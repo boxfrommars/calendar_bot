@@ -10,6 +10,8 @@ data/
 *.sqlite*
 *.db*
 *.lock
+*.health.json
+*.health.json.tmp
 !requirements*.txt
 .coverage
 htmlcov/

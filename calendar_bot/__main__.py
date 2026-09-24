@@ -5,17 +5,21 @@ import os
 from pathlib import Path
 
 from aiogram import Bot, Dispatcher
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.exceptions import TelegramAPIError
 from aiogram.types import BotCommand
 from dotenv import load_dotenv
 
-from .config import Config, ConfigError
+from .config import Config, ConfigError, database_path_from_env
 from .domain import UserError
 from .locking import InstanceLock
 from .logging_config import configure_logging
 from .parser import OpenAIParser
+from .polling import REQUEST_TIMEOUT, PollingMonitor, check_health
+from .runtime import serve_polling, stop_signals
 from .service import CalendarService
 from .storage import Store, check_database, migrate
+from .systemd import SystemdNotifier
 from .telegram import BotUI
 from .worker import NotificationWorker
 
@@ -30,70 +34,108 @@ async def check_telegram(config: Config) -> None:
         raise UserError("Проверка Telegram не прошла. Проверьте токен и сетевой доступ.") from None
 
 
-async def run(config: Config) -> None:
-    with InstanceLock(config.database_path):
-        bot = Bot(config.bot_token)
-        store = None
-        parser = None
-        try:
-            store = await Store.open(config.database_path)
-            parser = OpenAIParser(config.openai_api_key, config.openai_model)
-            service = CalendarService(store, config.allowed_user_ids)
-            dispatcher = Dispatcher()
-            ui = BotUI(service, parser, bot)
-            dispatcher.include_router(ui.router)
-            # Refuse to replace an unexpected webhook or discard incoming updates.
-            webhook = await bot.get_webhook_info(request_timeout=15)
-            if webhook.url:
-                raise UserError(
-                    "У токена настроен webhook. Используйте отдельный токен для этого polling-бота."
-                )
-            await bot.set_my_commands(
-                [
-                    BotCommand(
-                        command="start", description="Начать работу / возобновить уведомления"
-                    ),
-                    BotCommand(command="today", description="Сегодня"),
-                    BotCommand(command="week", description="Ближайшие 7 дней"),
-                    BotCommand(command="events", description="События и серии"),
-                    BotCommand(command="settings", description="Настройки"),
-                    BotCommand(command="help", description="Примеры и помощь"),
-                    BotCommand(command="cancel", description="Отменить текущий ввод"),
-                    BotCommand(command="id", description="Мой Telegram ID"),
-                ]
+async def _application(config: Config, monitor: PollingMonitor, begin_shutdown) -> None:
+    bot = None
+    store = None
+    parser = None
+    try:
+        bot = Bot(config.bot_token, session=AiohttpSession(timeout=REQUEST_TIMEOUT))
+        bot.session.middleware(monitor)
+        store = await Store.open(config.database_path)
+        parser = OpenAIParser(config.openai_api_key, config.openai_model)
+        service = CalendarService(store, config.allowed_user_ids)
+        dispatcher = Dispatcher()
+        ui = BotUI(service, parser, bot)
+        dispatcher.include_router(ui.router)
+        # Refuse to replace an unexpected webhook or discard incoming updates.
+        webhook = await bot.get_webhook_info(request_timeout=15)
+        if webhook.url:
+            raise UserError(
+                "У токена настроен webhook. Используйте отдельный токен для этого polling-бота."
             )
-            stop = asyncio.Event()
-            worker = NotificationWorker(service, bot)
-
-            async def poll():
+        await bot.set_my_commands(
+            [
+                BotCommand(command="start", description="Начать работу / возобновить уведомления"),
+                BotCommand(command="today", description="Сегодня"),
+                BotCommand(command="week", description="Ближайшие 7 дней"),
+                BotCommand(command="events", description="События и серии"),
+                BotCommand(command="settings", description="Настройки"),
+                BotCommand(command="help", description="Примеры и помощь"),
+                BotCommand(command="cancel", description="Отменить текущий ввод"),
+                BotCommand(command="id", description="Мой Telegram ID"),
+            ],
+            request_timeout=15,
+        )
+        worker = NotificationWorker(service, bot)
+        log.info("bot_started schema=1 allowed_users=%s", len(config.allowed_user_ids))
+        await serve_polling(dispatcher, bot, ui, worker, monitor, begin_shutdown)
+    finally:
+        begin_shutdown()
+        # Polling, handlers and the worker have already finished before closing SDKs.
+        async with asyncio.timeout(5):
+            try:
+                if parser is not None:
+                    await parser.close()
+            finally:
                 try:
-                    await dispatcher.start_polling(
-                        bot, allowed_updates=["message", "callback_query"], close_bot_session=False
-                    )
+                    if bot is not None:
+                        await bot.session.close()
                 finally:
-                    try:
-                        await ui.shutdown()
-                    finally:
-                        stop.set()
+                    if store is not None:
+                        await store.close()
+        log.info("bot_stopped")
 
-            log.info("bot_started schema=1 allowed_users=%s", len(config.allowed_user_ids))
-            # A failed worker must also stop polling, so a supervisor can restart both.
-            async with asyncio.TaskGroup() as group:
-                group.create_task(worker.run(stop))
-                group.create_task(poll())
+
+class _StopRequested(Exception):
+    pass
+
+
+async def run(config: Config) -> None:
+    notifier = SystemdNotifier.from_env(os.environ)
+    with InstanceLock(config.database_path) as instance:
+        monitor = PollingMonitor(config.database_path, instance.instance_id)
+        stop = asyncio.Event()
+        monitor_stop = asyncio.Event()
+
+        def begin_shutdown():
+            if monitor.phase not in ("stopping", "stopped"):
+                monitor.set_phase("stopping")
+                notifier.stopping()
+
+        async def observe():
+            await monitor.run(notifier, monitor_stop)
+            raise RuntimeError("Polling monitor stopped unexpectedly")
+
+        async def stopping():
+            await stop.wait()
+            begin_shutdown()
+            raise _StopRequested
+
+        try:
+            with stop_signals(stop):
+                try:
+                    async with asyncio.TaskGroup() as group:
+                        group.create_task(observe(), name="calendar-monitor")
+                        group.create_task(_application(config, monitor, begin_shutdown))
+                        group.create_task(stopping())
+                except* _StopRequested:
+                    pass
+        except ExceptionGroup as exc:
+            # Preserve actionable, already-safe ConfigError/UserError messages on startup.
+            error = exc
+            while isinstance(error, ExceptionGroup) and len(error.exceptions) == 1:
+                error = error.exceptions[0]
+            raise error from None
         finally:
-            if parser is not None:
-                await parser.close()
-            await bot.session.close()
-            if store is not None:
-                await store.close()
-            log.info("bot_stopped")
+            monitor_stop.set()
+            begin_shutdown()
+            monitor.set_phase("stopped")
 
 
 def main() -> int:
     configure_logging()
     arguments = argparse.ArgumentParser(description="Личный календарь в Telegram")
-    arguments.add_argument("command", choices=["run", "migrate", "check"])
+    arguments.add_argument("command", choices=["run", "migrate", "check", "health"])
     arguments.add_argument(
         "--env-file",
         type=Path,
@@ -108,6 +150,10 @@ def main() -> int:
         arguments.error("--offline применяется только к check")
     load_dotenv(args.env_file, override=False)
     try:
+        if args.command == "health":
+            result = check_health(database_path_from_env(os.environ))
+            print(result.describe())
+            return 0 if result.healthy else 1
         config = Config.from_env(os.environ, require_secrets=args.command != "migrate")
         if args.command == "migrate":
             with InstanceLock(config.database_path):

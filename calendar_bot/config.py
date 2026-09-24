@@ -7,6 +7,13 @@ class ConfigError(ValueError):
     pass
 
 
+def database_path_from_env(env: Mapping[str, str]) -> Path:
+    path = env.get("DATABASE_PATH", "data/calendar.sqlite3").strip()
+    if not path or path == ":memory:":
+        raise ConfigError("DATABASE_PATH должен указывать постоянный файл SQLite.")
+    return Path(path).expanduser().resolve()
+
+
 @dataclass(frozen=True)
 class Config:
     database_path: Path
@@ -32,7 +39,4 @@ class Config:
         model = env.get("OPENAI_MODEL", "gpt-5.4-mini-2026-03-17").strip()
         if not model:
             raise ConfigError("OPENAI_MODEL не может быть пустым.")
-        path = env.get("DATABASE_PATH", "data/calendar.sqlite3").strip()
-        if not path or path == ":memory:":
-            raise ConfigError("DATABASE_PATH должен указывать постоянный файл SQLite.")
-        return cls(Path(path).expanduser().resolve(), token, key, allowed, model)
+        return cls(database_path_from_env(env), token, key, allowed, model)
