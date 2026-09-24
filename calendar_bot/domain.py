@@ -19,7 +19,7 @@ def utc_now() -> datetime:
 def zone(name: str) -> ZoneInfo:
     try:
         return ZoneInfo(name)
-    except (ZoneInfoNotFoundError, ValueError, TypeError):
+    except ZoneInfoNotFoundError, ValueError, TypeError:
         raise UserError(
             "Неизвестный часовой пояс. Пример: Europe/Moscow или Asia/Yerevan."
         ) from None
@@ -31,7 +31,7 @@ def parse_time(value: str) -> time:
             raise ValueError
         hour, minute = map(int, value.split(":"))
         return time(hour, minute)
-    except (ValueError, TypeError):
+    except ValueError, TypeError:
         raise UserError("Укажите время в формате ЧЧ:ММ, например 09:00.") from None
 
 

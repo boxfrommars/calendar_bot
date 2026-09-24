@@ -171,7 +171,7 @@ class NotificationWorker:
                 log.warning("telegram_blocked user_id=%s", user["id"])
             except TelegramRetryAfter as exc:
                 await self._retry(notice, float(exc.retry_after), global_pause=True)
-            except (TelegramNetworkError, TelegramServerError, TimeoutError):
+            except TelegramNetworkError, TelegramServerError, TimeoutError:
                 await self._retry(notice, min(300, 5 * 2 ** min(notice["attempts"], 6)))
             except TelegramBadRequest:
                 async with self.service.store.transaction() as tx:

@@ -98,7 +98,7 @@ class OpenAIParser:
             if not result.events and not result.question:
                 raise UserError("Не нашёл событий. Укажите название, дату и время.")
             return result
-        except (OpenAIError, ValidationError):
+        except OpenAIError, ValidationError:
             raise UserError(
                 "Сервис разбора текста временно недоступен. Нажмите «Повторить». "
                 "Существующие напоминания продолжают работать."

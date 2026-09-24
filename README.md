@@ -4,7 +4,7 @@
 напоминания **за 15, 5 и 1 минуту**, утренняя сводка. У каждого пользователя
 свой часовой пояс и настройки. Доступ ограничен числовыми Telegram ID.
 
-Бот написан на Python 3.12+, использует aiogram 3, SQLite и OpenAI Responses API.
+Бот написан на Python 3.14+, использует aiogram 3, SQLite и OpenAI Responses API.
 Новые события сохраняются автоматически после разбора и проверки. Изменения
 существующих событий требуют подтверждения. Напоминания и сводки работают без AI.
 
@@ -107,13 +107,15 @@
 
 ## Локальный запуск
 
-Нужны Python 3.12 или новее, токен отдельного бота от [BotFather](https://t.me/BotFather)
+Нужны Python 3.14 или новее, токен отдельного бота от [BotFather](https://t.me/BotFather)
 и OpenAI API-ключ с доступом к выбранной модели. Один токен нельзя одновременно
 использовать в двух polling-процессах. Для разработки используйте тестового бота.
+Целевая версия 3.14 также указана в `.python-version` для менеджеров окружений.
 
 В PowerShell, из корня проекта:
 
 ```powershell
+python --version  # Ожидается Python 3.14.x
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install --require-hashes -r requirements.txt
 Copy-Item .env.example .env
@@ -122,13 +124,14 @@ Copy-Item .env.example .env
 В Linux:
 
 ```sh
-python3.12 -m venv .venv
+python3.14 -m venv .venv
 .venv/bin/python -m pip install --require-hashes -r requirements.txt
 cp -n .env.example .env
 ```
 
-Заполните `.env`: `BOT_TOKEN`, `OPENAI_API_KEY`, `ALLOWED_USER_IDS`. Модель по
-умолчанию — `gpt-5.4-mini-2026-03-17`; путь БД — `data/calendar.sqlite3`.
+Заполните `.env`: `BOT_TOKEN`, `OPENAI_API_KEY`, `ALLOWED_USER_IDS`. Шаблон
+`.env.example` задаёт `OPENAI_MODEL=gpt-6-luna`; без этой переменной код использует
+`gpt-5.4-mini-2026-03-17`. Путь БД по умолчанию — `data/calendar.sqlite3`.
 Переменные окружения имеют приоритет над `.env`. Другой файл можно передать
 параметром `--env-file`.
 
@@ -165,7 +168,7 @@ python -m unittest discover -s tests -q
 Он проверяет календарную арифметику, DST, SQLite, изоляцию пользователей,
 автосохранение новых событий, подтверждение правок через диспетчер aiogram, повторные updates,
 доставку, ошибки Telegram, восстановление и резервную копию. Внешние API заменены
-подставными реализациями. Проверены Python 3.12 и 3.14 на Windows; перед первым
+подставными реализациями. Набор проверяется на Python 3.14 под Windows; перед первым
 релизом этот же набор нужно выполнить на целевой Linux-среде.
 
 Проверка формата и импортов (инструмент нужен только разработчику):
@@ -190,7 +193,7 @@ python -m calendar_bot.evaluation
 Обновление зависимостей через uv:
 
 ```sh
-uv pip compile requirements.in --universal --python-version 3.12 --generate-hashes --output-file requirements.txt
+uv pip compile requirements.in --universal --python-version 3.14 --generate-hashes --output-file requirements.txt
 ```
 
 После обновления установите lock с `--require-hashes` и повторите тесты. Production
@@ -240,10 +243,14 @@ uv pip compile requirements.in --universal --python-version 3.12 --generate-hash
 ## Размещение
 
 Контракт приложения описан в [DEPLOYMENT.md](DEPLOYMENT.md). Реализация размещения
-принадлежит проекту `leucothea-administrator`. `calendar-bot` пока отсутствует в
-его inventory: регистрация приложения, отдельный сервис и backup — следующий
-инфраструктурный этап. Существующие специальные hooks другого бота повторно
-использовать для этого приложения нельзя.
+принадлежит проекту `leucothea-administrator`; каноническая структура контракта —
+его `templates/deployment-handoff.md`.
 
-Основная локальная ветка — `master`; remote ещё не назначен. Здесь
-нет production-секретов и выполненного серверного развёртывания.
+Репозиторий — [boxfrommars/calendar_bot](https://github.com/boxfrommars/calendar_bot),
+основная ветка и ветка контракта развёртывания — `master`.
+
+В `config/server.psd1` Leucothea пока нет записи, совпадающей с `calendar-bot`
+или его origin. Статус `Deployable` для приложения поэтому ещё не задан.
+Подключение приложения, реализация запуска и backup — отдельная задача в
+`leucothea-administrator`. Этот репозиторий задаёт требования, а фактическое
+серверное состояние и runbooks ведутся там в `production-server.md`.

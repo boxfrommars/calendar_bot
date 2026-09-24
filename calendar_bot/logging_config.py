@@ -3,7 +3,7 @@ import sys
 
 
 def configure_logging() -> None:
-    # Python 3.12 on Windows may default redirected streams to cp1252. Our CLI
+    # Windows may default redirected streams to a legacy encoding. Our CLI
     # speaks Russian, so use the same encoding for terminals, pipes and journals.
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
