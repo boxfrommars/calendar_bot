@@ -11,9 +11,10 @@ from aiogram.exceptions import TelegramConflictError, TelegramNetworkError, Tele
 from aiogram.methods import GetMe, GetUpdates
 from aiogram.utils.backoff import BackoffConfig
 
+from calendar_bot.health import check_health
 from calendar_bot.locking import InstanceLock
 from calendar_bot.logging_config import configure_logging
-from calendar_bot.polling import PollingMonitor, check_health
+from calendar_bot.polling import PollingMonitor
 from tests.polling_support import PRIVATE, TOKEN, MonotonicClock, PollingSession, RecordingNotifier
 
 

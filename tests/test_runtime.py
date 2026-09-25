@@ -14,11 +14,12 @@ from unittest.mock import AsyncMock, patch
 from aiogram import Dispatcher, Router
 from aiogram.types import Chat, Message, Update, User
 
-from calendar_bot.__main__ import main, run
+from calendar_bot.__main__ import main
 from calendar_bot.config import Config
+from calendar_bot.health import check_health, health_path
 from calendar_bot.locking import InstanceLock
-from calendar_bot.polling import PollingMonitor, check_health, health_path
-from calendar_bot.runtime import serve_polling
+from calendar_bot.polling import PollingMonitor
+from calendar_bot.runtime import run, serve_polling
 from calendar_bot.storage import migrate
 from tests.polling_support import PRIVATE, TOKEN, PollingSession, RecordingNotifier
 
@@ -33,10 +34,10 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         self.session = PollingSession()
         self.notifier = RecordingNotifier()
         self.parser = AsyncMock()
-        self.enterContext(patch("calendar_bot.__main__.AiohttpSession", return_value=self.session))
-        self.enterContext(patch("calendar_bot.__main__.OpenAIParser", return_value=self.parser))
+        self.enterContext(patch("calendar_bot.runtime.AiohttpSession", return_value=self.session))
+        self.enterContext(patch("calendar_bot.runtime.OpenAIParser", return_value=self.parser))
         self.enterContext(
-            patch("calendar_bot.__main__.SystemdNotifier.from_env", return_value=self.notifier)
+            patch("calendar_bot.runtime.SystemdNotifier.from_env", return_value=self.notifier)
         )
         self.enterContext(patch.object(logging.getLogger("aiogram"), "level", logging.CRITICAL))
         self.original_tasks = asyncio.all_tasks()
@@ -79,7 +80,7 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
                 await session.requested.wait()
                 raise ValueError(PRIVATE)
 
-        with patch("calendar_bot.__main__.NotificationWorker", BrokenWorker):
+        with patch("calendar_bot.runtime.NotificationWorker", BrokenWorker):
             with self.assertLogs("calendar_bot.runtime", level="ERROR") as captured:
                 with self.assertRaises(ValueError):
                     await asyncio.wait_for(run(self.config), timeout=3)
@@ -89,7 +90,7 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_unexpected_worker_return_is_failure(self):
         worker = AsyncMock()
-        with patch("calendar_bot.__main__.NotificationWorker", return_value=worker):
+        with patch("calendar_bot.runtime.NotificationWorker", return_value=worker):
             with self.assertLogs("calendar_bot.runtime", level="ERROR"):
                 with self.assertRaises(RuntimeError):
                     await asyncio.wait_for(run(self.config), timeout=3)
@@ -175,7 +176,7 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
                 await asyncio.gather(task, return_exceptions=True)
 
     async def test_startup_failure_releases_lock_and_closes_resources(self):
-        with patch("calendar_bot.__main__.Store.open", side_effect=ValueError(PRIVATE)):
+        with patch("calendar_bot.runtime.Store.open", side_effect=ValueError(PRIVATE)):
             with self.assertRaises(ValueError):
                 await run(self.config)
         self.assertTrue(self.session.closed)
@@ -198,7 +199,7 @@ class RuntimeExitTests(unittest.TestCase):
                     ["calendar_bot", "run", "--env-file", str(Path(directory) / "absent.env")],
                 ):
                     with patch(
-                        "calendar_bot.__main__.run",
+                        "calendar_bot.runtime.run",
                         new=AsyncMock(side_effect=RuntimeError(PRIVATE)),
                     ):
                         output = io.StringIO()

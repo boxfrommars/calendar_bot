@@ -10,8 +10,9 @@ from unittest.mock import AsyncMock, patch
 
 from aiogram.methods import GetUpdates
 
+from calendar_bot.health import check_health, health_path
 from calendar_bot.locking import InstanceLock, locked_instance
-from calendar_bot.polling import PollingMonitor, check_health, health_path
+from calendar_bot.polling import PollingMonitor
 from tests.polling_support import PRIVATE, MonotonicClock
 
 
