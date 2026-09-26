@@ -1,0 +1,1247 @@
+{
+  "baseline_revision": "b39272a",
+  "model": "gpt-6-luna",
+  "reasoning_effort": "low",
+  "positive_cases": [
+    "web_euro",
+    "web_euro_followup",
+    "web_bst",
+    "web_bst_followup",
+    "web_czechia_2026",
+    "web_czechia_2026_followup"
+  ],
+  "guard_cases": [
+    "personal_missing_time",
+    "event_duration"
+  ],
+  "variants": [
+    "control",
+    "candidate"
+  ],
+  "repeat": 5,
+  "parse_timeout": 40,
+  "max_tool_calls": 3,
+  "max_output_tokens": 3000,
+  "schema_sha256": {
+    "control": "33b8c2fde1fa222af05d9d057ed0ca1cc0561a4cd1f7418094d496b6cef1e1e1",
+    "candidate": "6217cb8f454fde9257f2bca17aa7902df6eaf92a366c17bd277d1d1e78c1af67"
+  },
+  "description_sha256": "84413c7d56849c9b993dffd5ddbc6c037c7bcce003d902007b04b0baf679e841",
+  "acceptance": {
+    "more_passed_positive_cases": true,
+    "fewer_false_clarification_parses": true,
+    "all_guard_cases_pass_without_web_search": true,
+    "unverified_url_parses_not_more_than_control": true,
+    "all_api_completed_and_complete_diagnostics": true,
+    "budgets_respected": true,
+    "candidate_parse_p95_max_seconds": 30,
+    "candidate_parse_p95_max_ratio_to_control": 2,
+    "full_suite_required_after_gate": 33,
+    "full_suite_all_pass_required_for_adoption": true
+  },
+  "schedule": [
+    {
+      "position": 1,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 1
+    },
+    {
+      "position": 2,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 1
+    },
+    {
+      "position": 3,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 1
+    },
+    {
+      "position": 4,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 1
+    },
+    {
+      "position": 5,
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 1
+    },
+    {
+      "position": 6,
+      "variant": "candidate",
+      "case_id": "web_bst",
+      "repetition": 1
+    },
+    {
+      "position": 7,
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 1
+    },
+    {
+      "position": 8,
+      "variant": "control",
+      "case_id": "web_bst_followup",
+      "repetition": 1
+    },
+    {
+      "position": 9,
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 1
+    },
+    {
+      "position": 10,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 1
+    },
+    {
+      "position": 11,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1
+    },
+    {
+      "position": 12,
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1
+    },
+    {
+      "position": 13,
+      "variant": "control",
+      "case_id": "personal_missing_time",
+      "repetition": 1
+    },
+    {
+      "position": 14,
+      "variant": "candidate",
+      "case_id": "personal_missing_time",
+      "repetition": 1
+    },
+    {
+      "position": 15,
+      "variant": "candidate",
+      "case_id": "event_duration",
+      "repetition": 1
+    },
+    {
+      "position": 16,
+      "variant": "control",
+      "case_id": "event_duration",
+      "repetition": 1
+    },
+    {
+      "position": 17,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 2
+    },
+    {
+      "position": 18,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 2
+    },
+    {
+      "position": 19,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 2
+    },
+    {
+      "position": 20,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 2
+    },
+    {
+      "position": 21,
+      "variant": "candidate",
+      "case_id": "web_bst",
+      "repetition": 2
+    },
+    {
+      "position": 22,
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 2
+    },
+    {
+      "position": 23,
+      "variant": "control",
+      "case_id": "web_bst_followup",
+      "repetition": 2
+    },
+    {
+      "position": 24,
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 2
+    },
+    {
+      "position": 25,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 2
+    },
+    {
+      "position": 26,
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 2
+    },
+    {
+      "position": 27,
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2
+    },
+    {
+      "position": 28,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2
+    },
+    {
+      "position": 29,
+      "variant": "candidate",
+      "case_id": "personal_missing_time",
+      "repetition": 2
+    },
+    {
+      "position": 30,
+      "variant": "control",
+      "case_id": "personal_missing_time",
+      "repetition": 2
+    },
+    {
+      "position": 31,
+      "variant": "control",
+      "case_id": "event_duration",
+      "repetition": 2
+    },
+    {
+      "position": 32,
+      "variant": "candidate",
+      "case_id": "event_duration",
+      "repetition": 2
+    },
+    {
+      "position": 33,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 3
+    },
+    {
+      "position": 34,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 3
+    },
+    {
+      "position": 35,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 3
+    },
+    {
+      "position": 36,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 3
+    },
+    {
+      "position": 37,
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 3
+    },
+    {
+      "position": 38,
+      "variant": "candidate",
+      "case_id": "web_bst",
+      "repetition": 3
+    },
+    {
+      "position": 39,
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 3
+    },
+    {
+      "position": 40,
+      "variant": "control",
+      "case_id": "web_bst_followup",
+      "repetition": 3
+    },
+    {
+      "position": 41,
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 3
+    },
+    {
+      "position": 42,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 3
+    },
+    {
+      "position": 43,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3
+    },
+    {
+      "position": 44,
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3
+    },
+    {
+      "position": 45,
+      "variant": "control",
+      "case_id": "personal_missing_time",
+      "repetition": 3
+    },
+    {
+      "position": 46,
+      "variant": "candidate",
+      "case_id": "personal_missing_time",
+      "repetition": 3
+    },
+    {
+      "position": 47,
+      "variant": "candidate",
+      "case_id": "event_duration",
+      "repetition": 3
+    },
+    {
+      "position": 48,
+      "variant": "control",
+      "case_id": "event_duration",
+      "repetition": 3
+    },
+    {
+      "position": 49,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 4
+    },
+    {
+      "position": 50,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 4
+    },
+    {
+      "position": 51,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 4
+    },
+    {
+      "position": 52,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 4
+    },
+    {
+      "position": 53,
+      "variant": "candidate",
+      "case_id": "web_bst",
+      "repetition": 4
+    },
+    {
+      "position": 54,
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 4
+    },
+    {
+      "position": 55,
+      "variant": "control",
+      "case_id": "web_bst_followup",
+      "repetition": 4
+    },
+    {
+      "position": 56,
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 4
+    },
+    {
+      "position": 57,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 4
+    },
+    {
+      "position": 58,
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 4
+    },
+    {
+      "position": 59,
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 4
+    },
+    {
+      "position": 60,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 4
+    },
+    {
+      "position": 61,
+      "variant": "candidate",
+      "case_id": "personal_missing_time",
+      "repetition": 4
+    },
+    {
+      "position": 62,
+      "variant": "control",
+      "case_id": "personal_missing_time",
+      "repetition": 4
+    },
+    {
+      "position": 63,
+      "variant": "control",
+      "case_id": "event_duration",
+      "repetition": 4
+    },
+    {
+      "position": 64,
+      "variant": "candidate",
+      "case_id": "event_duration",
+      "repetition": 4
+    },
+    {
+      "position": 65,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 5
+    },
+    {
+      "position": 66,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 5
+    },
+    {
+      "position": 67,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 5
+    },
+    {
+      "position": 68,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 5
+    },
+    {
+      "position": 69,
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 5
+    },
+    {
+      "position": 70,
+      "variant": "candidate",
+      "case_id": "web_bst",
+      "repetition": 5
+    },
+    {
+      "position": 71,
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 5
+    },
+    {
+      "position": 72,
+      "variant": "control",
+      "case_id": "web_bst_followup",
+      "repetition": 5
+    },
+    {
+      "position": 73,
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 5
+    },
+    {
+      "position": 74,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 5
+    },
+    {
+      "position": 75,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 5
+    },
+    {
+      "position": 76,
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 5
+    },
+    {
+      "position": 77,
+      "variant": "control",
+      "case_id": "personal_missing_time",
+      "repetition": 5
+    },
+    {
+      "position": 78,
+      "variant": "candidate",
+      "case_id": "personal_missing_time",
+      "repetition": 5
+    },
+    {
+      "position": 79,
+      "variant": "candidate",
+      "case_id": "event_duration",
+      "repetition": 5
+    },
+    {
+      "position": 80,
+      "variant": "control",
+      "case_id": "event_duration",
+      "repetition": 5
+    }
+  ],
+  "requests": [
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "personal_missing_time",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "personal_missing_time",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "event_duration",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "event_duration",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "personal_missing_time",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "personal_missing_time",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "event_duration",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "event_duration",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "personal_missing_time",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "personal_missing_time",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "event_duration",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "event_duration",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "personal_missing_time",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "personal_missing_time",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "event_duration",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "event_duration",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "personal_missing_time",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "personal_missing_time",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "event_duration",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "3851651193c900364de74e5031efba8f0437ba36675ace5f3fcc8a98c0cfcbbb",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "event_duration",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac",
+      "normalized_options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    }
+  ],
+  "only_question_description_differs": true
+}

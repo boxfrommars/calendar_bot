@@ -179,11 +179,19 @@ def search_urls(response) -> set[str]:
             continue
         if output.status != "completed":
             raise UserError("Поиск временно недоступен. Нажмите «Повторить» или укажите время.")
-        action = output.action
-        if action.type == "search":
-            urls.update(source.url for source in (action.sources or []) if source.type == "url")
-        elif action.type in {"open_page", "find_in_page"} and action.url:
-            urls.add(action.url)
+        # A completed call can have incomplete metadata. It grants no sources,
+        # but must not discard URLs confirmed by another call in this response.
+        action = getattr(output, "action", None)
+        action_type = getattr(action, "type", None)
+        if action_type == "search":
+            for source in getattr(action, "sources", None) or []:
+                url = getattr(source, "url", None)
+                if getattr(source, "type", None) == "url" and isinstance(url, str):
+                    urls.add(url)
+        elif action_type in {"open_page", "find_in_page"}:
+            url = getattr(action, "url", None)
+            if isinstance(url, str):
+                urls.add(url)
     return urls
 
 

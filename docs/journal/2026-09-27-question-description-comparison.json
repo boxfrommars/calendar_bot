@@ -1,0 +1,35 @@
+{
+  "control": {
+    "passed_positive": 28,
+    "passed_guard": 10,
+    "false_clarification_parses": 2,
+    "unverified_url_parses": 0,
+    "guard_web_calls": 0,
+    "parse_seconds_p50": 4.5167,
+    "parse_seconds_p95": 6.2147,
+    "parse_seconds_max": 7.1263,
+    "positive_seconds_p50": 4.64935,
+    "positive_seconds_p95": 6.4364,
+    "all_api_completed": true,
+    "complete_diagnostics": true,
+    "budgets_respected": true,
+    "complete_traces": true
+  },
+  "candidate": {
+    "passed_positive": 29,
+    "passed_guard": 10,
+    "false_clarification_parses": 1,
+    "unverified_url_parses": 0,
+    "guard_web_calls": 0,
+    "parse_seconds_p50": 4.6761,
+    "parse_seconds_p95": 6.9842,
+    "parse_seconds_max": 8.0317,
+    "positive_seconds_p50": 5.3231,
+    "positive_seconds_p95": 7.7781,
+    "all_api_completed": true,
+    "complete_diagnostics": true,
+    "budgets_respected": true,
+    "complete_traces": true
+  },
+  "gate_passed": true
+}

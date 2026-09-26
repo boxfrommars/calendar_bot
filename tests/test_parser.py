@@ -522,6 +522,49 @@ class WebSearchTests(unittest.IsolatedAsyncioTestCase):
                 self.assertTrue(result.question)
                 self.assertEqual(result.question_sources, [])
 
+    async def test_incomplete_tool_metadata_does_not_grant_or_discard_sources(self):
+        actions = (
+            None,
+            SimpleNamespace(),
+            SimpleNamespace(type="search"),
+            SimpleNamespace(
+                type="search",
+                sources=[
+                    None,
+                    SimpleNamespace(type="url"),
+                    SimpleNamespace(type="url", url=None),
+                    SimpleNamespace(type="api", url=SOURCE.url),
+                ],
+            ),
+            SimpleNamespace(type="open_page"),
+            SimpleNamespace(type="find_in_page", url=None),
+            SimpleNamespace(type="unknown", url=SOURCE.url),
+            {"type": "open_page", "url": SOURCE.url},
+        )
+        for action in actions:
+            for has_source in (False, True):
+                with self.subTest(action=action, has_source=has_source):
+                    incomplete = SimpleNamespace(
+                        type="web_search_call", status="completed", action=action
+                    )
+                    outputs = [incomplete]
+                    if has_source:
+                        outputs.insert(0, search_output())
+                    expected = ParseResult(
+                        items=[
+                            ParsedTask(kind="task", title="Купить хлеб", date=None),
+                            web_event(),
+                        ],
+                        question=None,
+                    )
+                    result, _ = await self.parse(expected, outputs)
+                    if has_source:
+                        self.assertEqual(result, expected)
+                    else:
+                        self.assertEqual(result.items, [])
+                        self.assertTrue(result.question)
+                        self.assertEqual(result.question_sources, [])
+
     async def test_source_urls_require_verbatim_match_for_events_and_questions(self):
         retrieved = "https://example.org/tournament/final%2F2026/?lang=en&view=full#start"
         variants = {
@@ -706,6 +749,12 @@ class WebSearchTests(unittest.IsolatedAsyncioTestCase):
                                     {"type": "api", "name": "SECRET_PROVIDER_FRAGMENT"},
                                 ],
                             },
+                        },
+                        {
+                            "type": "web_search_call",
+                            "id": "ws_no_action",
+                            "status": "completed",
+                            "action": None,
                         },
                         {
                             "type": "message",
