@@ -280,7 +280,7 @@ def build_cases() -> list[EvaluationCase]:
         add(id, text, base=base, expected=(expected,))
     add("edit_type_rejected", "преврати дело во встречу завтра в 15:00", base=task)
     add("edit_add_rejected", "сохрани текущую серию и добавь ещё завтра в 18:00 Обед", base=event)
-    # Historical fixtures: sources and their timezone conventions are linked in docs/development.md.
+    # Fixed public-event fixtures: sources and timezones are linked in docs/development.md.
     for prefix, reference, request, answer, followup, start_utc in (
         (
             "web_euro",
@@ -297,6 +297,15 @@ def build_cases() -> list[EvaluationCase]:
             "Это время уже прошло. Укажите будущую дату и время.",
             "А во сколько было это время?",
             datetime(2026, 9, 26, 18, 45, tzinfo=UTC),
+        ),
+        (
+            # Upcoming at the 2026-09-27 measurement; keep the reference fixed.
+            "web_czechia_2026",
+            datetime(2026, 9, 27, 8, tzinfo=UTC),
+            "Напомни о послезавтрашнем матче мужской футбольной Лиги наций Чехия — Англия",
+            "Во сколько начинается матч?",
+            "А ты не можешь посмотреть?",
+            datetime(2026, 9, 29, 18, 45, tzinfo=UTC),
         ),
     ):
         messages = [{"role": "user", "content": request}]

@@ -1,0 +1,313 @@
+{
+  "baseline_revision": "04f98f1",
+  "model": "gpt-6-luna",
+  "creation_context_roles": {
+    "control": "user",
+    "candidate": "developer"
+  },
+  "schedule": [
+    {
+      "position": 1,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 1
+    },
+    {
+      "position": 2,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 1
+    },
+    {
+      "position": 3,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 1
+    },
+    {
+      "position": 4,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 1
+    },
+    {
+      "position": 5,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 2
+    },
+    {
+      "position": 6,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 2
+    },
+    {
+      "position": 7,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 2
+    },
+    {
+      "position": 8,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 2
+    },
+    {
+      "position": 9,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 3
+    },
+    {
+      "position": 10,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 3
+    },
+    {
+      "position": 11,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 3
+    },
+    {
+      "position": 12,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 3
+    },
+    {
+      "position": 13,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 4
+    },
+    {
+      "position": 14,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 4
+    },
+    {
+      "position": 15,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 4
+    },
+    {
+      "position": 16,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 4
+    },
+    {
+      "position": 17,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 5
+    },
+    {
+      "position": 18,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 5
+    },
+    {
+      "position": 19,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 5
+    },
+    {
+      "position": 20,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 5
+    }
+  ],
+  "requests": [
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 1,
+      "context_role": "user",
+      "input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "normalized_input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 1,
+      "context_role": "developer",
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "normalized_input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 1,
+      "context_role": "developer",
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "normalized_input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 1,
+      "context_role": "user",
+      "input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "normalized_input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 2,
+      "context_role": "developer",
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "normalized_input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 2,
+      "context_role": "user",
+      "input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "normalized_input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 2,
+      "context_role": "user",
+      "input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "normalized_input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 2,
+      "context_role": "developer",
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "normalized_input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 3,
+      "context_role": "user",
+      "input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "normalized_input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 3,
+      "context_role": "developer",
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "normalized_input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 3,
+      "context_role": "developer",
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "normalized_input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 3,
+      "context_role": "user",
+      "input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "normalized_input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 4,
+      "context_role": "developer",
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "normalized_input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 4,
+      "context_role": "user",
+      "input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "normalized_input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 4,
+      "context_role": "user",
+      "input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "normalized_input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 4,
+      "context_role": "developer",
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "normalized_input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 5,
+      "context_role": "user",
+      "input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "normalized_input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 5,
+      "context_role": "developer",
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "normalized_input_sha256": "e6ec209205af09a39d7958ed81e47e1b3f44c8f56b7791ffaa9638ce9e7376eb",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 5,
+      "context_role": "developer",
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "normalized_input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 5,
+      "context_role": "user",
+      "input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "normalized_input_sha256": "7ef39e79d68171428c5d51f5beb9c4d87d436f97618380777d0a61ed573eff15",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    }
+  ],
+  "only_context_role_differs": true
+}

@@ -101,10 +101,10 @@ class EvaluationTests(unittest.IsolatedAsyncioTestCase):
             check_result(case, await parser.parse())
 
     def test_case_selection_does_not_silently_skip_unknown_or_web_cases(self):
-        self.assertEqual(len(build_cases()), 29)
-        self.assertEqual(len({case.id for case in build_cases()}), 29)
+        self.assertEqual(len(build_cases()), 31)
+        self.assertEqual(len({case.id for case in build_cases()}), 31)
         self.assertEqual(len(select_cases()), 23)
-        self.assertEqual(len(select_cases(web_search=True)), 29)
+        self.assertEqual(len(select_cases(web_search=True)), 31)
         self.assertEqual(len(select_cases(case_ids=["edit_title", "edit_title"])), 1)
         for ids in (["unknown"], ["edit_title", "unknown"], ["web_euro"]):
             with self.assertRaises(UserError):

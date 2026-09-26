@@ -363,7 +363,12 @@ class OpenAIParser:
                 "content": COMMON_INSTRUCTIONS
                 + (EDIT_INSTRUCTIONS if base is not None else CREATE_INSTRUCTIONS),
             },
-            {"role": "user", "content": "Контекст приложения: " + context},
+            {
+                # Only creation context is application-owned clock data. Editing
+                # also contains selected_item with user text; never promote it.
+                "role": "developer" if base is None else "user",
+                "content": "Контекст приложения: " + context,
+            },
             *messages,
         ]
         trace_session = self.trace.new_session() if self.trace else None

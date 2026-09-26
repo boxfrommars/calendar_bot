@@ -1,0 +1,283 @@
+{
+  "completed": true,
+  "summary": {
+    "attempts": 10,
+    "completed_responses": 10,
+    "responses_with_usage": 10,
+    "seconds_total": 52.8154,
+    "seconds_p50": 5.0776,
+    "seconds_p95": 6.9583,
+    "input_tokens": 108134,
+    "output_tokens": 2870,
+    "cached_input_tokens": 64990,
+    "reasoning_tokens": 1499,
+    "web_search_calls": 11
+  },
+  "by_mode": {
+    "create": {
+      "attempts": 10,
+      "completed_responses": 10,
+      "responses_with_usage": 10,
+      "seconds_total": 52.8154,
+      "seconds_p50": 5.0776,
+      "seconds_p95": 6.9583,
+      "input_tokens": 108134,
+      "output_tokens": 2870,
+      "cached_input_tokens": 64990,
+      "reasoning_tokens": 1499,
+      "web_search_calls": 11
+    },
+    "edit": {
+      "attempts": 0,
+      "completed_responses": 0,
+      "responses_with_usage": 0,
+      "seconds_total": 0,
+      "seconds_p50": null,
+      "seconds_p95": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_tokens": null,
+      "web_search_calls": null
+    }
+  },
+  "attempts": [
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_czechia_2026",
+      "repetition": 1,
+      "model": "gpt-6-luna",
+      "input_tokens": 10727,
+      "output_tokens": 248,
+      "cached_input_tokens": 6488,
+      "reasoning_tokens": 111,
+      "web_search_calls": 1,
+      "seconds": 5.2962
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1,
+      "model": "gpt-6-luna",
+      "input_tokens": 10779,
+      "output_tokens": 291,
+      "cached_input_tokens": 6510,
+      "reasoning_tokens": 150,
+      "web_search_calls": 1,
+      "seconds": 4.5624
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_czechia_2026",
+      "repetition": 2,
+      "model": "gpt-6-luna",
+      "input_tokens": 12658,
+      "output_tokens": 264,
+      "cached_input_tokens": 6488,
+      "reasoning_tokens": 139,
+      "web_search_calls": 2,
+      "seconds": 5.1561
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2,
+      "model": "gpt-6-luna",
+      "input_tokens": 10746,
+      "output_tokens": 305,
+      "cached_input_tokens": 6510,
+      "reasoning_tokens": 159,
+      "web_search_calls": 1,
+      "seconds": 5.4669
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_czechia_2026",
+      "repetition": 3,
+      "model": "gpt-6-luna",
+      "input_tokens": 10815,
+      "output_tokens": 308,
+      "cached_input_tokens": 6488,
+      "reasoning_tokens": 143,
+      "web_search_calls": 1,
+      "seconds": 4.9991
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3,
+      "model": "gpt-6-luna",
+      "input_tokens": 10706,
+      "output_tokens": 265,
+      "cached_input_tokens": 6510,
+      "reasoning_tokens": 138,
+      "web_search_calls": 1,
+      "seconds": 6.4468
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_czechia_2026",
+      "repetition": 4,
+      "model": "gpt-6-luna",
+      "input_tokens": 9730,
+      "output_tokens": 257,
+      "cached_input_tokens": 6488,
+      "reasoning_tokens": 130,
+      "web_search_calls": 1,
+      "seconds": 4.6184
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 4,
+      "model": "gpt-6-luna",
+      "input_tokens": 10528,
+      "output_tokens": 285,
+      "cached_input_tokens": 6510,
+      "reasoning_tokens": 151,
+      "web_search_calls": 1,
+      "seconds": 4.4692
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_czechia_2026",
+      "repetition": 5,
+      "model": "gpt-6-luna",
+      "input_tokens": 10793,
+      "output_tokens": 312,
+      "cached_input_tokens": 6488,
+      "reasoning_tokens": 185,
+      "web_search_calls": 1,
+      "seconds": 4.842
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 5,
+      "model": "gpt-6-luna",
+      "input_tokens": 10652,
+      "output_tokens": 335,
+      "cached_input_tokens": 6510,
+      "reasoning_tokens": 193,
+      "web_search_calls": 1,
+      "seconds": 6.9583
+    }
+  ],
+  "schema_version": 2,
+  "finished": true,
+  "outcomes": {
+    "planned": 10,
+    "passed": 10,
+    "failed": 0,
+    "error": 0,
+    "cancelled": 0,
+    "not_run": 0
+  },
+  "cases": [
+    {
+      "case_id": "web_czechia_2026",
+      "repetition": 1,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 5.3076
+    },
+    {
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 4.5732
+    },
+    {
+      "case_id": "web_czechia_2026",
+      "repetition": 2,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 5.1683
+    },
+    {
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 5.4799
+    },
+    {
+      "case_id": "web_czechia_2026",
+      "repetition": 3,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 5.016
+    },
+    {
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 6.4607
+    },
+    {
+      "case_id": "web_czechia_2026",
+      "repetition": 4,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 4.6366
+    },
+    {
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 4,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 4.4881
+    },
+    {
+      "case_id": "web_czechia_2026",
+      "repetition": 5,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 4.8594
+    },
+    {
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 5,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 6.9754
+    }
+  ],
+  "suite_sha256": "26d2ecd98bc3a855a4ba9c0f7efcef36851c2440749c5b2d16d294224a495aa1",
+  "prompt_sha256": {
+    "create": "c7a268393169ccf2db4bb0e0091c94b013e182df791610707a226e73fc9c3394",
+    "edit": "0e0ca17068ce348f792527aa39070adaecafe289718dac80fcba908d489be600"
+  }
+}
