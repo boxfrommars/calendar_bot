@@ -56,7 +56,7 @@
 | --- | --- | --- | --- |
 | `BOT_TOKEN` | Для `run` и `check`, включая `--offline` | Да | Токен отдельного Telegram-бота; отсутствие webhook обязательно для `run` |
 | `OPENAI_API_KEY` | Для `run` и `check`, включая `--offline` | Да | OpenAI API-ключ; `check` проверяет только его наличие |
-| `OPENAI_MODEL` | Нет | Нет | Непустое имя; default кода — `gpt-5.4-mini-2026-03-17`. Нужны Responses API, Structured Outputs, `web_search` и `reasoning.effort=low` |
+| `OPENAI_MODEL` | Нет | Нет | Непустое имя; default кода — `gpt-6-luna`. Нужны Responses API, Structured Outputs, `web_search` и `reasoning.effort=low` |
 | `OPENAI_TRACE_DIR` | Нет | Нет, но содержимое каталога приватное | Каталог временной диагностики запросов и ответов модели; отсутствующее или пустое значение отключает запись; относительный путь от рабочего каталога |
 | `ALLOWED_USER_IDS` | Нет | Нет | Положительные числовые ID через запятую; пустой список не даёт никому доступ к календарю |
 | `DATABASE_PATH` | Нет | Нет | Постоянный файл SQLite; default `data/calendar.sqlite3`; относительный путь разрешается от рабочего каталога; пустое значение и `:memory:` запрещены |

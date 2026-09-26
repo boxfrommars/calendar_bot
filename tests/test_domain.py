@@ -218,3 +218,12 @@ class CalendarMathTests(unittest.TestCase):
             Config.from_env({"ALLOWED_USER_IDS": "not-a-number"}, require_secrets=False)
         config = Config.from_env({"ALLOWED_USER_IDS": "101, 202,101"}, require_secrets=False)
         self.assertEqual(config.allowed_user_ids, frozenset({101, 202}))
+
+    def test_model_defaults_to_luna_and_respects_override(self):
+        self.assertEqual(Config.from_env({}, require_secrets=False).openai_model, "gpt-6-luna")
+        self.assertEqual(
+            Config.from_env({"OPENAI_MODEL": "custom-model"}, require_secrets=False).openai_model,
+            "custom-model",
+        )
+        with self.assertRaises(ConfigError):
+            Config.from_env({"OPENAI_MODEL": " "}, require_secrets=False)

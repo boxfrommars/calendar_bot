@@ -10,6 +10,9 @@ from openai import APIConnectionError, AsyncOpenAI
 
 from calendar_bot.domain import UserError
 from calendar_bot.parser import (
+    COMMON_INSTRUCTIONS,
+    CREATE_INSTRUCTIONS,
+    EDIT_INSTRUCTIONS,
     OpenAIParser,
     ParsedEvent,
     ParsedSource,
@@ -79,6 +82,7 @@ class ParserContractTests(unittest.IsolatedAsyncioTestCase):
             {"reference_local", "reference_utc", "reference_weekday", "timezone", "selected_item"},
         )
         self.assertNotIn("tools", arguments)
+        self.assertEqual(arguments["input"][0]["content"], COMMON_INSTRUCTIONS + EDIT_INSTRUCTIONS)
         self.assertFalse(arguments["store"])
         schema = ParseResult.model_json_schema()
         self.assertEqual(set(schema["properties"]), {"items", "question", "question_sources"})
@@ -106,7 +110,7 @@ class ParserContractTests(unittest.IsolatedAsyncioTestCase):
         )
         call = AsyncMock(return_value=SimpleNamespace(status="completed", output_parsed=expected))
         client = SimpleNamespace(responses=SimpleNamespace(parse=call), close=AsyncMock())
-        parser = OpenAIParser("test-not-real", "gpt-5.4-mini-2026-03-17", client=client)
+        parser = OpenAIParser("test-not-real", "gpt-6-luna", client=client)
         result = await parser.parse(
             [{"role": "user", "content": "завтра 16:00 Штурм // Ориентир 2027"}],
             datetime(2026, 9, 24, 19, 59, tzinfo=UTC),
@@ -118,6 +122,9 @@ class ParserContractTests(unittest.IsolatedAsyncioTestCase):
         self.assertIs(arguments["text_format"], ParseResult)
         self.assertEqual(arguments["tools"], [{"type": "web_search"}])
         self.assertEqual(arguments["tool_choice"], "auto")
+        self.assertEqual(
+            arguments["input"][0]["content"], COMMON_INSTRUCTIONS + CREATE_INSTRUCTIONS
+        )
         self.assertEqual(arguments["max_tool_calls"], 3)
         self.assertEqual(arguments["include"], ["web_search_call.action.sources"])
         context = json.loads(arguments["input"][1]["content"].split(": ", 1)[1])

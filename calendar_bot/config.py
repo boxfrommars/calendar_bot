@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Mapping
 
+DEFAULT_OPENAI_MODEL = "gpt-6-luna"
+
 
 class ConfigError(ValueError):
     pass
@@ -20,7 +22,7 @@ class Config:
     bot_token: str
     openai_api_key: str
     allowed_user_ids: frozenset[int]
-    openai_model: str = "gpt-5.4-mini-2026-03-17"
+    openai_model: str = DEFAULT_OPENAI_MODEL
     openai_trace_dir: Path | None = None
 
     @classmethod
@@ -37,7 +39,7 @@ class Config:
             raise ConfigError("Telegram ID должны быть положительными.")
         if require_secrets and (not token or not key):
             raise ConfigError("Задайте BOT_TOKEN и OPENAI_API_KEY.")
-        model = env.get("OPENAI_MODEL", "gpt-5.4-mini-2026-03-17").strip()
+        model = env.get("OPENAI_MODEL", DEFAULT_OPENAI_MODEL).strip()
         if not model:
             raise ConfigError("OPENAI_MODEL не может быть пустым.")
         trace_dir = env.get("OPENAI_TRACE_DIR", "").strip()

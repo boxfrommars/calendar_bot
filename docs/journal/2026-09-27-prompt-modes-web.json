@@ -1,0 +1,118 @@
+{
+  "completed": true,
+  "summary": {
+    "attempts": 6,
+    "completed_responses": 6,
+    "responses_with_usage": 6,
+    "seconds_total": 29.2051,
+    "seconds_p50": 4.82975,
+    "seconds_p95": 6.3088,
+    "input_tokens": 64308,
+    "output_tokens": 1587,
+    "cached_input_tokens": 38957,
+    "reasoning_tokens": 910,
+    "web_search_calls": 7
+  },
+  "by_mode": {
+    "create": {
+      "attempts": 6,
+      "completed_responses": 6,
+      "responses_with_usage": 6,
+      "seconds_total": 29.2051,
+      "seconds_p50": 4.82975,
+      "seconds_p95": 6.3088,
+      "input_tokens": 64308,
+      "output_tokens": 1587,
+      "cached_input_tokens": 38957,
+      "reasoning_tokens": 910,
+      "web_search_calls": 7
+    },
+    "edit": {
+      "attempts": 0,
+      "completed_responses": 0,
+      "responses_with_usage": 0,
+      "seconds_total": 0,
+      "seconds_p50": null,
+      "seconds_p95": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_tokens": null,
+      "web_search_calls": null
+    }
+  },
+  "attempts": [
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "model": "gpt-6-luna",
+      "input_tokens": 10619,
+      "output_tokens": 320,
+      "cached_input_tokens": 6485,
+      "reasoning_tokens": 145,
+      "web_search_calls": 1,
+      "seconds": 6.3088
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "model": "gpt-6-luna",
+      "input_tokens": 10733,
+      "output_tokens": 339,
+      "cached_input_tokens": 6507,
+      "reasoning_tokens": 164,
+      "web_search_calls": 1,
+      "seconds": 4.5024
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "model": "gpt-6-luna",
+      "input_tokens": 11033,
+      "output_tokens": 280,
+      "cached_input_tokens": 6484,
+      "reasoning_tokens": 153,
+      "web_search_calls": 2,
+      "seconds": 5.4236
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "model": "gpt-6-luna",
+      "input_tokens": 10640,
+      "output_tokens": 372,
+      "cached_input_tokens": 6514,
+      "reasoning_tokens": 240,
+      "web_search_calls": 1,
+      "seconds": 5.1324
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "model": "gpt-6-luna",
+      "input_tokens": 10758,
+      "output_tokens": 128,
+      "cached_input_tokens": 6479,
+      "reasoning_tokens": 96,
+      "web_search_calls": 1,
+      "seconds": 4.5271
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "model": "gpt-6-luna",
+      "input_tokens": 10525,
+      "output_tokens": 148,
+      "cached_input_tokens": 6488,
+      "reasoning_tokens": 112,
+      "web_search_calls": 1,
+      "seconds": 3.3108
+    }
+  ]
+}
