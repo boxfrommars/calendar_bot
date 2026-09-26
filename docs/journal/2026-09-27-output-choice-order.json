@@ -1,0 +1,126 @@
+{
+  "baseline_revision": "3c2e61c",
+  "model": "gpt-6-luna",
+  "schedule": [
+    {
+      "position": 1,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 1
+    },
+    {
+      "position": 2,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 1
+    },
+    {
+      "position": 3,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 1
+    },
+    {
+      "position": 4,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 1
+    },
+    {
+      "position": 5,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 2
+    },
+    {
+      "position": 6,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 2
+    },
+    {
+      "position": 7,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 2
+    },
+    {
+      "position": 8,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 2
+    },
+    {
+      "position": 9,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 3
+    },
+    {
+      "position": 10,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 3
+    },
+    {
+      "position": 11,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 3
+    },
+    {
+      "position": 12,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 3
+    },
+    {
+      "position": 13,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 4
+    },
+    {
+      "position": 14,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 4
+    },
+    {
+      "position": 15,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 4
+    },
+    {
+      "position": 16,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 4
+    },
+    {
+      "position": 17,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 5
+    },
+    {
+      "position": 18,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 5
+    },
+    {
+      "position": 19,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 5
+    },
+    {
+      "position": 20,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 5
+    }
+  ]
+}

@@ -1,0 +1,285 @@
+{
+  "completed": false,
+  "summary": {
+    "attempts": 10,
+    "completed_responses": 10,
+    "responses_with_usage": 10,
+    "seconds_total": 51.3868,
+    "seconds_p50": 4.74275,
+    "seconds_p95": 7.4268,
+    "input_tokens": 107090,
+    "output_tokens": 3160,
+    "cached_input_tokens": 64960,
+    "reasoning_tokens": 1540,
+    "web_search_calls": 10
+  },
+  "by_mode": {
+    "create": {
+      "attempts": 10,
+      "completed_responses": 10,
+      "responses_with_usage": 10,
+      "seconds_total": 51.3868,
+      "seconds_p50": 4.74275,
+      "seconds_p95": 7.4268,
+      "input_tokens": 107090,
+      "output_tokens": 3160,
+      "cached_input_tokens": 64960,
+      "reasoning_tokens": 1540,
+      "web_search_calls": 10
+    },
+    "edit": {
+      "attempts": 0,
+      "completed_responses": 0,
+      "responses_with_usage": 0,
+      "seconds_total": 0,
+      "seconds_p50": null,
+      "seconds_p95": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_tokens": null,
+      "web_search_calls": null
+    }
+  },
+  "attempts": [
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_euro",
+      "repetition": 1,
+      "model": "gpt-6-luna",
+      "input_tokens": 10691,
+      "output_tokens": 278,
+      "cached_input_tokens": 6485,
+      "reasoning_tokens": 146,
+      "web_search_calls": 1,
+      "seconds": 7.4268
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_euro_followup",
+      "repetition": 1,
+      "model": "gpt-6-luna",
+      "input_tokens": 10735,
+      "output_tokens": 318,
+      "cached_input_tokens": 6507,
+      "reasoning_tokens": 157,
+      "web_search_calls": 1,
+      "seconds": 5.4195
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_euro",
+      "repetition": 2,
+      "model": "gpt-6-luna",
+      "input_tokens": 10705,
+      "output_tokens": 188,
+      "cached_input_tokens": 6485,
+      "reasoning_tokens": 42,
+      "web_search_calls": 1,
+      "seconds": 4.6292
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_euro_followup",
+      "repetition": 2,
+      "model": "gpt-6-luna",
+      "input_tokens": 10699,
+      "output_tokens": 295,
+      "cached_input_tokens": 6507,
+      "reasoning_tokens": 128,
+      "web_search_calls": 1,
+      "seconds": 4.6458
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_euro",
+      "repetition": 3,
+      "model": "gpt-6-luna",
+      "input_tokens": 10760,
+      "output_tokens": 342,
+      "cached_input_tokens": 6485,
+      "reasoning_tokens": 166,
+      "web_search_calls": 1,
+      "seconds": 5.3619
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_euro_followup",
+      "repetition": 3,
+      "model": "gpt-6-luna",
+      "input_tokens": 10722,
+      "output_tokens": 393,
+      "cached_input_tokens": 6507,
+      "reasoning_tokens": 220,
+      "web_search_calls": 1,
+      "seconds": 4.8397
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_euro",
+      "repetition": 4,
+      "model": "gpt-6-luna",
+      "input_tokens": 10635,
+      "output_tokens": 184,
+      "cached_input_tokens": 6485,
+      "reasoning_tokens": 42,
+      "web_search_calls": 1,
+      "seconds": 3.5485
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_euro_followup",
+      "repetition": 4,
+      "model": "gpt-6-luna",
+      "input_tokens": 10717,
+      "output_tokens": 527,
+      "cached_input_tokens": 6507,
+      "reasoning_tokens": 355,
+      "web_search_calls": 1,
+      "seconds": 6.8772
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_euro",
+      "repetition": 5,
+      "model": "gpt-6-luna",
+      "input_tokens": 10764,
+      "output_tokens": 323,
+      "cached_input_tokens": 6485,
+      "reasoning_tokens": 148,
+      "web_search_calls": 1,
+      "seconds": 4.3131
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "status": "completed",
+      "case_id": "web_euro_followup",
+      "repetition": 5,
+      "model": "gpt-6-luna",
+      "input_tokens": 10662,
+      "output_tokens": 312,
+      "cached_input_tokens": 6507,
+      "reasoning_tokens": 136,
+      "web_search_calls": 1,
+      "seconds": 4.3251
+    }
+  ],
+  "schema_version": 2,
+  "finished": true,
+  "outcomes": {
+    "planned": 10,
+    "passed": 8,
+    "failed": 2,
+    "error": 0,
+    "cancelled": 0,
+    "not_run": 0
+  },
+  "cases": [
+    {
+      "case_id": "web_euro",
+      "repetition": 1,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 7.4465
+    },
+    {
+      "case_id": "web_euro_followup",
+      "repetition": 1,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 5.429
+    },
+    {
+      "case_id": "web_euro",
+      "repetition": 2,
+      "status": "failed",
+      "item_count": 0,
+      "has_question": true,
+      "check": "expected_items",
+      "seconds": 4.6419
+    },
+    {
+      "case_id": "web_euro_followup",
+      "repetition": 2,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 4.6554
+    },
+    {
+      "case_id": "web_euro",
+      "repetition": 3,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 5.3756
+    },
+    {
+      "case_id": "web_euro_followup",
+      "repetition": 3,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 4.8539
+    },
+    {
+      "case_id": "web_euro",
+      "repetition": 4,
+      "status": "failed",
+      "item_count": 0,
+      "has_question": true,
+      "check": "expected_items",
+      "seconds": 3.5629
+    },
+    {
+      "case_id": "web_euro_followup",
+      "repetition": 4,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 6.8936
+    },
+    {
+      "case_id": "web_euro",
+      "repetition": 5,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 4.3298
+    },
+    {
+      "case_id": "web_euro_followup",
+      "repetition": 5,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 4.3451
+    }
+  ],
+  "suite_sha256": "1eb0b24b3ef1ac592934d1b13a2d741791ac89161c45f529df3665eccdf1a117",
+  "prompt_sha256": {
+    "create": "c7a268393169ccf2db4bb0e0091c94b013e182df791610707a226e73fc9c3394",
+    "edit": "0e0ca17068ce348f792527aa39070adaecafe289718dac80fcba908d489be600"
+  }
+}
