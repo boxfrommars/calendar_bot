@@ -20,23 +20,12 @@
 
 ## Быстрый локальный запуск
 
-Потребуются Python 3.14, токен отдельного тестового бота от
+Потребуются Linux, Python 3.14, токен отдельного тестового бота от
 [BotFather](https://t.me/BotFather) и OpenAI API-ключ с доступом к выбранной модели.
 Один Telegram-токен нельзя одновременно использовать в двух polling-процессах.
 Команды выполняются из корня репозитория.
 
 ### Подготовка окружения
-
-PowerShell:
-
-```powershell
-python --version  # Ожидается Python 3.14.x
-python -m venv .venv
-.venv/Scripts/python.exe -m pip install --require-hashes -r requirements.txt
-if (-not (Test-Path -LiteralPath .env)) { Copy-Item .env.example .env }
-```
-
-Linux:
 
 ```sh
 python3.14 -m venv .venv
@@ -67,16 +56,6 @@ cp -n .env.example .env
 Для новой локальной установки создайте пустую БД, проверьте конфигурацию
 и запустите бот.
 
-PowerShell:
-
-```powershell
-.venv/Scripts/python.exe -m calendar_bot migrate
-.venv/Scripts/python.exe -m calendar_bot check
-.venv/Scripts/python.exe -m calendar_bot run
-```
-
-Linux:
-
 ```sh
 .venv/bin/python -m calendar_bot migrate
 .venv/bin/python -m calendar_bot check
@@ -94,9 +73,5 @@ Linux:
 
 ## Размещение
 
-Репозиторий — [boxfrommars/calendar_bot](https://github.com/boxfrommars/calendar_bot),
-ветка — `master`. Приложение задаёт [требования к размещению](DEPLOYMENT.md).
-Релизы, серверные runbooks, мониторинг и backup ведёт
-`leucothea-administrator`;
-актуальный inventory находится там в `config/server.psd1`, состояние — в
-`production-server.md`.
+Приложение задаёт [декларативные требования к размещению](DEPLOYMENT.md).
+Конкретную систему развёртывания и выполнение этих требований определяет окружение.
