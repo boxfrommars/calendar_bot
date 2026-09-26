@@ -46,6 +46,8 @@ WEEKLY = (
 ZONE_NAMES = {"Europe/Moscow": "Москва", "Asia/Yerevan": "Ереван", "UTC": "UTC"}
 TIME_ROW = re.compile(r"^\d{2}:\d{2} — ")
 SCHEDULE_PREFIX = "  По расписанию: "
+TASK_OPEN_MARKER = "⬜"
+TASK_DONE_MARKER = "✅"
 TASK_COUNTER = re.compile(
     r"^📋 На сегодня (?:нет невыполненных дел\.|осталось \d+ (?:дело|дела|дел)\.)$"
 )
@@ -191,7 +193,8 @@ HELP = lines(
         Code("завтра купить продукты"),
         Code("купить продукты"),
         "Дата без времени — дело. Если даты нет, добавлю на сегодня.",
-        "Кнопка ☐ отмечает выполнение, ✅ возвращает дело в работу. Просроченные сохраняют исходную дату.",
+        f"Кнопка {TASK_OPEN_MARKER} отмечает выполнение, {TASK_DONE_MARKER} возвращает дело в работу. "
+        "Просроченные сохраняют исходную дату.",
         "",
         "Можно добавить до 10 событий и дел одним сообщением. Они сохранятся вместе, и я покажу карточки.",
         "Если данных недостаточно, сначала задам уточняющий вопрос.",
@@ -291,7 +294,11 @@ def schedule_note(spec: EventSpec, instant: datetime, user_timezone: str) -> str
 def task_card(spec: TaskSpec, today: date, *, completed=False, saved=False, draft=False) -> Text:
     heading = "Изменение дела" if draft else "Дело сохранено" if saved else "Дело"
     state = (
-        "✅ Выполнено" if completed else "⏳ Просрочено" if spec.day < today else "☐ Не выполнено"
+        f"{TASK_DONE_MARKER} Выполнено"
+        if completed
+        else "⏳ Просрочено"
+        if spec.day < today
+        else f"{TASK_OPEN_MARKER} Не выполнено"
     )
     body = [
         Text("📋 ", Bold(heading)),
@@ -343,7 +350,8 @@ def agenda(
                     body.extend(["", Bold(date_label(spec.day, today))])
                 elif previous_day == "overdue":
                     body.extend(["", Bold("Сегодня")])
-            label = f"{number}. {'✅' if completed else '☐'} {spec.title}"
+            marker = TASK_DONE_MARKER if completed else TASK_OPEN_MARKER
+            label = f"{number}. {marker} {spec.title}"
             if overdue:
                 label += f" · {date_label(spec.day, today)}"
             body.extend(["", Text(label)])
@@ -481,7 +489,7 @@ def summary_parts(
         if selected:
             body.extend([heading, ""])
             for row in selected:
-                label = f"☐ {row['title']}"
+                label = f"{TASK_OPEN_MARKER} {row['title']}"
                 if overdue:
                     label += f" · {date_label(date.fromisoformat(row['day']), today)}"
                 body.extend([label, ""])

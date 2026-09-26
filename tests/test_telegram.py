@@ -438,12 +438,15 @@ class TelegramFlowTests(DatabaseCase):
         task_id = await self.create(spec=TaskSpec("Проверить 😀", date(2026, 9, 24)))
         await self.say("/today")
         original = self.session.messages[-1]
-        data = next(
-            b.callback_data
+        done_button = next(
+            b
             for row in original.reply_markup.inline_keyboard
             for b in row
             if b.callback_data.startswith("t:done:")
         )
+        self.assertEqual(done_button.text, "⬜ 1. Проверить 😀")
+        self.assertIn("1. ⬜ Проверить 😀", original.text)
+        data = done_button.callback_data
         await self.say("/week")
         other = self.session.messages[-1]
         sent_count = len(self.session.messages)
@@ -458,13 +461,15 @@ class TelegramFlowTests(DatabaseCase):
         await self.press(data, message=original)
         self.assertEqual((await self.service.task(101, task_id))["version"], 2)
         current = next(m for m in self.session.messages if m.message_id == original.message_id)
-        undo = next(
-            b.callback_data
+        undo_button = next(
+            b
             for row in current.reply_markup.inline_keyboard
             for b in row
             if b.callback_data.startswith("t:open:")
         )
-        await self.press(undo, message=current)
+        self.assertEqual(undo_button.text, "✅ 1. Проверить 😀")
+        await self.press(undo_button.callback_data, message=current)
+        self.assertIn("1. ⬜ Проверить 😀", self.session.edits[-1].text)
         self.assertIsNone((await self.service.task(101, task_id))["completed_at"])
         self.assertEqual(self.parser.calls, [])
 
@@ -574,7 +579,7 @@ class TelegramFlowTests(DatabaseCase):
             "Страница →",
             [b.text for row in self.session.messages[-1].reply_markup.inline_keyboard for b in row],
         )
-        self.assertIn("1. ☐", self.session.messages[-1].text)
+        self.assertIn("1. ⬜", self.session.messages[-1].text)
         await self.press("a:a7_20260917:1")
         self.assertIn("23 сентября", self.session.messages[-1].text)
         self.assertIn("✅", self.session.messages[-1].text)
@@ -587,7 +592,7 @@ class TelegramFlowTests(DatabaseCase):
         self.assertEqual(self.session.messages[count - 1], summary)
         self.assertEqual(len(self.session.messages), count + 1)
         self.assertEqual(self.session.edits, [])
-        self.assertIn("Сегодня", self.session.messages[-1].text)
+        self.assertIn("⬜ Сегодня", self.session.messages[-1].text)
 
     async def test_deleted_task_button_refreshes_list_without_restoring_the_task(self):
         task_id = await self.create(spec=TaskSpec("Удалённое", date(2026, 9, 24)))
@@ -647,7 +652,7 @@ class TelegramFlowTests(DatabaseCase):
         self.assertEqual(len(self.session.messages), count)
         self.assertEqual(button("a:"), "a:a7_20260924:1")
         await self.press(button("a:"))
-        self.assertIn("9. ☐ Перенесено", self.session.messages[-1].text)
+        self.assertIn("9. ⬜ Перенесено", self.session.messages[-1].text)
 
     async def test_week_navigation_works_in_empty_periods_and_resets_page(self):
         await self.say("/week")
@@ -691,7 +696,7 @@ class TelegramFlowTests(DatabaseCase):
         self.assertEqual(result.message_id, source.message_id)
         self.assertIn("1 октября", result.text)
         self.assertIn("7 октября", result.text)
-        self.assertIn("1. ☐", result.text)
+        self.assertIn("1. ⬜", result.text)
         self.assertFalse(
             any(b.text == "Страница →" for row in result.reply_markup.inline_keyboard for b in row)
         )

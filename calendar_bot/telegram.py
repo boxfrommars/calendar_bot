@@ -303,11 +303,12 @@ class BotUI:
         for number, row in enumerate(rows, page * 8 + 1):
             if row["kind"] == "task":
                 completed = row["completed_at"] is not None
+                marker = view.TASK_DONE_MARKER if completed else view.TASK_OPEN_MARKER
                 suffix = f"{row['id']}:{row['version']}:{scope}:{page}"
                 buttons.append(
                     [
                         (
-                            f"{'✅' if completed else '☐'} {number}. {row['title'][:38]}",
+                            f"{marker} {number}. {row['title'][:38]}",
                             f"t:{'open' if completed else 'done'}:{suffix}",
                         ),
                         ("Карточка", f"t:card:{suffix}"),

@@ -187,6 +187,7 @@ class PresentationTests(unittest.TestCase):
         card = view.task_card(TaskSpec(title, date(2026, 9, 24)), date(2026, 9, 24))
         kwargs = card.as_kwargs()
         self.assertIsNone(kwargs["parse_mode"])
+        self.assertIn("⬜ Не выполнено", kwargs["text"])
         self.assertIn(("bold", title), entity_fragments(kwargs["text"], kwargs["entities"]))
         tasks = [{"title": f"{n}: " + "😀" * 160, "day": "2026-09-24"} for n in range(30)]
         parts = view.summary_parts([], date(2026, 9, 24), "Asia/Yerevan", self.now, tasks)
@@ -197,7 +198,7 @@ class PresentationTests(unittest.TestCase):
             self.assertEqual(part, text)
             entity_fragments(text, entities)
         for task in tasks:
-            self.assertEqual("\n".join(parts).count("☐ " + task["title"]), 1)
+            self.assertEqual("\n".join(parts).count("⬜ " + task["title"]), 1)
 
     def test_agenda_separates_overdue_once_and_keeps_day_as_one_list(self):
         tasks = [
@@ -222,7 +223,7 @@ class PresentationTests(unittest.TestCase):
                 self.assertLess(text.index(self.spec.title), text.index("Открытое"))
                 self.assertLess(text.index("Открытое"), text.index("Готовое"))
                 self.assertIn(
-                    f"3. 13:00 — {self.spec.title}\n\n4. ☐ Открытое\n\n5. ✅ Готовое",
+                    f"3. 13:00 — {self.spec.title}\n\n4. ⬜ Открытое\n\n5. ✅ Готовое",
                     text,
                 )
                 self.assertIn("20 сентября", text)
