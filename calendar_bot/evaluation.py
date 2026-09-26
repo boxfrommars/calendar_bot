@@ -230,6 +230,8 @@ def build_cases() -> list[EvaluationCase]:
         ),
     )
     add("recurring_task", "каждый день читать без времени")
+    add("personal_missing_time", "Напомни о завтрашней встрече с Анной")
+    add("event_duration", "Напомни завтра в 15:00 о встрече с Анной длительностью два часа")
     titles = [f"купить товар {index}" for index in range(1, 12)]
     lines = [f"завтра {title}" for title in titles]
     add(
