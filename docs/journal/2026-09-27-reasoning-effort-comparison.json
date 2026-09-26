@@ -1,0 +1,35 @@
+{
+  "low": {
+    "passed_positive": 27,
+    "passed_guard": 10,
+    "false_clarification_parses": 3,
+    "unverified_url_parses": 0,
+    "guard_web_calls": 0,
+    "parse_seconds_p50": 4.7986,
+    "parse_seconds_p95": 6.4946,
+    "parse_seconds_max": 8.0065,
+    "positive_seconds_p50": 4.992100000000001,
+    "positive_seconds_p95": 7.8842,
+    "all_api_completed": true,
+    "complete_diagnostics": true,
+    "budgets_respected": true,
+    "complete_traces": true
+  },
+  "medium": {
+    "passed_positive": 28,
+    "passed_guard": 10,
+    "false_clarification_parses": 2,
+    "unverified_url_parses": 1,
+    "guard_web_calls": 0,
+    "parse_seconds_p50": 5.88735,
+    "parse_seconds_p95": 17.0938,
+    "parse_seconds_max": 19.0708,
+    "positive_seconds_p50": 6.18685,
+    "positive_seconds_p95": 17.9708,
+    "all_api_completed": true,
+    "complete_diagnostics": true,
+    "budgets_respected": true,
+    "complete_traces": true
+  },
+  "gate_passed": false
+}

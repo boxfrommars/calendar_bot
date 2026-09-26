@@ -1,0 +1,1259 @@
+{
+  "baseline_revision": "4ee6d42",
+  "model": "gpt-6-luna",
+  "positive_cases": [
+    "web_euro",
+    "web_euro_followup",
+    "web_bst",
+    "web_bst_followup",
+    "web_czechia_2026",
+    "web_czechia_2026_followup"
+  ],
+  "guard_cases": [
+    "personal_missing_time",
+    "event_duration"
+  ],
+  "variants": [
+    "low",
+    "medium"
+  ],
+  "repeat": 5,
+  "parse_timeout": 40,
+  "max_tool_calls": 3,
+  "max_output_tokens": 3000,
+  "acceptance": {
+    "more_passed_positive_cases": true,
+    "fewer_false_clarification_parses": true,
+    "all_guard_cases_pass_without_web_search": true,
+    "unverified_url_parses_not_more_than_low": true,
+    "all_api_completed_and_complete_diagnostics": true,
+    "budgets_respected": true,
+    "medium_parse_p95_max_seconds": 30,
+    "medium_parse_p95_max_ratio_to_low": 2,
+    "full_suite_required_after_gate": 33,
+    "full_suite_all_pass_required_for_adoption": true
+  },
+  "schedule": [
+    {
+      "position": 1,
+      "variant": "low",
+      "case_id": "web_euro",
+      "repetition": 1
+    },
+    {
+      "position": 2,
+      "variant": "medium",
+      "case_id": "web_euro",
+      "repetition": 1
+    },
+    {
+      "position": 3,
+      "variant": "medium",
+      "case_id": "web_euro_followup",
+      "repetition": 1
+    },
+    {
+      "position": 4,
+      "variant": "low",
+      "case_id": "web_euro_followup",
+      "repetition": 1
+    },
+    {
+      "position": 5,
+      "variant": "low",
+      "case_id": "web_bst",
+      "repetition": 1
+    },
+    {
+      "position": 6,
+      "variant": "medium",
+      "case_id": "web_bst",
+      "repetition": 1
+    },
+    {
+      "position": 7,
+      "variant": "medium",
+      "case_id": "web_bst_followup",
+      "repetition": 1
+    },
+    {
+      "position": 8,
+      "variant": "low",
+      "case_id": "web_bst_followup",
+      "repetition": 1
+    },
+    {
+      "position": 9,
+      "variant": "low",
+      "case_id": "web_czechia_2026",
+      "repetition": 1
+    },
+    {
+      "position": 10,
+      "variant": "medium",
+      "case_id": "web_czechia_2026",
+      "repetition": 1
+    },
+    {
+      "position": 11,
+      "variant": "medium",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1
+    },
+    {
+      "position": 12,
+      "variant": "low",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1
+    },
+    {
+      "position": 13,
+      "variant": "low",
+      "case_id": "personal_missing_time",
+      "repetition": 1
+    },
+    {
+      "position": 14,
+      "variant": "medium",
+      "case_id": "personal_missing_time",
+      "repetition": 1
+    },
+    {
+      "position": 15,
+      "variant": "medium",
+      "case_id": "event_duration",
+      "repetition": 1
+    },
+    {
+      "position": 16,
+      "variant": "low",
+      "case_id": "event_duration",
+      "repetition": 1
+    },
+    {
+      "position": 17,
+      "variant": "medium",
+      "case_id": "web_euro",
+      "repetition": 2
+    },
+    {
+      "position": 18,
+      "variant": "low",
+      "case_id": "web_euro",
+      "repetition": 2
+    },
+    {
+      "position": 19,
+      "variant": "low",
+      "case_id": "web_euro_followup",
+      "repetition": 2
+    },
+    {
+      "position": 20,
+      "variant": "medium",
+      "case_id": "web_euro_followup",
+      "repetition": 2
+    },
+    {
+      "position": 21,
+      "variant": "medium",
+      "case_id": "web_bst",
+      "repetition": 2
+    },
+    {
+      "position": 22,
+      "variant": "low",
+      "case_id": "web_bst",
+      "repetition": 2
+    },
+    {
+      "position": 23,
+      "variant": "low",
+      "case_id": "web_bst_followup",
+      "repetition": 2
+    },
+    {
+      "position": 24,
+      "variant": "medium",
+      "case_id": "web_bst_followup",
+      "repetition": 2
+    },
+    {
+      "position": 25,
+      "variant": "medium",
+      "case_id": "web_czechia_2026",
+      "repetition": 2
+    },
+    {
+      "position": 26,
+      "variant": "low",
+      "case_id": "web_czechia_2026",
+      "repetition": 2
+    },
+    {
+      "position": 27,
+      "variant": "low",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2
+    },
+    {
+      "position": 28,
+      "variant": "medium",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2
+    },
+    {
+      "position": 29,
+      "variant": "medium",
+      "case_id": "personal_missing_time",
+      "repetition": 2
+    },
+    {
+      "position": 30,
+      "variant": "low",
+      "case_id": "personal_missing_time",
+      "repetition": 2
+    },
+    {
+      "position": 31,
+      "variant": "low",
+      "case_id": "event_duration",
+      "repetition": 2
+    },
+    {
+      "position": 32,
+      "variant": "medium",
+      "case_id": "event_duration",
+      "repetition": 2
+    },
+    {
+      "position": 33,
+      "variant": "low",
+      "case_id": "web_euro",
+      "repetition": 3
+    },
+    {
+      "position": 34,
+      "variant": "medium",
+      "case_id": "web_euro",
+      "repetition": 3
+    },
+    {
+      "position": 35,
+      "variant": "medium",
+      "case_id": "web_euro_followup",
+      "repetition": 3
+    },
+    {
+      "position": 36,
+      "variant": "low",
+      "case_id": "web_euro_followup",
+      "repetition": 3
+    },
+    {
+      "position": 37,
+      "variant": "low",
+      "case_id": "web_bst",
+      "repetition": 3
+    },
+    {
+      "position": 38,
+      "variant": "medium",
+      "case_id": "web_bst",
+      "repetition": 3
+    },
+    {
+      "position": 39,
+      "variant": "medium",
+      "case_id": "web_bst_followup",
+      "repetition": 3
+    },
+    {
+      "position": 40,
+      "variant": "low",
+      "case_id": "web_bst_followup",
+      "repetition": 3
+    },
+    {
+      "position": 41,
+      "variant": "low",
+      "case_id": "web_czechia_2026",
+      "repetition": 3
+    },
+    {
+      "position": 42,
+      "variant": "medium",
+      "case_id": "web_czechia_2026",
+      "repetition": 3
+    },
+    {
+      "position": 43,
+      "variant": "medium",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3
+    },
+    {
+      "position": 44,
+      "variant": "low",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3
+    },
+    {
+      "position": 45,
+      "variant": "low",
+      "case_id": "personal_missing_time",
+      "repetition": 3
+    },
+    {
+      "position": 46,
+      "variant": "medium",
+      "case_id": "personal_missing_time",
+      "repetition": 3
+    },
+    {
+      "position": 47,
+      "variant": "medium",
+      "case_id": "event_duration",
+      "repetition": 3
+    },
+    {
+      "position": 48,
+      "variant": "low",
+      "case_id": "event_duration",
+      "repetition": 3
+    },
+    {
+      "position": 49,
+      "variant": "medium",
+      "case_id": "web_euro",
+      "repetition": 4
+    },
+    {
+      "position": 50,
+      "variant": "low",
+      "case_id": "web_euro",
+      "repetition": 4
+    },
+    {
+      "position": 51,
+      "variant": "low",
+      "case_id": "web_euro_followup",
+      "repetition": 4
+    },
+    {
+      "position": 52,
+      "variant": "medium",
+      "case_id": "web_euro_followup",
+      "repetition": 4
+    },
+    {
+      "position": 53,
+      "variant": "medium",
+      "case_id": "web_bst",
+      "repetition": 4
+    },
+    {
+      "position": 54,
+      "variant": "low",
+      "case_id": "web_bst",
+      "repetition": 4
+    },
+    {
+      "position": 55,
+      "variant": "low",
+      "case_id": "web_bst_followup",
+      "repetition": 4
+    },
+    {
+      "position": 56,
+      "variant": "medium",
+      "case_id": "web_bst_followup",
+      "repetition": 4
+    },
+    {
+      "position": 57,
+      "variant": "medium",
+      "case_id": "web_czechia_2026",
+      "repetition": 4
+    },
+    {
+      "position": 58,
+      "variant": "low",
+      "case_id": "web_czechia_2026",
+      "repetition": 4
+    },
+    {
+      "position": 59,
+      "variant": "low",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 4
+    },
+    {
+      "position": 60,
+      "variant": "medium",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 4
+    },
+    {
+      "position": 61,
+      "variant": "medium",
+      "case_id": "personal_missing_time",
+      "repetition": 4
+    },
+    {
+      "position": 62,
+      "variant": "low",
+      "case_id": "personal_missing_time",
+      "repetition": 4
+    },
+    {
+      "position": 63,
+      "variant": "low",
+      "case_id": "event_duration",
+      "repetition": 4
+    },
+    {
+      "position": 64,
+      "variant": "medium",
+      "case_id": "event_duration",
+      "repetition": 4
+    },
+    {
+      "position": 65,
+      "variant": "low",
+      "case_id": "web_euro",
+      "repetition": 5
+    },
+    {
+      "position": 66,
+      "variant": "medium",
+      "case_id": "web_euro",
+      "repetition": 5
+    },
+    {
+      "position": 67,
+      "variant": "medium",
+      "case_id": "web_euro_followup",
+      "repetition": 5
+    },
+    {
+      "position": 68,
+      "variant": "low",
+      "case_id": "web_euro_followup",
+      "repetition": 5
+    },
+    {
+      "position": 69,
+      "variant": "low",
+      "case_id": "web_bst",
+      "repetition": 5
+    },
+    {
+      "position": 70,
+      "variant": "medium",
+      "case_id": "web_bst",
+      "repetition": 5
+    },
+    {
+      "position": 71,
+      "variant": "medium",
+      "case_id": "web_bst_followup",
+      "repetition": 5
+    },
+    {
+      "position": 72,
+      "variant": "low",
+      "case_id": "web_bst_followup",
+      "repetition": 5
+    },
+    {
+      "position": 73,
+      "variant": "low",
+      "case_id": "web_czechia_2026",
+      "repetition": 5
+    },
+    {
+      "position": 74,
+      "variant": "medium",
+      "case_id": "web_czechia_2026",
+      "repetition": 5
+    },
+    {
+      "position": 75,
+      "variant": "medium",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 5
+    },
+    {
+      "position": 76,
+      "variant": "low",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 5
+    },
+    {
+      "position": 77,
+      "variant": "low",
+      "case_id": "personal_missing_time",
+      "repetition": 5
+    },
+    {
+      "position": 78,
+      "variant": "medium",
+      "case_id": "personal_missing_time",
+      "repetition": 5
+    },
+    {
+      "position": 79,
+      "variant": "medium",
+      "case_id": "event_duration",
+      "repetition": 5
+    },
+    {
+      "position": 80,
+      "variant": "low",
+      "case_id": "event_duration",
+      "repetition": 5
+    }
+  ],
+  "requests": [
+    {
+      "variant": "low",
+      "case_id": "web_euro",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_euro",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_euro_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_euro_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_bst",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_bst",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_bst",
+      "repetition": 1,
+      "attempt": 2,
+      "input_sha256": "afef131830cc94b6a3086583ab8321dcc7206f4f55d6b0f1245353169580f880",
+      "options_sha256": "55ddc702bcb0e9948bc2254160e67a0ef04bfbd02cb22b612cae59eeec3596e2",
+      "normalized_options_sha256": "c525cf538b9d9e0dc7e0aaec7366616f20031c88175ce963f9e0c03d325ba074"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_bst_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_bst_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_czechia_2026",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_czechia_2026",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "personal_missing_time",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "personal_missing_time",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "event_duration",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "event_duration",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_euro",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_euro",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_euro_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_euro_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_bst",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_bst",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_bst_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_bst_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_bst_followup",
+      "repetition": 2,
+      "attempt": 2,
+      "input_sha256": "e6248cf775f83fa1602157f4b3396cec61f7b153726fc780dbb3ef71a3a003a0",
+      "options_sha256": "55ddc702bcb0e9948bc2254160e67a0ef04bfbd02cb22b612cae59eeec3596e2",
+      "normalized_options_sha256": "c525cf538b9d9e0dc7e0aaec7366616f20031c88175ce963f9e0c03d325ba074"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_czechia_2026",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_czechia_2026",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "personal_missing_time",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "personal_missing_time",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "event_duration",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "event_duration",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_euro",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_euro",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_euro_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_euro_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_bst",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_bst",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_bst_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_bst_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_czechia_2026",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_czechia_2026",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "personal_missing_time",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "personal_missing_time",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "event_duration",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "event_duration",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_euro",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_euro",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_euro_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_euro_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_bst",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_bst",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_bst_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_bst_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_czechia_2026",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_czechia_2026",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "personal_missing_time",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "personal_missing_time",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "event_duration",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "event_duration",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_euro",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_euro",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_euro_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_euro_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_bst",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_bst",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_bst_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_bst_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_czechia_2026",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_czechia_2026",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "personal_missing_time",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "personal_missing_time",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "medium",
+      "case_id": "event_duration",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "070443874c4fa3f335a69a89b45416ab0ff0766017fe518da191f96467d65fa8",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "low",
+      "case_id": "event_duration",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61",
+      "normalized_options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    }
+  ],
+  "only_reasoning_effort_differs": true
+}

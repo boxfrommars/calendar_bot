@@ -47,7 +47,12 @@ class EvaluationTests(unittest.IsolatedAsyncioTestCase):
         ticks = iter([0.0, 2.0, 3.0, 8.0])
         client = EvaluationClient(sdk, clock=lambda: next(ticks))
         self.assertIs(
-            await client.responses.parse(model="gpt-6-luna", tools=[{}], input="SECRET_INPUT"),
+            await client.responses.parse(
+                model="gpt-6-luna",
+                tools=[{}],
+                input="SECRET_INPUT",
+                reasoning={"effort": "medium", "private": "SECRET_REASONING"},
+            ),
             response,
         )
         with self.assertRaises(RuntimeError):
@@ -55,6 +60,8 @@ class EvaluationTests(unittest.IsolatedAsyncioTestCase):
         report = client.report(completed=False)
         self.assertFalse(report["completed"])
         self.assertNotIn("SECRET", json.dumps(report))
+        self.assertEqual(report["attempts"][0]["reasoning_effort"], "medium")
+        self.assertIsNone(report["attempts"][1]["reasoning_effort"])
         summary = report["summary"]
         self.assertEqual(summary["attempts"], 2)
         self.assertEqual(summary["completed_responses"], 1)

@@ -24,6 +24,7 @@ from .parser import (
     COMMON_INSTRUCTIONS,
     CREATE_INSTRUCTIONS,
     EDIT_INSTRUCTIONS,
+    REASONING_EFFORT,
     OpenAIParser,
     ParseResult,
     normalize,
@@ -45,6 +46,7 @@ class EvaluationClient:
         entry = {
             "mode": "create" if kwargs.get("tools") else "edit",
             "requested_model": kwargs["model"],
+            "reasoning_effort": (kwargs.get("reasoning") or {}).get("effort"),
             "status": "error",
             **self.case_context,
         }
@@ -436,7 +438,8 @@ async def evaluate(
     )
     run = EvaluationRun(metrics, cases, repeat=repeat, fail_fast=fail_fast)
     print(
-        f"Модель: {model}; reasoning=low; max_output_tokens=3000; сценариев={len(cases)}; повторов={repeat}"
+        f"Модель: {model}; reasoning={REASONING_EFFORT}; max_output_tokens=3000; "
+        f"сценариев={len(cases)}; повторов={repeat}"
     )
     try:
         await run.run(parser)

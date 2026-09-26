@@ -19,6 +19,7 @@ from .domain import (
 from .model_trace import ModelTrace
 
 PARSE_TIMEOUT = 40.0
+REASONING_EFFORT = "low"
 
 
 class ParsedSource(BaseModel):
@@ -387,7 +388,7 @@ class OpenAIParser:
                                 "model": self.model,
                                 "input": request_input,
                                 "store": False,
-                                "reasoning": {"effort": "low"},
+                                "reasoning": {"effort": REASONING_EFFORT},
                                 "max_output_tokens": 3000,
                                 **options,
                             },
@@ -395,7 +396,7 @@ class OpenAIParser:
                     response = await self.client.responses.parse(
                         model=self.model,
                         store=False,
-                        reasoning={"effort": "low"},
+                        reasoning={"effort": REASONING_EFFORT},
                         max_output_tokens=3000,
                         text_format=ParseResult,
                         input=request_input,

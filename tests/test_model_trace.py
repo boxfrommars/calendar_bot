@@ -58,14 +58,18 @@ class ModelTraceTests(unittest.IsolatedAsyncioTestCase):
             client=SimpleNamespace(responses=SimpleNamespace(parse=call)),
             trace=self.trace,
         )
-        await parser.parse(
-            [{"role": "user", "content": "напомни о матче"}], self.now, "Asia/Yerevan"
-        )
+        with patch("calendar_bot.parser.REASONING_EFFORT", "medium"):
+            await parser.parse(
+                [{"role": "user", "content": "напомни о матче"}], self.now, "Asia/Yerevan"
+            )
         entries = self.records()
         self.assertEqual(
             [entry["kind"] for entry in entries], ["request", "response", "request", "response"]
         )
         self.assertEqual(len(list(self.path.glob("*.jsonl"))), 1)
+        for entry, request in zip(entries[::2], call.await_args_list, strict=True):
+            self.assertEqual(entry["reasoning"], {"effort": "medium"})
+            self.assertEqual(entry["reasoning"], request.kwargs["reasoning"])
         if os.name != "nt":
             self.assertEqual(self.path.stat().st_mode & 0o777, 0o700)
             self.assertEqual(list(self.path.glob("*.jsonl"))[0].stat().st_mode & 0o777, 0o600)
