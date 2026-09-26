@@ -69,6 +69,77 @@ def local_instant(day: date, clock: time, timezone: str) -> datetime:
     return first.astimezone(UTC)
 
 
+def local_day(instant: datetime, timezone: str) -> date:
+    return instant.astimezone(zone(timezone)).date()
+
+
+def day_window(day: date, days: int, timezone: str) -> tuple[datetime, datetime]:
+    return (
+        local_instant(day, time(), timezone),
+        local_instant(shift_day(day, days), time(), timezone),
+    )
+
+
+def shift_day(day: date, days: int) -> date:
+    try:
+        return day + timedelta(days=days)
+    except OverflowError:
+        raise UserError("Дата за пределами поддерживаемого календаря.") from None
+
+
+@dataclass(frozen=True)
+class AgendaPeriod:
+    start: date
+    days: int = 7
+
+    def __post_init__(self):
+        if self.days not in {1, 7}:
+            raise UserError("Некорректный период расписания.")
+        if self.start < date(1, 1, 3) or shift_day(self.start, self.days) > date(9999, 12, 29):
+            raise UserError("Дата за пределами поддерживаемого календаря.")
+
+    @property
+    def end(self) -> date:
+        return shift_day(self.start, self.days)
+
+    def contains(self, day: date) -> bool:
+        return self.start <= day < self.end
+
+    def shifted(self, direction: int) -> "AgendaPeriod":
+        return AgendaPeriod(shift_day(self.start, self.days * direction), self.days)
+
+    def window(self, timezone: str) -> tuple[datetime, datetime]:
+        return day_window(self.start, self.days, timezone)
+
+
+def validate_title(title: str) -> None:
+    if not title.strip() or len(title) > 180 or "\n" in title or "\r" in title:
+        raise UserError("Название должно занимать одну строку длиной от 1 до 180 символов.")
+
+
+@dataclass(frozen=True)
+class TaskSpec:
+    title: str
+    day: date
+
+    def __post_init__(self) -> None:
+        validate_title(self.title)
+
+    def to_dict(self) -> dict:
+        return {"title": self.title, "day": self.day.isoformat()}
+
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict(), ensure_ascii=False)
+
+    @classmethod
+    def from_dict(cls, value: dict) -> "TaskSpec":
+        return cls(value["title"], date.fromisoformat(value["day"]))
+
+    @classmethod
+    def from_json(cls, value: str) -> "TaskSpec":
+        return cls.from_dict(json.loads(value))
+
+
 @dataclass(frozen=True)
 class EventSpec:
     title: str
@@ -80,8 +151,7 @@ class EventSpec:
     reminder_minutes: tuple[int, ...] | None = None
 
     def __post_init__(self) -> None:
-        if not self.title.strip() or len(self.title) > 180 or "\n" in self.title:
-            raise UserError("Название должно занимать одну строку длиной от 1 до 180 символов.")
+        validate_title(self.title)
         zone(self.timezone)
         if self.clock.tzinfo is not None or self.clock.second or self.clock.microsecond:
             raise UserError("Укажите местное время с точностью до минуты.")
@@ -146,6 +216,14 @@ class EventSpec:
         return replace(self, day=day, repeat="once", weekdays=())
 
 
+def read_spec(value: str, kind: str = "event") -> EventSpec | TaskSpec:
+    if kind == "task":
+        return TaskSpec.from_json(value)
+    if kind == "event":
+        return EventSpec.from_json(value)
+    raise UserError("Неизвестный тип записи.")
+
+
 @dataclass(frozen=True)
 class Occurrence:
     event_id: str
@@ -156,6 +234,23 @@ class Occurrence:
     @property
     def key(self) -> str:
         return f"{self.event_id}:{self.original_day.isoformat()}"
+
+
+def resolve_occurrence(
+    event_id: str, spec: EventSpec, exceptions: dict[date, EventSpec | None], original_day: date
+) -> Occurrence | None:
+    if original_day in exceptions:
+        selected = exceptions[original_day]
+    else:
+        selected = spec.as_single(original_day) if spec.occurs_on(original_day) else None
+    if selected is None:
+        return None
+    return Occurrence(
+        event_id,
+        original_day,
+        local_instant(selected.day, selected.clock, selected.timezone),
+        selected,
+    )
 
 
 def expand(

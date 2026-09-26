@@ -7,7 +7,8 @@ import aiosqlite
 
 from .domain import UserError
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
+# The original schema is immutable; fresh databases follow the same migration path.
 SCHEMA = """
 CREATE TABLE users (
     id INTEGER PRIMARY KEY, chat_id INTEGER NOT NULL, timezone TEXT,
@@ -62,6 +63,19 @@ CREATE TABLE notifications (
 CREATE INDEX notification_due ON notifications(status, next_attempt_at, due_at);
 """
 
+MIGRATION_2 = """
+CREATE TABLE tasks (
+    id TEXT PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id),
+    title TEXT NOT NULL, day TEXT NOT NULL, completed_at REAL,
+    version INTEGER NOT NULL DEFAULT 1, active INTEGER NOT NULL DEFAULT 1,
+    created_at REAL NOT NULL
+);
+CREATE INDEX tasks_owner_day ON tasks(user_id, active, day, completed_at);
+ALTER TABLE drafts ADD COLUMN kind TEXT NOT NULL DEFAULT 'event' CHECK(kind IN ('event','task'));
+ALTER TABLE drafts ADD COLUMN task_id TEXT REFERENCES tasks(id);
+ALTER TABLE drafts ADD COLUMN task_version INTEGER;
+"""
+
 
 def migrate(path: Path) -> None:
     """Only an explicit CLI invocation may create or migrate persistent state."""
@@ -70,12 +84,19 @@ def migrate(path: Path) -> None:
         version = db.execute("PRAGMA user_version").fetchone()[0]
         if version == SCHEMA_VERSION:
             return
-        if version != 0:
+        if version not in {0, 1}:
             raise UserError("Неизвестная версия схемы БД. Автоматический откат запрещён.")
-        if db.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchone():
+        if (
+            version == 0
+            and db.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchone()
+        ):
             raise UserError("База без версии уже содержит таблицы; миграция остановлена.")
+        db.execute("PRAGMA foreign_keys=ON")
         db.executescript(
-            "BEGIN EXCLUSIVE;\n" + SCHEMA + f"\nPRAGMA user_version={SCHEMA_VERSION};\nCOMMIT;"
+            "BEGIN EXCLUSIVE;\n"
+            + (SCHEMA if version == 0 else "")
+            + MIGRATION_2
+            + f"\nPRAGMA user_version={SCHEMA_VERSION};\nCOMMIT;"
         )
         db.execute("PRAGMA journal_mode=WAL")
 

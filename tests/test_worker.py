@@ -1,5 +1,5 @@
 import json
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 
 from aiogram.exceptions import (
     TelegramBadRequest,
@@ -9,6 +9,7 @@ from aiogram.exceptions import (
 )
 from aiogram.methods import SendMessage
 
+from calendar_bot.domain import TaskSpec
 from calendar_bot.worker import NotificationWorker
 from tests.support import DatabaseCase, FakeBot, entity_fragments
 
@@ -24,6 +25,139 @@ class NotificationTests(DatabaseCase):
             if not await self.worker.dispatch_one():
                 return
         self.fail("Queue did not settle")
+
+    async def test_reminder_counters_follow_task_mutations_on_every_offset(self):
+        first = await self.create(spec=TaskSpec("Первое", date(2026, 9, 24)))
+        second = await self.create(spec=TaskSpec("Второе", date(2026, 9, 24)))
+        past = await self.create(spec=TaskSpec("Прошлое", date(2026, 9, 23)))
+        done = await self.create(spec=TaskSpec("Выполнено", date(2026, 9, 24)))
+        deleted = await self.create(spec=TaskSpec("Удалено", date(2026, 9, 24)))
+        await self.service.set_task_completion(101, done, 1, True)
+        await self.service.cancel_task(101, deleted, 1)
+        await self.create(spec=TaskSpec("Будущее", date(2026, 9, 25)))
+        await self.create(uid=202, spec=TaskSpec("Чужое", date(2026, 9, 24)))
+        await self.create(offsets=(15, 5, 1, 0))
+        self.clock.advance(minutes=45)
+        await self.drain()
+        self.assertIn("На сегодня осталось 2 дела.", self.bot.sent[-1]["text"])
+        self.assertIn("Просроченных: 1.", self.bot.sent[-1]["text"])
+        await self.service.set_task_completion(101, first, 1, True)
+        draft = (
+            await self.service.create_drafts(
+                101,
+                "move-task",
+                [TaskSpec("Перенесено", date(2026, 9, 25))],
+                self.clock(),
+                task_id=second,
+                task_version=1,
+            )
+        )[0]
+        await self.service.save_draft(101, draft["id"], 1)
+        added = await self.create(spec=TaskSpec("Новое", date(2026, 9, 24)))
+        self.clock.advance(minutes=10)
+        await self.drain()
+        self.assertIn("На сегодня осталось 1 дело.", self.bot.sent[-1]["text"])
+        await self.service.set_task_completion(101, first, 2, False)
+        await self.service.cancel_task(101, past, 1)
+        self.clock.advance(minutes=4)
+        await self.drain()
+        self.assertIn("На сегодня осталось 2 дела.", self.bot.sent[-1]["text"])
+        self.assertNotIn("Просроченных:", self.bot.sent[-1]["text"])
+        await self.service.set_task_completion(101, first, 3, True)
+        await self.service.set_task_completion(101, added, 1, True)
+        self.clock.advance(minutes=1, seconds=4)
+        await self.drain()
+        self.assertEqual(len(self.bot.sent), 4)
+        self.assertIn("Начинается сейчас", self.bot.sent[-1]["text"])
+        self.assertIn("На сегодня нет невыполненных дел.", self.bot.sent[-1]["text"])
+
+    async def test_retry_recomputes_task_counters_from_storage_after_restart(self):
+        task_id = await self.create(spec=TaskSpec("Первое", date(2026, 9, 24)))
+        await self.create(offsets=(15,))
+        self.clock.advance(minutes=45)
+        self.bot.errors = [
+            TelegramNetworkError(method=SendMessage(chat_id=101, text="test"), message="network")
+        ]
+        await self.drain()
+        self.assertEqual(self.bot.sent, [])
+        await self.service.set_task_completion(101, task_id, 1, True)
+        await self.create(spec=TaskSpec("Вчера", date(2026, 9, 23)))
+        await self.restart()
+        self.worker = NotificationWorker(self.service, self.bot)
+        self.clock.advance(seconds=6)
+        await self.drain()
+        self.assertIn("На сегодня нет невыполненных дел.", self.bot.sent[0]["text"])
+        self.assertIn("Просроченных: 1.", self.bot.sent[0]["text"])
+
+    async def test_counters_use_send_day_and_user_timezone_across_midnight(self):
+        self.clock.now = datetime(2026, 9, 24, 19, 55, tzinfo=UTC)
+        for day in (23, 24, 25):
+            await self.create(spec=TaskSpec(f"Дело {day}", date(2026, 9, day)))
+        await self.create(
+            when=datetime(2026, 9, 24, 20, 5, tzinfo=UTC),
+            timezone="America/New_York",
+            offsets=(15, 5),
+        )
+        await self.drain()
+        self.assertIn("На сегодня осталось 1 дело.", self.bot.sent[-1]["text"])
+        self.assertIn("Просроченных: 1.", self.bot.sent[-1]["text"])
+        self.clock.advance(minutes=5)
+        await self.drain()
+        self.assertEqual(len(self.bot.sent), 2)
+        self.assertIn("На сегодня осталось 1 дело.", self.bot.sent[-1]["text"])
+        self.assertIn("Просроченных: 2.", self.bot.sent[-1]["text"])
+
+    async def test_task_only_summary_includes_overdue_and_link_but_not_completed(self):
+        self.clock.now = datetime(2026, 9, 24, 3, tzinfo=UTC)
+        await self.service.preferences(101, summary_enabled=1)
+        await self.create(spec=TaskSpec("Сегодня & <дело>", date(2026, 9, 24)))
+        await self.create(spec=TaskSpec("Просроченное", date(2026, 9, 23)))
+        done = await self.create(spec=TaskSpec("Готовое", date(2026, 9, 24)))
+        await self.service.set_task_completion(101, done, 1, True)
+        await self.create(spec=TaskSpec("Завтрашнее", date(2026, 9, 25)))
+        await self.create(uid=202, spec=TaskSpec("Чужое", date(2026, 9, 24)))
+        self.clock.advance(hours=2)
+        await self.drain()
+        self.assertEqual(len(self.bot.sent), 1)
+        text = self.bot.sent[0]["text"]
+        self.assertIn("Сегодня & <дело>", text)
+        self.assertIn("Просроченное", text)
+        self.assertIn("23 сентября", text)
+        for absent in ("Готовое", "Завтрашнее", "Чужое"):
+            self.assertNotIn(absent, text)
+        self.assertEqual(
+            self.bot.sent[0]["reply_markup"].inline_keyboard[0][0].callback_data, "t:show:0"
+        )
+        self.assertEqual(await self.rows("SELECT * FROM notifications WHERE kind='reminder'"), [])
+
+    async def test_started_task_summary_remains_a_snapshot_after_all_tasks_complete(self):
+        self.clock.now = datetime(2026, 9, 24, 3, tzinfo=UTC)
+        await self.service.preferences(101, summary_enabled=1)
+        ids = [
+            await self.create(spec=TaskSpec(f"{n}: " + "😀" * 160, date(2026, 9, 24)))
+            for n in range(22)
+        ]
+        self.clock.advance(hours=2)
+        await self.worker.dispatch_one()
+        notice = (await self.rows("SELECT * FROM notifications WHERE occurrence_key='2026-09-24'"))[
+            0
+        ]
+        snapshot = notice["parts"]
+        self.assertGreater(len(json.loads(snapshot)), 1)
+        for task_id in ids:
+            await self.service.set_task_completion(101, task_id, 1, True)
+        await self.restart()
+        self.worker = NotificationWorker(self.service, self.bot)
+        for _ in range(6):
+            self.clock.advance(seconds=2)
+            await self.drain()
+        notice = (await self.rows("SELECT * FROM notifications WHERE occurrence_key='2026-09-24'"))[
+            0
+        ]
+        self.assertEqual(notice["parts"], snapshot)
+        self.assertEqual(notice["status"], "sent")
+        self.assertEqual(notice["part_index"], len(json.loads(snapshot)))
+        self.assertEqual([m["text"] for m in self.bot.sent], json.loads(snapshot))
 
     async def test_three_notifications_and_no_duplicate_after_restart(self):
         event_id = await self.create()

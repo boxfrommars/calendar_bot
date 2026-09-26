@@ -50,11 +50,11 @@ def main() -> int:
             return 0 if result.healthy else 1
         config = Config.from_env(os.environ, require_secrets=args.command != "migrate")
         if args.command == "migrate":
-            from .storage import migrate
+            from .storage import SCHEMA_VERSION, migrate
 
             with InstanceLock(config.database_path):
                 migrate(config.database_path)
-            print("Схема SQLite готова (версия 1).")
+            print(f"Схема SQLite готова (версия {SCHEMA_VERSION}).")
         elif args.command == "check":
             from .storage import check_database
 

@@ -5,14 +5,49 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 from calendar_bot.domain import UserError
-from calendar_bot.parser import OpenAIParser, ParsedEvent, ParseResult
+from calendar_bot.parser import OpenAIParser, ParsedEvent, ParsedTask, ParseResult
 
 
 class ParserContractTests(unittest.IsolatedAsyncioTestCase):
+    async def test_task_edit_passes_only_selected_item_and_strict_schema(self):
+        expected = ParseResult(
+            items=[ParsedTask(kind="task", title="Изменённое дело", date="2026-09-25")],
+            question=None,
+        )
+        call = AsyncMock(return_value=SimpleNamespace(status="completed", output_parsed=expected))
+        parser = OpenAIParser(
+            "test-not-real", "model", client=SimpleNamespace(responses=SimpleNamespace(parse=call))
+        )
+        base = {"kind": "task", "title": "Дело", "day": "2026-09-24"}
+        self.assertEqual(
+            await parser.parse(
+                [{"role": "user", "content": "на завтра"}],
+                datetime(2026, 9, 24, tzinfo=UTC),
+                "UTC",
+                base,
+            ),
+            expected,
+        )
+        arguments = call.call_args.kwargs
+        context = json.loads(arguments["input"][1]["content"].split(": ", 1)[1])
+        self.assertEqual(context["selected_item"], base)
+        self.assertEqual(
+            set(context), {"reference_local", "reference_weekday", "timezone", "selected_item"}
+        )
+        self.assertNotIn("tools", arguments)
+        self.assertFalse(arguments["store"])
+        schema = ParseResult.model_json_schema()
+        self.assertEqual(set(schema["properties"]), {"items", "question"})
+        self.assertFalse(schema["$defs"]["ParsedTask"]["additionalProperties"])
+        for kind in ("ParsedTask", "ParsedEvent"):
+            self.assertIn("kind", schema["$defs"][kind]["required"])
+            self.assertNotIn("default", schema["$defs"][kind]["properties"]["kind"])
+
     async def test_sdk_uses_structured_schema_and_minimum_context(self):
         expected = ParseResult(
-            events=[
+            items=[
                 ParsedEvent(
+                    kind="event",
                     title="Штурм // Ориентир 2027",
                     date="2026-09-25",
                     time="16:00",
@@ -39,7 +74,7 @@ class ParserContractTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("tools", arguments)
         context = json.loads(arguments["input"][1]["content"].split(": ", 1)[1])
         self.assertEqual(context["reference_local"], "2026-09-24T23:59:00+04:00")
-        self.assertIsNone(context["selected_event"])
+        self.assertIsNone(context["selected_item"])
 
     async def test_refusal_or_incomplete_response_never_creates_event(self):
         for status in ("completed", "incomplete"):

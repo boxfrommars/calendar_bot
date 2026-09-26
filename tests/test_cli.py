@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from calendar_bot.storage import check_database
+from calendar_bot.storage import SCHEMA_VERSION, check_database
 
 
 class CommandLineTests(unittest.TestCase):
@@ -46,6 +46,7 @@ class CommandLineTests(unittest.TestCase):
             self.assertIn("Личный календарь", help_result.stdout)
             migration = invoke(["migrate"])
             self.assertEqual(migration.returncode, 0, migration.stdout + migration.stderr)
+            self.assertIn(f"версия {SCHEMA_VERSION}", migration.stdout)
             before = path.read_bytes()
             checked = invoke(["check", "--offline"])
             self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)

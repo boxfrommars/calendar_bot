@@ -40,6 +40,7 @@ class CalendarMathTests(unittest.TestCase):
             with self.subTest(title=title):
                 spec = normalize(
                     ParsedEvent(
+                        kind="event",
                         title=title,
                         date=day,
                         time=clock,
@@ -108,6 +109,7 @@ class CalendarMathTests(unittest.TestCase):
 
     def test_missing_time_and_invalid_zone_are_not_guessed(self):
         value = ParsedEvent(
+            kind="event",
             title="Встреча",
             date="2026-09-25",
             time=None,

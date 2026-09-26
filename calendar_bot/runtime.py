@@ -16,7 +16,7 @@ from .locking import InstanceLock
 from .parser import OpenAIParser
 from .polling import POLLING_TIMEOUT, REQUEST_TIMEOUT, PollingMonitor
 from .service import CalendarService
-from .storage import Store
+from .storage import SCHEMA_VERSION, Store
 from .systemd import SystemdNotifier
 from .telegram import BotUI
 from .worker import NotificationWorker
@@ -126,7 +126,9 @@ async def _application(config: Config, monitor: PollingMonitor, begin_shutdown) 
             request_timeout=15,
         )
         worker = NotificationWorker(service, bot)
-        log.info("bot_started schema=1 allowed_users=%s", len(config.allowed_user_ids))
+        log.info(
+            "bot_started schema=%s allowed_users=%s", SCHEMA_VERSION, len(config.allowed_user_ids)
+        )
         await serve_polling(dispatcher, bot, ui, worker, monitor, begin_shutdown)
     finally:
         begin_shutdown()

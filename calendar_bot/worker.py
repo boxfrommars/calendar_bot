@@ -10,9 +10,10 @@ from aiogram.exceptions import (
     TelegramRetryAfter,
     TelegramServerError,
 )
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from . import presentation as view
-from .domain import EventSpec, local_instant, zone
+from .domain import EventSpec, local_day, local_instant, zone
 from .service import CalendarService
 
 log = logging.getLogger(__name__)
@@ -83,7 +84,10 @@ class NotificationWorker:
                 return None
             spec = EventSpec.from_json(occurrence["spec"])
             start = datetime.fromtimestamp(occurrence["start_at"], UTC)
-            parts = [view.reminder_part(spec, start, now, user["timezone"])]
+            counts = await self.service.task_counts(
+                tx, user["id"], local_day(now, user["timezone"])
+            )
+            parts = [view.reminder_part(spec, start, now, user["timezone"], *counts)]
         else:
             day = date.fromisoformat(notice["occurrence_key"])
             if (
@@ -103,12 +107,14 @@ class NotificationWorker:
                 "WHERE e.user_id=? AND o.start_at>=? AND o.start_at<? ORDER BY o.start_at,o.event_id",
                 (user["id"], start.timestamp(), end.timestamp()),
             )
-            if not rows and not user["summary_empty"]:
+            tasks = await self.service.open_tasks_through(tx, user["id"], day)
+            started = notice["parts"] is not None and notice["part_index"] > 0
+            if not rows and not tasks and not user["summary_empty"] and not started:
                 await tx.execute(
                     "UPDATE notifications SET status='skipped' WHERE id=?", (notice["id"],)
                 )
                 return None
-            parts = view.summary_parts(rows, day, user["timezone"], now)
+            parts = view.summary_parts(rows, day, user["timezone"], now, tasks)
         if notice["parts"] is None or notice["kind"] == "reminder":
             await tx.execute(
                 "UPDATE notifications SET parts=? WHERE id=?",
@@ -159,6 +165,13 @@ class NotificationWorker:
                     **view.notification_message(
                         notice["kind"], parts[notice["part_index"]]
                     ).as_kwargs(),
+                    reply_markup=InlineKeyboardMarkup(
+                        inline_keyboard=[
+                            [InlineKeyboardButton(text="Открыть сегодня", callback_data="t:show:0")]
+                        ]
+                    )
+                    if notice["kind"] == "summary"
+                    else None,
                     request_timeout=15,
                 )
             except TelegramForbiddenError:

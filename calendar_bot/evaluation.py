@@ -6,7 +6,7 @@ from datetime import UTC, date, datetime
 
 from dotenv import load_dotenv
 
-from .domain import UserError
+from .domain import EventSpec, TaskSpec, UserError
 from .logging_config import configure_logging
 from .parser import OpenAIParser, normalize
 
@@ -36,10 +36,15 @@ async def evaluate() -> None:
             result = await parser.parse(
                 [{"role": "user", "content": text}], reference, "Asia/Yerevan"
             )
-            if result.question or len(result.events) != 1:
+            if result.question or len(result.items) != 1:
                 raise UserError(f"Пример {index}: вместо события получено уточнение.")
-            spec = normalize(result.events[0], reference, "Asia/Yerevan")
-            if (spec.title, spec.repeat, spec.weekdays, spec.clock.strftime("%H:%M")) != (
+            spec = normalize(result.items[0], reference, "Asia/Yerevan")
+            if not isinstance(spec, EventSpec) or (
+                spec.title,
+                spec.repeat,
+                spec.weekdays,
+                spec.clock.strftime("%H:%M"),
+            ) != (
                 title,
                 repeat,
                 weekdays,
@@ -49,6 +54,46 @@ async def evaluate() -> None:
             if repeat == "once" and spec.day != date(2026, 9, 25):
                 raise UserError(f"Пример {index}: неправильно распознано «завтра».")
             print(f"Пример {index}: OK")
+        for index, (text, title, day) in enumerate(
+            (
+                ("купить продукты", "купить продукты", date(2026, 9, 24)),
+                ("завтра купить продукты", "купить продукты", date(2026, 9, 25)),
+            ),
+            len(CASES) + 1,
+        ):
+            result = await parser.parse(
+                [{"role": "user", "content": text}], reference, "Asia/Yerevan"
+            )
+            if result.question or len(result.items) != 1:
+                raise UserError(f"Пример {index}: вместо дела получено уточнение.")
+            spec = normalize(result.items[0], reference, "Asia/Yerevan")
+            if not isinstance(spec, TaskSpec) or spec.title.casefold() != title or spec.day != day:
+                raise UserError(f"Пример {index}: дело или его дата не совпали с ожидаемыми.")
+            print(f"Пример {index}: OK")
+        mixed = await parser.parse(
+            [{"role": "user", "content": "завтра купить хлеб\nзавтра 16:00 встреча"}],
+            reference,
+            "Asia/Yerevan",
+        )
+        if mixed.question or len(mixed.items) != 2:
+            raise UserError("Смешанный пример: ожидались дело и событие.")
+        specs = [normalize(item, reference, "Asia/Yerevan") for item in mixed.items]
+        if not isinstance(specs[0], TaskSpec) or not isinstance(specs[1], EventSpec):
+            raise UserError("Смешанный пример: неверные типы или порядок записей.")
+        if (
+            any(spec.day != date(2026, 9, 25) for spec in specs)
+            or specs[1].clock.strftime("%H:%M") != "16:00"
+        ):
+            raise UserError("Смешанный пример: неверная дата или время.")
+        print("Смешанный пример: OK")
+        unsupported = await parser.parse(
+            [{"role": "user", "content": "каждый день читать без времени"}],
+            reference,
+            "Asia/Yerevan",
+        )
+        if not unsupported.question or unsupported.items:
+            raise UserError("Повторяющееся дело: ожидалось объяснение ограничения.")
+        print("Неподдерживаемый повтор дела: OK")
     finally:
         await parser.close()
 

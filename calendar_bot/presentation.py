@@ -7,7 +7,16 @@ from datetime import UTC, date, datetime, time
 
 from aiogram.utils.formatting import Bold, Code, Italic, Text
 
-from .domain import WEEKDAYS, EventSpec, local_instant, split_lines, zone
+from .domain import (
+    WEEKDAYS,
+    AgendaPeriod,
+    EventSpec,
+    TaskSpec,
+    local_instant,
+    shift_day,
+    split_lines,
+    zone,
+)
 
 MONTHS = (
     "января",
@@ -35,6 +44,10 @@ WEEKLY = (
 ZONE_NAMES = {"Europe/Moscow": "Москва", "Asia/Yerevan": "Ереван", "UTC": "UTC"}
 TIME_ROW = re.compile(r"^\d{2}:\d{2} — ")
 SCHEDULE_PREFIX = "  По расписанию: "
+TASK_COUNTER = re.compile(
+    r"^📋 На сегодня (?:нет невыполненных дел\.|осталось \d+ (?:дело|дела|дел)\.)$"
+)
+OVERDUE_COUNTER = re.compile(r"^Просроченных: \d+\.$")
 
 
 def lines(items: Iterable[str | Text]) -> Text:
@@ -122,8 +135,8 @@ WELCOME = Text(
     "📅 ",
     Bold("Ваше расписание"),
     "\n\n",
-    "Напомню о встречах и пришлю события на день.\n",
-    "Новые события сохраняются автоматически — их можно изменить или удалить кнопками в карточке.\n\n",
+    "Напомню о встречах и помогу вести дела на день.\n",
+    "Новые события и дела сохраняются автоматически — их можно изменить или удалить кнопками в карточке.\n\n",
     Italic("Для понимания новых записей и исправлений их текст передаётся OpenAI."),
 )
 
@@ -135,7 +148,13 @@ HELP = lines(
         Code("каждый понедельник 14:00 Content Retro & Planning"),
         Code("завтра 16:00 Штурм // Ориентир 2027"),
         "",
-        "Можно добавить несколько событий одним сообщением. Они сохранятся автоматически, и я покажу карточки с датой и временем.",
+        Bold("Дела без времени"),
+        Code("завтра купить продукты"),
+        Code("купить продукты"),
+        "Дата без времени — дело. Если даты нет, добавлю на сегодня.",
+        "Кнопка ☐ отмечает выполнение, ✅ возвращает дело в работу. Просроченные сохраняют исходную дату.",
+        "",
+        "Можно добавить до 10 событий и дел одним сообщением. Они сохранятся вместе, и я покажу карточки.",
         "Если данных недостаточно, сначала задам уточняющий вопрос.",
         "Поддерживаются разовые встречи, ежедневные повторы, будни и выбранные дни недели.",
         "",
@@ -144,8 +163,8 @@ HELP = lines(
         Code("напомни за 30 и 5 минут"),
         "",
         Bold("Расписание и настройки"),
-        Text(Code("/today"), " — события сегодня"),
-        Text(Code("/week"), " — ближайшие 7 дней"),
+        Text(Code("/today"), " — события и дела сегодня"),
+        Text(Code("/week"), " — 7 дней с переходом к прошлым и будущим неделям"),
         Text(Code("/events"), " — события и серии"),
         Text(Code("/settings"), " — часовой пояс, напоминания и сводка"),
         Text(Code("/cancel"), " — выйти из текущего ввода"),
@@ -156,7 +175,7 @@ HELP = lines(
         "Для одной встречи из серии откройте /week.",
         "",
         Italic(
-            "У каждого события есть время начала. Задачи без времени и ежемесячные повторы пока не поддерживаются."
+            "Дела пока только разовые, без отдельных напоминаний. В напоминаниях о встречах показаны оставшиеся дела на сегодня и просрочка. Ежемесячные повторы не поддерживаются."
         ),
     ]
 )
@@ -224,19 +243,75 @@ def schedule_note(spec: EventSpec, instant: datetime, user_timezone: str) -> str
     return f"{SCHEDULE_PREFIX}{moment} · {timezone_label(spec.timezone, instant)}"
 
 
-def agenda(rows: list[dict], timezone: str, now: datetime, days: int, page: int) -> Text:
+def task_card(spec: TaskSpec, today: date, *, completed=False, saved=False, draft=False) -> Text:
+    heading = "Изменение дела" if draft else "Дело сохранено" if saved else "Дело"
+    state = (
+        "✅ Выполнено" if completed else "⏳ Просрочено" if spec.day < today else "☐ Не выполнено"
+    )
+    body = [
+        Text("📋 ", Bold(heading)),
+        "",
+        Bold(spec.title),
+        Text("📅 ", date_label(spec.day, today), " · без времени"),
+        state,
+    ]
+    if draft:
+        body.extend(
+            [
+                "",
+                Italic("Изменения вступят в силу после подтверждения. Черновик действует 24 часа."),
+            ]
+        )
+    return lines(body)
+
+
+def agenda(
+    rows: list[dict],
+    timezone: str,
+    now: datetime,
+    days: int,
+    page: int,
+    *,
+    start_day: date | None = None,
+) -> Text:
     today = now.astimezone(zone(timezone)).date()
-    title = f"Сегодня · {date_label(today, today)}" if days == 1 else "Ближайшие 7 дней"
+    period = AgendaPeriod(start_day or today, days)
+    title = (
+        ("Сегодня" if period.start == today else "Расписание")
+        + f" · {date_label(period.start, today)}"
+        if days == 1
+        else f"7 дней · {date_label(period.start, today)} — {date_label(shift_day(period.end, -1), today)}"
+    )
     body = [Text("📅 ", Bold(title))]
     previous_day = None
     instants = []
     for number, row in enumerate(rows, page * 8 + 1):
+        if row.get("kind") == "task":
+            spec = TaskSpec.from_dict(row)
+            completed = row["completed_at"] is not None
+            overdue = period.contains(today) and spec.day < today and not completed
+            group = "overdue" if overdue else spec.day
+            if group != previous_day:
+                if overdue:
+                    body.extend(["", Bold("Просроченные дела")])
+                elif days != 1:
+                    body.extend(["", Bold(date_label(spec.day, today))])
+                elif previous_day == "overdue":
+                    body.extend(["", Bold("Сегодня")])
+            label = f"{number}. {'✅' if completed else '☐'} {spec.title}"
+            if overdue:
+                label += f" · {date_label(spec.day, today)}"
+            body.extend(["", Text(label)])
+            previous_day = group
+            continue
         spec = EventSpec.from_json(row["spec"])
         instant = datetime.fromtimestamp(row["start_at"], UTC)
         instants.append(instant)
         local = instant.astimezone(zone(timezone))
-        if days > 1 and local.date() != previous_day:
+        if days != 1 and local.date() != previous_day:
             body.extend(["", Bold(date_label(local.date(), today))])
+        elif previous_day == "overdue":
+            body.extend(["", Bold("Сегодня")])
         body.extend(["", Text(f"{number}. ", Bold(f"{local:%H:%M}"), " — ", spec.title)])
         if instant <= now:
             body[-1] += Text(" · ", Italic("уже началось"))
@@ -245,7 +320,12 @@ def agenda(rows: list[dict], timezone: str, now: datetime, days: int, page: int)
         previous_day = local.date()
     if not rows:
         body.extend(
-            ["", "На сегодня событий нет." if days == 1 else "На ближайшие 7 дней событий нет."]
+            [
+                "",
+                "На сегодня событий и дел нет."
+                if days == 1 and period.start == today
+                else "В этом периоде событий и дел нет.",
+            ]
         )
     body.extend(["", Italic("Время: " + timezone_range(timezone, instants or [now]))])
     return lines(body)
@@ -293,7 +373,33 @@ def settings(user: dict, now: datetime) -> Text:
     )
 
 
-def reminder_part(spec: EventSpec, start: datetime, now: datetime, timezone: str) -> str:
+def task_counter(today: int, overdue: int) -> list[str]:
+    if today:
+        word = (
+            "дел"
+            if 11 <= today % 100 <= 14
+            else "дело"
+            if today % 10 == 1
+            else "дела"
+            if today % 10 in {2, 3, 4}
+            else "дел"
+        )
+        result = [f"📋 На сегодня осталось {today} {word}."]
+    else:
+        result = ["📋 На сегодня нет невыполненных дел."]
+    if overdue:
+        result.append(f"Просроченных: {overdue}.")
+    return result
+
+
+def reminder_part(
+    spec: EventSpec,
+    start: datetime,
+    now: datetime,
+    timezone: str,
+    today_remaining=0,
+    overdue_remaining=0,
+) -> str:
     seconds = (start - now).total_seconds()
     minutes = max(1, round(seconds / 60))
     label = (
@@ -306,12 +412,15 @@ def reminder_part(spec: EventSpec, start: datetime, now: datetime, timezone: str
     if note := schedule_note(spec, start, timezone):
         body.append(note)
     body.extend(["", timezone_label(timezone, start)])
+    body.extend(["", *task_counter(today_remaining, overdue_remaining)])
     return "\n".join(body)
 
 
-def summary_parts(rows: list[dict], day: date, timezone: str, now: datetime) -> list[str]:
+def summary_parts(
+    rows: list[dict], day: date, timezone: str, now: datetime, tasks: Sequence[dict] = ()
+) -> list[str]:
     today = now.astimezone(zone(timezone)).date()
-    body = [f"☀️ События на {date_label(day, today)}", ""]
+    body = [f"☀️ {'План' if tasks else 'События'} на {date_label(day, today)}", ""]
     instants = []
     for row in rows:
         spec = EventSpec.from_json(row["spec"])
@@ -322,7 +431,16 @@ def summary_parts(rows: list[dict], day: date, timezone: str, now: datetime) -> 
         if note := schedule_note(spec, instant, timezone):
             body.append(note)
         body.append("")
-    if not rows:
+    for overdue, heading in ((False, "📋 Дела на сегодня"), (True, "⏳ Просроченные дела")):
+        selected = [row for row in tasks if (date.fromisoformat(row["day"]) < day) == overdue]
+        if selected:
+            body.extend([heading, ""])
+            for row in selected:
+                label = f"☐ {row['title']}"
+                if overdue:
+                    label += f" · {date_label(date.fromisoformat(row['day']), today)}"
+                body.extend([label, ""])
+    if not rows and not tasks:
         body.extend(["На сегодня событий нет.", ""])
     reference = local_instant(day, time(), timezone)
     body.append("Время: " + timezone_range(timezone, instants or [reference]))
@@ -338,11 +456,22 @@ def notification_message(kind: str, part: str) -> Text:
     source = part.split("\n")
     body = []
     modern_reminder = kind == "reminder" and len(source) >= 6 and source[1] == ""
+    timezone_index = len(source) - 1
+    if modern_reminder:
+        footer_index = len(source) - (2 if OVERDUE_COUNTER.fullmatch(source[-1]) else 1)
+        if (
+            footer_index >= 7
+            and TASK_COUNTER.fullmatch(source[footer_index])
+            and source[footer_index - 1] == ""
+        ):
+            timezone_index = footer_index - 2
     for index, line in enumerate(source):
         value = line
         if kind == "summary":
-            if index == 0 and line.startswith("☀️ События на "):
+            if index == 0 and line.startswith(("☀️ События на ", "☀️ План на ")):
                 value = Text("☀️ ", Bold(line[len("☀️ ") :]))
+            elif line in {"📋 Дела на сегодня", "⏳ Просроченные дела"}:
+                value = Bold(line)
             elif TIME_ROW.match(line):
                 value = Text(Bold(line[:5]), line[5:])
             elif line.startswith(("Время: ", SCHEDULE_PREFIX)):
@@ -352,7 +481,7 @@ def notification_message(kind: str, part: str) -> Text:
                 value = Bold(line)
             elif index == 3 and line.startswith("Начало в "):
                 value = Text("Начало в ", Bold(line[len("Начало в ") :]))
-            elif index == len(source) - 1 or line.startswith(SCHEDULE_PREFIX):
+            elif index == timezone_index or line.startswith(SCHEDULE_PREFIX):
                 value = Italic(line)
         body.append(value)
     return lines(body)
