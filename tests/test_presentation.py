@@ -3,11 +3,40 @@ from dataclasses import replace
 from datetime import UTC, date, datetime, time, timedelta
 
 from calendar_bot import presentation as view
-from calendar_bot.domain import EventSpec, TaskSpec, local_instant
+from calendar_bot.domain import EventSource, EventSpec, TaskSpec, local_instant
 from tests.support import entity_fragments
 
 
 class PresentationTests(unittest.TestCase):
+    def test_sources_are_literal_clickable_entities_in_cards_and_questions(self):
+        source = EventSource("🏟️ <b>Организатор</b> & _турнир_", "https://example.org/a?x=1&y=2")
+        spec = EventSpec("Матч", date(2026, 9, 25), time(20, 45), "Europe/Madrid", source=source)
+        card = view.event_card(
+            "Событие сохранено",
+            spec,
+            spec.first_after(self.now),
+            "Asia/Yerevan",
+            (15, 5, 1),
+            self.now,
+            saved=True,
+        )
+        question = view.clarification("Какой из матчей <выбрать>? 😀", [source])
+        for content in (card, question):
+            with self.subTest(content=content):
+                kwargs = content.as_kwargs()
+                self.assertIsNone(kwargs["parse_mode"])
+                self.assertIn(
+                    ("text_link", source.title),
+                    entity_fragments(kwargs["text"], kwargs["entities"]),
+                )
+                self.assertEqual(
+                    [e.url for e in kwargs["entities"] if e.type == "text_link"], [source.url]
+                )
+                self.assertNotIn(
+                    ("bold", "Организатор"), entity_fragments(kwargs["text"], kwargs["entities"])
+                )
+        self.assertIn("22:45", card.render()[0])
+
     def setUp(self):
         self.now = datetime(2026, 9, 24, 8, tzinfo=UTC)
         self.spec = EventSpec(

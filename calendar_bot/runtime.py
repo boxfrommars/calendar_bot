@@ -13,6 +13,7 @@ from aiogram.types import BotCommand
 from .config import Config
 from .domain import UserError
 from .locking import InstanceLock
+from .model_trace import ModelTrace
 from .parser import OpenAIParser
 from .polling import POLLING_TIMEOUT, REQUEST_TIMEOUT, PollingMonitor
 from .service import CalendarService
@@ -101,7 +102,11 @@ async def _application(config: Config, monitor: PollingMonitor, begin_shutdown) 
         bot = Bot(config.bot_token, session=AiohttpSession(timeout=REQUEST_TIMEOUT))
         bot.session.middleware(monitor)
         store = await Store.open(config.database_path)
-        parser = OpenAIParser(config.openai_api_key, config.openai_model)
+        parser = OpenAIParser(
+            config.openai_api_key,
+            config.openai_model,
+            trace=ModelTrace(config.openai_trace_dir) if config.openai_trace_dir else None,
+        )
         service = CalendarService(store, config.allowed_user_ids)
         dispatcher = Dispatcher()
         ui = BotUI(service, parser, bot)

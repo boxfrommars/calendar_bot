@@ -1,6 +1,7 @@
 import asyncio
 from datetime import UTC, date, datetime, timedelta
-from unittest.mock import patch
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, patch
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.session.base import BaseSession
@@ -17,8 +18,8 @@ from aiogram.types import (
 )
 
 from calendar_bot import presentation as view
-from calendar_bot.domain import TaskSpec, UserError
-from calendar_bot.parser import ParsedEvent, ParsedTask, ParseResult
+from calendar_bot.domain import EventSpec, TaskSpec, UserError
+from calendar_bot.parser import OpenAIParser, ParsedEvent, ParsedSource, ParsedTask, ParseResult
 from calendar_bot.telegram import MENU, BotUI
 from tests.support import DatabaseCase, entity_fragments
 
@@ -101,11 +102,235 @@ def parsed(title="Встреча", **kwargs):
         repeat="once",
         weekdays=[],
         reminders=None,
+        time_source="user",
     )
     return ParsedEvent(**(data | kwargs))
 
 
 class TelegramFlowTests(DatabaseCase):
+    async def test_screenshot_timezone_error_is_repaired_before_saving(self):
+        self.clock.now = datetime(2026, 9, 26, 17, 47, tzinfo=UTC)
+        source = ParsedSource(title="England Football", url="https://example.org/england-spain")
+        wrong = parsed(
+            "Англия — Испания",
+            date="2026-09-26",
+            time="19:45",
+            timezone="Asia/Yerevan",
+            time_source="web",
+            source=source,
+        )
+        corrected = wrong.model_copy(update={"timezone": "Europe/London"})
+        call = self.use_search_parser(
+            [ParseResult(items=[item], question=None) for item in (wrong, corrected)], source
+        )
+        await self.say("напомни о сегодняшнем матче англия - испания")
+        self.assertEqual(call.await_count, 2)
+        self.assertIn("Событие сохранено", self.session.messages[-1].text)
+        self.assertIn("22:45", self.session.messages[-1].text)
+        self.assertFalse(
+            any("Это время уже прошло" in message.text for message in self.session.messages)
+        )
+        event = (await self.rows("SELECT * FROM events"))[0]
+        self.assertEqual(
+            [
+                datetime.fromtimestamp(n["due_at"], UTC).strftime("%H:%M")
+                for n in await self.pending(event["id"])
+            ],
+            ["18:30", "18:40", "18:44"],
+        )
+
+    async def test_rejected_past_time_keeps_both_zones_source_and_context(self):
+        self.clock.now = datetime(2026, 9, 26, 19, 47, tzinfo=UTC)
+        source = ParsedSource(title="England Football", url="https://example.org/england-spain")
+        self.parser.results = [
+            ParseResult(
+                items=[
+                    parsed(
+                        "Англия <Испания>",
+                        date="2026-09-26",
+                        time="19:45",
+                        timezone="Europe/London",
+                        time_source="web",
+                        source=source,
+                    )
+                ],
+                question=None,
+            )
+        ]
+        await self.say("напомни о сегодняшнем матче")
+        message = self.session.messages[-1]
+        self.assertIn("22:45", message.text)
+        self.assertIn("19:45", message.text)
+        self.assertIn("23:47", message.text)
+        self.assertIn("Europe/London", message.text)
+        self.assertIn("Англия <Испания>", message.text)
+        self.assertEqual([e.url for e in message.entities if e.type == "text_link"], [source.url])
+        history = (await self.service.conversation(101))["payload"]["messages"]
+        self.assertIn("22:45", history[-1]["content"])
+        self.assertEqual(await self.rows("SELECT * FROM events"), [])
+        self.assertEqual(await self.rows("SELECT * FROM notifications"), [])
+
+    def use_search_parser(self, results, source):
+        responses = [
+            result
+            if isinstance(result, Exception)
+            else SimpleNamespace(
+                status="completed",
+                output_parsed=result,
+                output=[
+                    SimpleNamespace(
+                        type="web_search_call",
+                        status="completed",
+                        action=SimpleNamespace(
+                            type="search", sources=[SimpleNamespace(type="url", url=source.url)]
+                        ),
+                    )
+                ],
+            )
+            for result in results
+        ]
+        call = AsyncMock(side_effect=responses)
+        self.parser = OpenAIParser(
+            "test-not-real",
+            "model",
+            client=SimpleNamespace(
+                responses=SimpleNamespace(parse=call),
+            ),
+        )
+        self.ui.parser = self.parser
+        return call
+
+    async def test_searched_match_saves_atomically_with_source_and_replays_after_restart(self):
+        source = ParsedSource(title="🏟️ Расписание <турнира>", url="https://example.org/schedule")
+        call = self.use_search_parser(
+            [
+                ParseResult(
+                    items=[
+                        parsed(
+                            "Испания — Англия",
+                            time="20:45",
+                            timezone="Europe/Madrid",
+                            time_source="web",
+                            source=source,
+                        ),
+                        ParsedTask(kind="task", title="Купить хлеб", date=None),
+                    ],
+                    question=None,
+                )
+            ],
+            source,
+        )
+        await self.say("напомни о матче", uid=999)
+        self.assertEqual(call.await_count, 0)
+        with patch.object(
+            self.ui, "show_results", side_effect=RuntimeError("Interrupted after commit")
+        ):
+            await self.say("напомни о завтрашнем матче и купить хлеб", message_id=40)
+        events = await self.rows("SELECT * FROM events")
+        self.assertEqual(len(events), 1)
+        self.assertEqual(len(await self.rows("SELECT * FROM tasks")), 1)
+        spec = EventSpec.from_json(events[0]["spec"])
+        self.assertEqual(spec.source, source.to_source())
+        notices = await self.pending(events[0]["id"])
+        self.assertEqual([n["offset_minutes"] for n in notices], [15, 5, 1])
+        await self.restart()
+        self.ui = BotUI(self.service, self.parser, self.bot)
+        self.dispatcher = Dispatcher()
+        self.dispatcher.include_router(self.ui.router)
+        await self.press("p:retry")
+        await self.say("напомни о завтрашнем матче и купить хлеб", message_id=40)
+        self.assertEqual(call.await_count, 1)
+        self.assertEqual(await self.rows("SELECT * FROM events"), events)
+        self.assertEqual(await self.pending(events[0]["id"]), notices)
+        await self.press(f"e:{events[0]['id']}:1:all")
+        card = self.session.messages[-1]
+        self.assertIn("22:45", card.text)
+        self.assertEqual([e.url for e in card.entities if e.type == "text_link"], [source.url])
+        await self.press(f"r:{events[0]['id']}:1:all")
+        await self.say("30, 10")
+        self.assertIn(source.title, self.session.messages[-1].text)
+        save = self.session.messages[-1].reply_markup.inline_keyboard[0][0]
+        await self.press(save.callback_data)
+        self.assertEqual(
+            EventSpec.from_json((await self.service.event(101, events[0]["id"]))["spec"]).source,
+            source.to_source(),
+        )
+
+    async def test_search_question_has_sources_and_followup_keeps_reference_after_midnight(self):
+        self.clock.now = datetime(2026, 9, 24, 19, 59, tzinfo=UTC)
+        source = ParsedSource(title="Расписание", url="https://example.org/schedule")
+        call = self.use_search_parser(
+            [
+                ParseResult(items=[], question="Какой турнир?", question_sources=[source]),
+                ParseResult(
+                    items=[
+                        parsed(
+                            "Матч",
+                            time="20:45",
+                            timezone="Europe/Madrid",
+                            time_source="web",
+                            source=source,
+                        )
+                    ],
+                    question=None,
+                ),
+            ],
+            source,
+        )
+        await self.say("напомни о завтрашнем матче")
+        self.assertEqual(await self.rows("SELECT * FROM events"), [])
+        self.assertEqual(
+            [e.url for e in self.session.messages[-1].entities if e.type == "text_link"],
+            [source.url],
+        )
+        self.clock.advance(minutes=2)
+        await self.say("а ты не можешь посмотреть? мужской футбол")
+        first, second = [call.kwargs["input"] for call in call.await_args_list]
+        self.assertEqual(first[1], second[1])
+        self.assertEqual(second[-1]["content"], "а ты не можешь посмотреть? мужской футбол")
+        self.assertIn("пт, 25 сентября · 22:45", self.session.messages[-1].text)
+
+    async def test_unconfirmed_search_does_not_save_any_part_of_mixed_request(self):
+        source = ParsedSource(title="Расписание", url="https://example.org/schedule")
+        # A missing timezone must not fall back to the user's zone for a web result.
+        self.use_search_parser(
+            [
+                ParseResult(
+                    items=[
+                        ParsedTask(kind="task", title="Купить хлеб", date=None),
+                        parsed(time_source="web", source=source, timezone=None),
+                    ],
+                    question=None,
+                )
+            ],
+            source,
+        )
+        await self.say("купить хлеб и напомни о завтрашнем матче")
+        for table in ("tasks", "events", "drafts", "notifications"):
+            self.assertEqual(await self.rows(f"SELECT * FROM {table}"), [])
+        self.assertIn("Уточните запись", self.session.messages[-1].text)
+
+    async def test_search_timeout_keeps_input_and_retry_creates_single_event(self):
+        source = ParsedSource(title="Расписание", url="https://example.org/schedule")
+        call = self.use_search_parser(
+            [
+                TimeoutError(),
+                ParseResult(
+                    items=[parsed(time_source="web", source=source, timezone="UTC")], question=None
+                ),
+            ],
+            source,
+        )
+        await self.say("напомни о завтрашнем матче")
+        self.assertEqual(await self.rows("SELECT * FROM events"), [])
+        self.assertEqual(
+            (await self.service.conversation(101))["payload"]["messages"][-1]["content"],
+            "напомни о завтрашнем матче",
+        )
+        await self.press("p:retry")
+        self.assertEqual(len(await self.rows("SELECT * FROM events")), 1)
+        self.assertEqual(call.await_count, 2)
+
     async def asyncSetUp(self):
         await super().asyncSetUp()
         self.session = RecordingSession(self.clock)

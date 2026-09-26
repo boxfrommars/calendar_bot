@@ -1,5 +1,6 @@
 """Opt-in, paid live parser check using synthetic examples, without Telegram polling."""
 
+import argparse
 import asyncio
 import os
 from datetime import UTC, date, datetime
@@ -24,7 +25,76 @@ CASES = [
 ]
 
 
-async def evaluate() -> None:
+async def evaluate_web_search(parser: OpenAIParser) -> None:
+    # Fixed historical fixture: the EURO 2024 final kicked off at 21:00 in Berlin.
+    # Only parser output is inspected; no calendar or Telegram state is created.
+    reference = datetime(2024, 7, 14, 8, tzinfo=UTC)
+    request = "Напомни о сегодняшнем финале мужского футбольного Евро-2024 Испания — Англия"
+    for index, messages in enumerate(
+        (
+            [{"role": "user", "content": request}],
+            [
+                {"role": "user", "content": request},
+                {"role": "assistant", "content": "Во сколько начинается матч?"},
+                {"role": "user", "content": "А ты не можешь посмотреть?"},
+            ],
+        ),
+        1,
+    ):
+        result = await parser.parse(messages, reference, "Asia/Yerevan")
+        if result.question or len(result.items) != 1:
+            raise UserError(f"Поиск {index}: ожидалось однозначное событие с источником.")
+        spec = normalize(result.items[0], reference, "Asia/Yerevan")
+        if (
+            not isinstance(spec, EventSpec)
+            or spec.source is None
+            or spec.first_after(reference) != datetime(2024, 7, 14, 19, tzinfo=UTC)
+        ):
+            raise UserError(f"Поиск {index}: неверное начало финала или отсутствует источник.")
+        print(f"Поиск {index}: OK")
+    # At 21:47 in Yerevan, 19:45 BST is still future (22:45 in Yerevan).
+    # Includes the follow-up from the reported premature 'already passed' refusal.
+    timezone_reference = datetime(2026, 9, 26, 17, 47, tzinfo=UTC)
+    timezone_request = "Напомни о сегодняшнем матче мужской футбольной Лиги наций Англия — Испания"
+    for index, messages in enumerate(
+        (
+            [{"role": "user", "content": timezone_request}],
+            [
+                {"role": "user", "content": timezone_request},
+                {
+                    "role": "assistant",
+                    "content": "Это время уже прошло. Укажите будущую дату и время.",
+                },
+                {"role": "user", "content": "А во сколько было это время?"},
+            ],
+        ),
+        1,
+    ):
+        result = await parser.parse(messages, timezone_reference, "Asia/Yerevan")
+        if result.question or len(result.items) != 1:
+            raise UserError(f"Часовой пояс {index}: ожидалось событие, а не пояснение в question.")
+        spec = normalize(result.items[0], timezone_reference, "Asia/Yerevan")
+        if (
+            not isinstance(spec, EventSpec)
+            or spec.source is None
+            or spec.first_after(timezone_reference) != datetime(2026, 9, 26, 18, 45, tzinfo=UTC)
+        ):
+            raise UserError(f"Часовой пояс {index}: неверный перевод BST в UTC или нет источника.")
+        print(f"Часовой пояс {index}: OK")
+    for index, text in enumerate(
+        (
+            "Напомни о завтрашнем концерте, город и исполнитель пока неизвестны",
+            "Напомни о сегодняшнем матче вымышленных команд Кварц-92817 и Базальт-58329",
+        ),
+        1,
+    ):
+        result = await parser.parse([{"role": "user", "content": text}], reference, "Asia/Yerevan")
+        if result.items or not result.question:
+            raise UserError(f"Неоднозначный поиск {index}: ожидалось уточнение без записей.")
+        print(f"Неоднозначный поиск {index}: OK")
+
+
+async def evaluate(*, web_search=False) -> None:
     load_dotenv()
     key = os.environ.get("OPENAI_API_KEY", "")
     if not key:
@@ -94,14 +164,23 @@ async def evaluate() -> None:
         if not unsupported.question or unsupported.items:
             raise UserError("Повторяющееся дело: ожидалось объяснение ограничения.")
         print("Неподдерживаемый повтор дела: OK")
+        if web_search:
+            await evaluate_web_search(parser)
     finally:
         await parser.close()
 
 
 if __name__ == "__main__":
+    arguments = argparse.ArgumentParser(description=__doc__)
+    arguments.add_argument(
+        "--web-search",
+        action="store_true",
+        help="Also run paid web-search checks for public events.",
+    )
+    options = arguments.parse_args()
     configure_logging()
     try:
-        asyncio.run(evaluate())
+        asyncio.run(evaluate(web_search=options.web_search))
     except UserError as exc:
         print(str(exc))
         raise SystemExit(1) from None

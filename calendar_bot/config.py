@@ -21,6 +21,7 @@ class Config:
     openai_api_key: str
     allowed_user_ids: frozenset[int]
     openai_model: str = "gpt-5.4-mini-2026-03-17"
+    openai_trace_dir: Path | None = None
 
     @classmethod
     def from_env(cls, env: Mapping[str, str], *, require_secrets: bool = True) -> "Config":
@@ -39,4 +40,12 @@ class Config:
         model = env.get("OPENAI_MODEL", "gpt-5.4-mini-2026-03-17").strip()
         if not model:
             raise ConfigError("OPENAI_MODEL не может быть пустым.")
-        return cls(database_path_from_env(env), token, key, allowed, model)
+        trace_dir = env.get("OPENAI_TRACE_DIR", "").strip()
+        return cls(
+            database_path_from_env(env),
+            token,
+            key,
+            allowed,
+            model,
+            Path(trace_dir).expanduser().resolve() if trace_dir else None,
+        )

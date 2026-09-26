@@ -7,6 +7,7 @@ __pycache__/
 .env.*
 !.env.example
 data/
+model-trace-*.jsonl
 *.sqlite*
 *.db*
 *.lock

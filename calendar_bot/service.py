@@ -7,6 +7,7 @@ from .domain import (
     AgendaPeriod,
     EventSpec,
     Occurrence,
+    PastEventError,
     TaskSpec,
     UserError,
     expand,
@@ -197,12 +198,19 @@ class CalendarService:
                     raise UserError(
                         "Отдельная встреча должна оставаться разовой. Для повторов измените серию."
                     )
+                if event_id:
+                    previous = (
+                        await self._future_occurrence(tx, event_id, original_day, now)
+                        if original_day
+                        else target
+                    )
+                    spec = spec.with_edit_source(EventSpec.from_json(previous["spec"]))
                 if (
                     isinstance(spec, EventSpec)
                     and spec.repeat == "once"
                     and spec.first_after(now) <= now
                 ):
-                    raise UserError("Это время уже прошло. Укажите будущую дату и время.")
+                    raise PastEventError(spec, now)
                 if draft_id:
                     old = await self._owned_draft(tx, user_id, draft_id, draft_version)
                     if old["status"] != "pending" or old["expires_at"] <= now.timestamp():
@@ -211,6 +219,8 @@ class CalendarService:
                         )
                     if old["kind"] != kind:
                         raise UserError("Нельзя менять тип записи при исправлении черновика.")
+                    if isinstance(spec, EventSpec):
+                        spec = spec.with_edit_source(EventSpec.from_json(old["spec"]))
                     await tx.execute(
                         "UPDATE drafts SET spec=?,version=version+1 WHERE id=?",
                         (spec.to_json(), draft_id),

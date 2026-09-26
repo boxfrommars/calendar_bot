@@ -5,12 +5,14 @@ import re
 from collections.abc import Iterable, Sequence
 from datetime import UTC, date, datetime, time
 
-from aiogram.utils.formatting import Bold, Code, Italic, Text
+from aiogram.utils.formatting import Bold, Code, Italic, Text, TextLink
 
 from .domain import (
     WEEKDAYS,
     AgendaPeriod,
+    EventSource,
     EventSpec,
+    PastEventError,
     TaskSpec,
     local_instant,
     shift_day,
@@ -131,6 +133,43 @@ def prompt(heading: str, *body: str | Text) -> Text:
     return Text("✏️ ", Bold(heading), "\n\n", lines(body))
 
 
+def source_link(source: EventSource) -> Text:
+    return Text("Источник: ", TextLink(source.title, url=source.url))
+
+
+def clarification(question: str, sources: Sequence[EventSource] = ()) -> Text:
+    return prompt(
+        "Уточните запись",
+        question,
+        *(source_link(source) for source in sources),
+        "",
+        Italic("/cancel — отменить ввод."),
+    )
+
+
+def past_event_question(error: PastEventError, user_timezone: str) -> str:
+    spec, now = error.spec, error.now
+    instant = spec.first_after(now)
+    local = instant.astimezone(zone(user_timezone))
+    current = now.astimezone(zone(user_timezone))
+    body = [
+        f"По результату разбора «{spec.title}» начинается "
+        f"{local:%d.%m.%Y в %H:%M} ({timezone_label(user_timezone, instant)}).",
+    ]
+    if spec.timezone != user_timezone:
+        original = instant.astimezone(zone(spec.timezone))
+        body.append(
+            f"В исходном поясе: {original:%d.%m.%Y %H:%M} ({timezone_label(spec.timezone, instant)})."
+        )
+    body.extend(
+        [
+            f"Сейчас {current:%d.%m.%Y %H:%M} ({timezone_label(user_timezone, now)}).",
+            "Это время уже прошло. Уточните дату, время или часовой пояс.",
+        ]
+    )
+    return "\n".join(body)
+
+
 WELCOME = Text(
     "📅 ",
     Bold("Ваше расписание"),
@@ -156,6 +195,10 @@ HELP = lines(
         "",
         "Можно добавить до 10 событий и дел одним сообщением. Они сохранятся вместе, и я покажу карточки.",
         "Если данных недостаточно, сначала задам уточняющий вопрос.",
+        "Для публичного события без времени сам поищу начало и покажу источник:",
+        Code("напомни о сегодняшнем матче Испания — Англия"),
+        "Найденное событие сохраню сразу. При нескольких совпадениях уточню, какое вы имеете в виду.",
+        "Поиск может занять до 40 секунд. Последующие переносы организатором не отслеживаются.",
         "Поддерживаются разовые встречи, ежедневные повторы, будни и выбранные дни недели.",
         "",
         Bold("Напоминания"),
@@ -229,6 +272,8 @@ def event_card(
     if draft:
         note += " Черновик действует 24 часа."
     body.append(Italic(note))
+    if spec.source:
+        body.append(source_link(spec.source))
     return lines(body)
 
 

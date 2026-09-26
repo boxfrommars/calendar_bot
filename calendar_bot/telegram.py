@@ -22,6 +22,7 @@ from . import presentation as view
 from .domain import (
     AgendaPeriod,
     EventSpec,
+    PastEventError,
     TaskSpec,
     UserError,
     local_day,
@@ -1094,7 +1095,12 @@ class BotUI:
             )
             return
         if result.question:
-            await self.ask_clarification(uid, payload, result.question[:1000])
+            await self.ask_clarification(
+                uid,
+                payload,
+                result.question[:1000],
+                sources=[source.to_source() for source in result.question_sources],
+            )
             return
         try:
             specs = [normalize(item, reference, user["timezone"]) for item in result.items]
@@ -1114,6 +1120,14 @@ class BotUI:
                     payload.get("event_id") or payload.get("task_id") or payload.get("draft_id")
                 ),
             )
+        except PastEventError as exc:
+            await self.ask_clarification(
+                uid,
+                payload,
+                view.past_event_question(exc, user["timezone"]),
+                sources=[exc.spec.source] if exc.spec.source else [],
+            )
+            return
         except UserError as exc:
             await self.ask_clarification(uid, payload, str(exc))
             return
@@ -1121,10 +1135,8 @@ class BotUI:
             uid, rows, origin=payload.get("origin"), page=payload.get("page", 0)
         )
 
-    async def ask_clarification(self, uid, payload, question):
+    async def ask_clarification(self, uid, payload, question, *, sources=()):
         payload["messages"].append({"role": "assistant", "content": question})
         payload["awaiting_answer"] = True
         await self.service.set_conversation(uid, "parse", payload)
-        await self.send(
-            uid, view.prompt("Уточните запись", question, "", Italic("/cancel — отменить ввод."))
-        )
+        await self.send(uid, view.clarification(question, sources))

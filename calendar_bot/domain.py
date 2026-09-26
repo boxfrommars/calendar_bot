@@ -2,6 +2,7 @@ import json
 from dataclasses import asdict, dataclass, replace
 from datetime import UTC, date, datetime, time, timedelta
 from typing import Literal
+from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 DEFAULT_REMINDERS = (15, 5, 1)
@@ -73,6 +74,21 @@ def local_day(instant: datetime, timezone: str) -> date:
     return instant.astimezone(zone(timezone)).date()
 
 
+def validate_public_time(day: date, clock: time, timezone: str) -> None:
+    """A published start must identify one instant, without guessing across DST."""
+    naive = datetime.combine(day, clock)
+    tz = zone(timezone)
+    first = naive.replace(tzinfo=tz, fold=0)
+    second = naive.replace(tzinfo=tz, fold=1)
+    if (
+        first.utcoffset() != second.utcoffset()
+        or first.astimezone(UTC).astimezone(tz).replace(tzinfo=None) != naive
+    ):
+        raise UserError(
+            "Время из источника неоднозначно из-за перевода часов. Укажите время в UTC."
+        )
+
+
 def day_window(day: date, days: int, timezone: str) -> tuple[datetime, datetime]:
     return (
         local_instant(day, time(), timezone),
@@ -141,6 +157,31 @@ class TaskSpec:
 
 
 @dataclass(frozen=True)
+class EventSource:
+    title: str
+    url: str
+
+    def __post_init__(self) -> None:
+        validate_title(self.title)
+        try:
+            parts = urlsplit(self.url)
+            valid = (
+                parts.scheme in {"https", "http"}
+                and parts.hostname
+                and not parts.username
+                and not parts.password
+                and len(self.url) <= 2048
+                and not any(char.isspace() or ord(char) < 32 for char in self.url)
+                and "\\" not in self.url
+            )
+            parts.port  # Validate a malformed port without fetching anything.
+        except ValueError:
+            valid = False
+        if not valid:
+            raise UserError("Некорректная ссылка на источник времени.")
+
+
+@dataclass(frozen=True)
 class EventSpec:
     title: str
     day: date
@@ -149,6 +190,7 @@ class EventSpec:
     repeat: Literal["once", "daily", "weekly"] = "once"
     weekdays: tuple[int, ...] = ()
     reminder_minutes: tuple[int, ...] | None = None
+    source: EventSource | None = None
 
     def __post_init__(self) -> None:
         validate_title(self.title)
@@ -171,6 +213,8 @@ class EventSpec:
         result = asdict(self)
         result["day"] = self.day.isoformat()
         result["clock"] = self.clock.strftime("%H:%M")
+        if self.source is None:
+            result.pop("source")
         return result
 
     def to_json(self) -> str:
@@ -188,7 +232,16 @@ class EventSpec:
             reminder_minutes=(
                 None if value["reminder_minutes"] is None else tuple(value["reminder_minutes"])
             ),
+            source=EventSource(**value["source"]) if value.get("source") else None,
         )
+
+    def with_edit_source(self, previous: "EventSpec") -> "EventSpec":
+        """Only the owned previous record can supply provenance for a manual edit."""
+        unchanged = all(
+            getattr(self, field) == getattr(previous, field)
+            for field in ("title", "day", "clock", "timezone", "repeat", "weekdays")
+        )
+        return replace(self, source=previous.source if unchanged else None)
 
     @classmethod
     def from_json(cls, value: str) -> "EventSpec":
@@ -214,6 +267,13 @@ class EventSpec:
 
     def as_single(self, day: date) -> "EventSpec":
         return replace(self, day=day, repeat="once", weekdays=())
+
+
+class PastEventError(UserError):
+    def __init__(self, spec: EventSpec, now: datetime):
+        super().__init__("Это время уже прошло. Уточните дату, время или часовой пояс.")
+        self.spec = spec
+        self.now = now
 
 
 def read_spec(value: str, kind: str = "event") -> EventSpec | TaskSpec:

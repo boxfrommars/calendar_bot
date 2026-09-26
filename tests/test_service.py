@@ -5,13 +5,80 @@ from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from unittest.mock import patch
 
-from calendar_bot.domain import UserError
+from calendar_bot.domain import EventSource, EventSpec, TaskSpec, UserError
 from calendar_bot.locking import InstanceLock
 from calendar_bot.storage import check_database, migrate
 from tests.support import DatabaseCase
 
 
 class ServiceTests(DatabaseCase):
+    async def test_sourced_batch_and_provenance_survive_restart_without_duplicates(self):
+        source = EventSource("Расписание", "https://example.org/schedule")
+        spec = replace(self.spec(), source=source)
+        rows = await self.service.create_drafts(
+            101,
+            "searched",
+            [spec, TaskSpec("Хлеб", spec.day)],
+            self.clock(),
+            auto_save=True,
+        )
+        notices = await self.pending(rows[0]["result_id"])
+        self.assertEqual(len(notices), 3)
+        await self.restart()
+        self.assertEqual(await self.service.request_drafts(101, "searched"), rows)
+        saved = await self.service.event(101, rows[0]["result_id"])
+        self.assertEqual(EventSpec.from_json(saved["spec"]).source, source)
+        again = await self.service.create_drafts(
+            101, "searched", [spec], self.clock(), auto_save=True
+        )
+        self.assertEqual(again, rows)
+        self.assertEqual(await self.pending(rows[0]["result_id"]), notices)
+        self.assertEqual(len(await self.rows("SELECT * FROM tasks")), 1)
+
+    async def test_manual_edits_preserve_only_matching_owned_source(self):
+        source = EventSource("Расписание", "https://example.org/schedule")
+        original = replace(self.spec(), source=source)
+        for field, value in (
+            ("title", "Другое событие"),
+            ("day", original.day.replace(day=25)),
+            ("clock", original.clock.replace(hour=23)),
+            ("timezone", "UTC"),
+            ("repeat", "daily"),
+            ("reminder_minutes", (30,)),
+        ):
+            with self.subTest(field=field):
+                event_id = await self.create(spec=original)
+                # Simulate a model echoing the old source despite changing the event.
+                changed = replace(original, **{field: value})
+                await self.edit(event_id, changed)
+                saved = EventSpec.from_json((await self.service.event(101, event_id))["spec"])
+                self.assertEqual(saved.source, source if field == "reminder_minutes" else None)
+        event_id = await self.create(spec=original)
+        await self.edit(event_id, replace(original, source=None, reminder_minutes=(10,)))
+        saved = EventSpec.from_json((await self.service.event(101, event_id))["spec"])
+        self.assertEqual(saved.source, source)
+
+    async def test_pending_draft_source_clears_on_correction_and_no_source_is_invented(self):
+        source = EventSource("Расписание", "https://example.org/schedule")
+        original = replace(self.spec(), source=source)
+        draft = (await self.service.create_drafts(101, "new", [original], self.clock()))[0]
+        changed = (
+            await self.service.create_drafts(
+                101,
+                "correct",
+                [replace(original, title="Новое имя")],
+                self.clock(),
+                draft_id=draft["id"],
+                draft_version=1,
+            )
+        )[0]
+        self.assertIsNone(EventSpec.from_json(changed["spec"]).source)
+        plain = await self.create()
+        await self.edit(plain, original)
+        self.assertIsNone(
+            EventSpec.from_json((await self.service.event(101, plain))["spec"]).source
+        )
+
     async def test_auto_save_is_idempotent_after_restart_and_does_not_restore_deleted_events(self):
         specs = [self.spec(title="Первая"), self.spec(title="Вторая", offsets=(30,))]
         rows = await self.service.create_drafts(101, "auto", specs, self.clock(), auto_save=True)
