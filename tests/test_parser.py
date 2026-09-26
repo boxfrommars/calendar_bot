@@ -522,6 +522,47 @@ class WebSearchTests(unittest.IsolatedAsyncioTestCase):
                 self.assertTrue(result.question)
                 self.assertEqual(result.question_sources, [])
 
+    async def test_source_urls_require_verbatim_match_for_events_and_questions(self):
+        retrieved = "https://example.org/tournament/final%2F2026/?lang=en&view=full#start"
+        variants = {
+            "exact": retrieved,
+            "scheme": retrieved.replace("https:", "http:"),
+            "domain": retrieved.replace("example.org", "www.example.org"),
+            "path": retrieved.replace("/tournament/", "/finals/"),
+            "encoding": retrieved.replace("%2F", "/"),
+            "slash": retrieved.replace("/?", "?"),
+            "query": retrieved.replace("?lang=en&view=full", ""),
+            "query_order": retrieved.replace("lang=en&view=full", "view=full&lang=en"),
+            "fragment": retrieved.replace("#start", ""),
+        }
+        for action in ("search", "open_page", "find_in_page"):
+            for name, url in variants.items():
+                for question in (False, True):
+                    with self.subTest(action=action, variant=name, question=question):
+                        source = ParsedSource(title="Расписание", url=url)
+                        parsed = (
+                            ParseResult(
+                                items=[], question="Какой турнир?", question_sources=[source]
+                            )
+                            if question
+                            else ParseResult(
+                                items=[
+                                    ParsedTask(kind="task", title="Купить хлеб", date=None),
+                                    web_event(source=source),
+                                ],
+                                question=None,
+                            )
+                        )
+                        result, _ = await self.parse(
+                            parsed, [search_output(retrieved, action=action)]
+                        )
+                        if name == "exact":
+                            self.assertEqual(result, parsed)
+                        else:
+                            self.assertEqual(result.items, [])
+                            self.assertTrue(result.question)
+                            self.assertEqual(result.question_sources, [])
+
     async def test_history_urls_and_message_annotations_without_tool_are_not_proof(self):
         message = SimpleNamespace(
             type="message",

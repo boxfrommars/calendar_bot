@@ -1,0 +1,614 @@
+{
+  "baseline_revision": "0daf5d4",
+  "model": "gpt-6-luna",
+  "acceptance": {
+    "fewer_parses_with_unverified_urls": true,
+    "passed_not_less_than_control": true,
+    "complete_diagnostics_required": true
+  },
+  "schedule": [
+    {
+      "position": 1,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 1
+    },
+    {
+      "position": 2,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 1
+    },
+    {
+      "position": 3,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 1
+    },
+    {
+      "position": 4,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 1
+    },
+    {
+      "position": 5,
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 1
+    },
+    {
+      "position": 6,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 1
+    },
+    {
+      "position": 7,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1
+    },
+    {
+      "position": 8,
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1
+    },
+    {
+      "position": 9,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 2
+    },
+    {
+      "position": 10,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 2
+    },
+    {
+      "position": 11,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 2
+    },
+    {
+      "position": 12,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 2
+    },
+    {
+      "position": 13,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 2
+    },
+    {
+      "position": 14,
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 2
+    },
+    {
+      "position": 15,
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2
+    },
+    {
+      "position": 16,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2
+    },
+    {
+      "position": 17,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 3
+    },
+    {
+      "position": 18,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 3
+    },
+    {
+      "position": 19,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 3
+    },
+    {
+      "position": 20,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 3
+    },
+    {
+      "position": 21,
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 3
+    },
+    {
+      "position": 22,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 3
+    },
+    {
+      "position": 23,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3
+    },
+    {
+      "position": 24,
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3
+    },
+    {
+      "position": 25,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 4
+    },
+    {
+      "position": 26,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 4
+    },
+    {
+      "position": 27,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 4
+    },
+    {
+      "position": 28,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 4
+    },
+    {
+      "position": 29,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 4
+    },
+    {
+      "position": 30,
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 4
+    },
+    {
+      "position": 31,
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 4
+    },
+    {
+      "position": 32,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 4
+    },
+    {
+      "position": 33,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 5
+    },
+    {
+      "position": 34,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 5
+    },
+    {
+      "position": 35,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 5
+    },
+    {
+      "position": 36,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 5
+    },
+    {
+      "position": 37,
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 5
+    },
+    {
+      "position": 38,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 5
+    },
+    {
+      "position": 39,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 5
+    },
+    {
+      "position": 40,
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 5
+    }
+  ],
+  "requests": [
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "normalized_input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "62fd263c53dc8cd939d05950224fd1e01d2a72555e26187a8ae4341a7cd25f06",
+      "normalized_input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "70cc89c4b2402a21fc736566e1ec5ba06503303634bf2d55de52a2f521b36b0f",
+      "normalized_input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "normalized_input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "normalized_input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "4af7e86d361f2e1efd3d8e085dd7941ff258abfdf56640e80edeadd86c3eb093",
+      "normalized_input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "6caae79e8e43a456d4cd9a6ee0d763d7513f5e775429639f1c73eb2875fb7d1d",
+      "normalized_input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "normalized_input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "62fd263c53dc8cd939d05950224fd1e01d2a72555e26187a8ae4341a7cd25f06",
+      "normalized_input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "normalized_input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "normalized_input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "70cc89c4b2402a21fc736566e1ec5ba06503303634bf2d55de52a2f521b36b0f",
+      "normalized_input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "4af7e86d361f2e1efd3d8e085dd7941ff258abfdf56640e80edeadd86c3eb093",
+      "normalized_input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "normalized_input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "normalized_input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "6caae79e8e43a456d4cd9a6ee0d763d7513f5e775429639f1c73eb2875fb7d1d",
+      "normalized_input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "normalized_input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "62fd263c53dc8cd939d05950224fd1e01d2a72555e26187a8ae4341a7cd25f06",
+      "normalized_input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "70cc89c4b2402a21fc736566e1ec5ba06503303634bf2d55de52a2f521b36b0f",
+      "normalized_input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "normalized_input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "normalized_input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "4af7e86d361f2e1efd3d8e085dd7941ff258abfdf56640e80edeadd86c3eb093",
+      "normalized_input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "6caae79e8e43a456d4cd9a6ee0d763d7513f5e775429639f1c73eb2875fb7d1d",
+      "normalized_input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "normalized_input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "62fd263c53dc8cd939d05950224fd1e01d2a72555e26187a8ae4341a7cd25f06",
+      "normalized_input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "normalized_input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "normalized_input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "70cc89c4b2402a21fc736566e1ec5ba06503303634bf2d55de52a2f521b36b0f",
+      "normalized_input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "4af7e86d361f2e1efd3d8e085dd7941ff258abfdf56640e80edeadd86c3eb093",
+      "normalized_input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "normalized_input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "normalized_input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "input_sha256": "6caae79e8e43a456d4cd9a6ee0d763d7513f5e775429639f1c73eb2875fb7d1d",
+      "normalized_input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "normalized_input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "62fd263c53dc8cd939d05950224fd1e01d2a72555e26187a8ae4341a7cd25f06",
+      "normalized_input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "70cc89c4b2402a21fc736566e1ec5ba06503303634bf2d55de52a2f521b36b0f",
+      "normalized_input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "normalized_input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "normalized_input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "4af7e86d361f2e1efd3d8e085dd7941ff258abfdf56640e80edeadd86c3eb093",
+      "normalized_input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "6caae79e8e43a456d4cd9a6ee0d763d7513f5e775429639f1c73eb2875fb7d1d",
+      "normalized_input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 5,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "normalized_input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "5ee6b8de177323e8ddd91966e41554e70502d9795418258ea7812bc26a483b61"
+    }
+  ],
+  "only_create_instructions_differ": true
+}
