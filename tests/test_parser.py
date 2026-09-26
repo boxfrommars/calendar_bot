@@ -1,6 +1,7 @@
 import asyncio
 import json
 import unittest
+import warnings
 from datetime import UTC, datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
@@ -9,6 +10,7 @@ import httpx
 from openai import APIConnectionError, AsyncOpenAI
 
 from calendar_bot.domain import UserError
+from calendar_bot.logging_config import configure_logging
 from calendar_bot.parser import (
     COMMON_INSTRUCTIONS,
     CREATE_INSTRUCTIONS,
@@ -626,7 +628,10 @@ class WebSearchTests(unittest.IsolatedAsyncioTestCase):
                             "action": {
                                 "type": "search",
                                 "query": "матч",
-                                "sources": [{"type": "url", "url": SOURCE.url}],
+                                "sources": [
+                                    {"type": "url", "url": SOURCE.url},
+                                    {"type": "api", "name": "SECRET_PROVIDER_FRAGMENT"},
+                                ],
                             },
                         },
                         {
@@ -653,9 +658,14 @@ class WebSearchTests(unittest.IsolatedAsyncioTestCase):
         )
         parser = OpenAIParser("test-not-real", "model", client=client)
         try:
-            result = await parser.parse([], datetime(2026, 9, 24, tzinfo=UTC), "Asia/Yerevan")
+            with warnings.catch_warnings(record=True) as captured:
+                warnings.simplefilter("always")
+                configure_logging()
+                result = await parser.parse([], datetime(2026, 9, 24, tzinfo=UTC), "Asia/Yerevan")
+                warnings.warn("unrelated warning", UserWarning)
         finally:
             await parser.close()
+        self.assertEqual([str(warning.message) for warning in captured], ["unrelated warning"])
         self.assertEqual(result, expected)
         self.assertEqual(len(requests), 1)
         body = requests[0]
