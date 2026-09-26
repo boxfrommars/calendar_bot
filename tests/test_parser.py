@@ -142,6 +142,179 @@ class ParserContractTests(unittest.IsolatedAsyncioTestCase):
 
 
 class WebSearchTests(unittest.IsolatedAsyncioTestCase):
+    async def recheck(self, items, result, *, first_urls=(SOURCE.url,), second_urls=(SOURCE.url,)):
+        def outputs(urls):
+            if not urls:
+                return []
+            output = search_output()
+            output.action.sources = [SimpleNamespace(type="url", url=url) for url in urls]
+            return [output]
+
+        call = AsyncMock(
+            side_effect=[
+                SimpleNamespace(
+                    status="completed",
+                    output_parsed=ParseResult(items=items, question=None),
+                    output=outputs(first_urls),
+                ),
+                SimpleNamespace(
+                    status="completed", output_parsed=result, output=outputs(second_urls)
+                ),
+            ]
+        )
+        parser = OpenAIParser(
+            "test-not-real", "model", client=SimpleNamespace(responses=SimpleNamespace(parse=call))
+        )
+        result = await parser.parse(
+            [{"role": "user", "content": "два публичных события и дело"}],
+            datetime(2026, 9, 26, 17, 47, tzinfo=UTC),
+            "Asia/Yerevan",
+        )
+        self.assertEqual(call.await_count, 2)
+        return result, call
+
+    async def test_recheck_preserves_unchanged_event_source_and_task_at_original_indexes(self):
+        source = ParsedSource(title="Другой турнир", url="https://example.org/other")
+        future = web_event(title="Другой матч", date="2026-09-27", source=source)
+        task = ParsedTask(kind="task", title="Купить хлеб", date=None)
+        wrong = web_event(date="2026-09-26", time="19:45", timezone="Asia/Yerevan")
+        fresh = ParsedSource(title="Уточнённое расписание", url="https://example.org/corrected")
+        corrected = wrong.model_copy(update={"timezone": "Europe/London", "source": fresh})
+        expected = [future, task, corrected]
+        result, call = await self.recheck(
+            [future, task, wrong],
+            ParseResult(items=expected, question=None),
+            first_urls=(SOURCE.url, source.url),
+            second_urls=(fresh.url,),
+        )
+        self.assertIsNone(result.question)
+        self.assertEqual(result.items, expected)
+        feedback = json.loads(call.call_args.kwargs["input"][-1]["content"].split(": ", 1)[1])
+        self.assertEqual([item["index"] for item in feedback["past_events"]], [2])
+        self.assertEqual(call.call_args.kwargs["max_tool_calls"], 2)
+
+    async def test_recheck_rejects_batch_changes_even_with_current_sources(self):
+        source = ParsedSource(title="Другой турнир", url="https://example.org/other")
+        wrong = web_event(date="2026-09-26", time="19:45", timezone="Asia/Yerevan")
+        corrected = wrong.model_copy(update={"timezone": "Europe/London"})
+        future = web_event(title="Другой матч", date="2026-09-27", source=source)
+        task = ParsedTask(kind="task", title="Купить хлеб", date=None)
+        cases = {
+            "empty": [],
+            "missing": [corrected, task],
+            "extra": [corrected, future, task, task],
+            "reordered": [future, corrected, task],
+            "replaced": [corrected.model_copy(update={"title": "Новый матч"}), future, task],
+            "kind": [ParsedTask(kind="task", title=wrong.title, date=wrong.date), future, task],
+            "user_time": [
+                corrected.model_copy(update={"time_source": "user", "source": None}),
+                future,
+                task,
+            ],
+            "reminders": [corrected.model_copy(update={"reminders": []}), future, task],
+            "repeat": [corrected.model_copy(update={"repeat": "daily"}), future, task],
+            "weekdays": [corrected.model_copy(update={"weekdays": [0]}), future, task],
+            "other_time": [corrected, future.model_copy(update={"time": "21:00"}), task],
+            "other_source": [corrected, future.model_copy(update={"source": SOURCE}), task],
+            "task": [corrected, future, task.model_copy(update={"date": "2026-09-27"})],
+        }
+        for name, items in cases.items():
+            with self.subTest(name=name):
+                result, _ = await self.recheck(
+                    [wrong, future, task],
+                    ParseResult(items=items, question=None),
+                    first_urls=(SOURCE.url, source.url),
+                    second_urls=(SOURCE.url, source.url),
+                )
+                self.assertTrue(result.question)
+                self.assertEqual(result.items, [])
+
+    async def test_recheck_allows_date_and_time_corrections(self):
+        wrong = web_event(date="2026-09-26", time="10:00", timezone="UTC")
+        for changes in ({"date": "2026-09-27"}, {"time": "20:00"}):
+            with self.subTest(changes=changes):
+                corrected = wrong.model_copy(update=changes)
+                result, _ = await self.recheck(
+                    [wrong], ParseResult(items=[corrected], question=None)
+                )
+                self.assertIsNone(result.question)
+                self.assertEqual(result.items, [corrected])
+
+    async def test_each_rechecked_event_requires_fresh_source_even_when_unchanged(self):
+        source = ParsedSource(title="Другой турнир", url="https://example.org/other")
+        first = web_event(date="2026-09-26", time="10:00", timezone="UTC")
+        second = first.model_copy(update={"title": "Другой матч", "source": source})
+        for urls in ((SOURCE.url,), (source.url,)):
+            with self.subTest(urls=urls):
+                result, _ = await self.recheck(
+                    [first, second],
+                    ParseResult(items=[first, second], question=None),
+                    first_urls=(SOURCE.url, source.url),
+                    second_urls=urls,
+                )
+                self.assertTrue(result.question)
+                self.assertEqual(result.items, [])
+
+    async def test_preserved_source_cannot_confirm_a_rechecked_event(self):
+        source = ParsedSource(title="Другой турнир", url="https://example.org/other")
+        wrong = web_event(date="2026-09-26", time="10:00", timezone="UTC")
+        future = web_event(title="Другой матч", date="2026-09-27", source=source)
+        corrected = wrong.model_copy(update={"time": "20:00", "source": source})
+        result, _ = await self.recheck(
+            [wrong, future],
+            ParseResult(items=[corrected, future], question=None),
+            first_urls=(SOURCE.url, source.url),
+        )
+        self.assertTrue(result.question)
+        self.assertEqual(result.items, [])
+
+    async def test_recheck_question_sources_must_be_from_current_attempt(self):
+        source = ParsedSource(title="Другой турнир", url="https://example.org/other")
+        wrong = web_event(date="2026-09-26", time="10:00", timezone="UTC")
+        future = web_event(title="Другой матч", date="2026-09-27", source=source)
+        for question_source in (SOURCE, source):
+            with self.subTest(source=question_source.url):
+                question = ParseResult(
+                    items=[], question="Какой турнир?", question_sources=[question_source]
+                )
+                result, _ = await self.recheck(
+                    [wrong, future], question, first_urls=(SOURCE.url, source.url)
+                )
+                self.assertTrue(result.question)
+                self.assertEqual(result.items, [])
+                if question_source == SOURCE:
+                    self.assertEqual(result, question)
+                else:
+                    self.assertEqual(result.question_sources, [])
+
+    async def test_verified_sources_do_not_survive_another_parse_on_same_parser(self):
+        reference = datetime(2026, 9, 26, 17, 47, tzinfo=UTC)
+        wrong = web_event(date="2026-09-26", time="10:00", timezone="UTC")
+        corrected = wrong.model_copy(update={"time": "20:00"})
+        call = AsyncMock(
+            side_effect=[
+                SimpleNamespace(
+                    status="completed",
+                    output_parsed=ParseResult(items=[item], question=None),
+                    output=[search_output()] if index < 2 else [],
+                )
+                for index, item in enumerate((wrong, corrected, corrected))
+            ]
+        )
+        parser = OpenAIParser(
+            "test-not-real", "model", client=SimpleNamespace(responses=SimpleNamespace(parse=call))
+        )
+        first = await parser.parse([], reference, "Asia/Yerevan")
+        self.assertEqual(first.items, [corrected])
+        result = await parser.parse(
+            [{"role": "assistant", "content": "Источник: " + SOURCE.url}],
+            reference,
+            "Asia/Yerevan",
+        )
+        self.assertEqual(call.await_count, 3)
+        self.assertTrue(result.question)
+        self.assertEqual(result.items, [])
+
     async def test_past_web_time_is_rechecked_once_with_remaining_tools_and_whole_batch(self):
         reference = datetime(2026, 9, 26, 17, 47, tzinfo=UTC)
         task = ParsedTask(kind="task", title="Купить хлеб", date=None)

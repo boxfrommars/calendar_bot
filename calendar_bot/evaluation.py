@@ -22,7 +22,49 @@ CASES = [
     ("каждый вторник 14:00 Оля 1-1", "Оля 1-1", "weekly", (1,), "14:00"),
     ("каждую среду 15:00 Креаторская рассылки", "Креаторская рассылки", "weekly", (2,), "15:00"),
     ("завтра 16:00 Штурм // Ориентир 2027", "Штурм // Ориентир 2027", "once", (), "16:00"),
+    ("каждый день 14:00 Зарядка", "Зарядка", "daily", (), "14:00"),
+    (
+        "каждый понедельник и четверг 14:00 Планирование",
+        "Планирование",
+        "weekly",
+        (0, 3),
+        "14:00",
+    ),
 ]
+
+
+async def evaluate_constraints(parser: OpenAIParser, reference: datetime) -> None:
+    titles = [f"купить товар {index}" for index in range(1, 12)]
+    lines = [f"завтра {title}" for title in titles]
+    result = await parser.parse(
+        [{"role": "user", "content": "\n".join(lines[:10])}], reference, "Asia/Yerevan"
+    )
+    if result.question or len(result.items) != 10:
+        raise UserError("Десять записей: ожидался полный список без уточнения.")
+    specs = [normalize(item, reference, "Asia/Yerevan") for item in result.items]
+    if any(
+        not isinstance(spec, TaskSpec)
+        or spec.title.casefold() != title
+        or spec.day != date(2026, 9, 25)
+        for spec, title in zip(specs, titles[:10], strict=True)
+    ):
+        raise UserError("Десять записей: неверные типы, названия, даты или порядок.")
+    print("Десять записей: OK")
+    for name, text in (
+        ("Одиннадцать записей", "\n".join(lines)),
+        ("Интервал в несколько дней", "каждые два дня в 14:00 Зарядка"),
+        ("Интервал в несколько недель", "каждые две недели по понедельникам в 14:00 Планирование"),
+        ("Дата окончания серии", "каждый понедельник в 14:00 Планирование до 31 октября 2026 года"),
+        ("Число повторений", "каждый понедельник в 14:00 Планирование, всего пять встреч"),
+        (
+            "Ограничение в смешанном списке",
+            "завтра купить хлеб\nкаждые два дня в 14:00 Зарядка\nзавтра 16:00 Встреча",
+        ),
+    ):
+        result = await parser.parse([{"role": "user", "content": text}], reference, "Asia/Yerevan")
+        if result.items or not result.question:
+            raise UserError(f"{name}: ожидалось уточнение без частичного списка.")
+        print(f"{name}: OK")
 
 
 async def evaluate_web_search(parser: OpenAIParser) -> None:
@@ -164,6 +206,7 @@ async def evaluate(*, web_search=False) -> None:
         if not unsupported.question or unsupported.items:
             raise UserError("Повторяющееся дело: ожидалось объяснение ограничения.")
         print("Неподдерживаемый повтор дела: OK")
+        await evaluate_constraints(parser, reference)
         if web_search:
             await evaluate_web_search(parser)
     finally:

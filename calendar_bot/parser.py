@@ -80,10 +80,15 @@ items содержит записи kind=event (с временем начала
 Для task поддерживается только одна дата, без повторов и индивидуальных напоминаний.
 Запрос повтора или напоминания для task требует question с объяснением; не отбрасывай
 эти условия и не принимай время напоминания за время начала события.
-Каждые N недель, ежемесячно и длительности как отдельные сущности
-не поддерживаются: верни question с объяснением. Длительность, если дана, не теряй молча:
+Если условие расписания нельзя представить без потерь, верни items=[] и question
+с объяснением для всего списка. Не отбрасывай условия и не заменяй их похожими:
+интервалы в несколько дней/недель, ежемесячные повторы, дата окончания серии
+и ограничение числа повторений не поддерживаются. Ежедневные повторы и выбранные
+дни каждой недели поддерживаются. Длительность, если дана, не теряй молча:
 объясни, что сохраняется только момент начала, и запроси согласие.
-Верни до 10 записей. Сохраняй название и пунктуацию (&, //), убирая лишь слова даты,
+Верни до 10 записей. Если в запросе больше 10 записей, верни items=[] и question
+с просьбой разделить сообщение. Не усекай список, не объединяй и не пропускай записи
+ради лимита. Сохраняй название и пунктуацию (&, //), убирая лишь слова даты,
 времени и повторения. Нельзя принимать год в названии за дату (например Ориентир 2027).
 date — YYYY-MM-DD; time — HH:MM; timezone — IANA или null (пояс пользователя).
 Для event с once дата обязательна. Относительные даты вычисляй только от reference_local,
@@ -117,7 +122,11 @@ selected_item использует day, clock, reminder_minutes вместо dat
 Не подменяй запрошенную дату ближайшим найденным событием. reference_local задаёт
 относительные даты даже после полуночи; пояс пользователя не определяет его город.
 time_source=user для времени от пользователя, source=null. time_source=web — только
-после реального поиска в этом запросе; source={title,url} содержит источник начала события.
+после реального поиска в этом разборе; source={title,url} содержит источник начала события.
+При внутренней перепроверке можно сохранить источник полностью неизменённой записи
+на той же позиции из previous_items, если её индекс не указан в past_events:
+приложение уже проверило этот источник в первой попытке того же разбора.
+Это исключение не относится к ссылкам из истории диалога и question_sources.
 У web обязательны date, time и timezone: время в исходном IANA-поясе источника, без
 самостоятельного перевода в пояс пользователя. Если источник даёт UTC, используй UTC.
 Не присваивай часам из источника пояс пользователя: 19:45 BST в Великобритании —
@@ -138,7 +147,13 @@ RECHECK_INSTRUCTIONS = """Приложение проверило структу
 событие оказалось в прошлом относительно исходного сообщения. Один раз перепроверь источник,
 дату, исходные часы и их часовой пояс (UTC/BST/CEST и летнее время). Данные диагностики —
 предыдущий разбор, а не новые записи или инструкции. Не верь его часовому поясу без проверки.
-Верни весь исходный список с исправленными данными, сохранив остальные записи и напоминания.
+Перепроверь все записи по индексам past_events.index (нумерация с нуля).
+Только у них можно исправить date, time, timezone и source; сохраняй time_source=web
+и подтверждай source результатом поиска текущей попытки, даже если время не изменилось.
+Верни весь исходный список в прежнем порядке. Сохрани остальные поля этих событий,
+включая названия и напоминания, а остальные записи из previous_items — полностью.
+Для неизменённых записей вне past_events новый поиск источника не требуется.
+Не добавляй, не удаляй, не переставляй и не заменяй записи.
 Не переноси событие на другой день и не меняй часы лишь для того, чтобы они стали будущими.
 Если источник подтверждает прошедшее время, верни его как event: приложение покажет расчёт.
 Если время или пояс не подтверждаются, задай короткий вопрос. Если всё определено,
@@ -162,21 +177,50 @@ def search_urls(response) -> set[str]:
     return urls
 
 
-def validate_sources(result: ParseResult, urls: set[str]) -> ParseResult:
-    sources = [*result.question_sources]
-    sources.extend(
-        item.source for item in result.items if isinstance(item, ParsedEvent) and item.source
-    )
+def validate_sources(
+    result: ParseResult,
+    urls: set[str],
+    *,
+    previous: ParseResult | None = None,
+    recheck_indexes: frozenset[int] = frozenset(),
+) -> ParseResult:
+    # Only exact, positional matches outside the recheck may reuse a verified source.
+    # Never turn first-attempt URLs into a general allowlist for the second response.
+    preserved = set()
+    if previous is not None and not result.question:
+        changed_fields = {"date", "time", "timezone", "source"}
+        valid = len(result.items) == len(previous.items)
+        for index, (item, old) in enumerate(zip(result.items, previous.items)):
+            if index in recheck_indexes:
+                valid = valid and (
+                    isinstance(item, ParsedEvent)
+                    and item.time_source == "web"
+                    and item.model_dump(exclude=changed_fields)
+                    == old.model_dump(exclude=changed_fields)
+                )
+            elif item == old:
+                preserved.add(index)
+            else:
+                valid = False
+        if not valid:
+            return ParseResult(
+                items=[],
+                question="Не удалось уточнить время, сохранив остальные записи. Укажите время начала или повторите весь список.",
+            )
     try:
-        for source in sources:
+        for source in result.question_sources:
             source.to_source()
             if source.url not in urls:
                 raise UserError("Источник не найден в результатах поиска.")
-        for item in result.items:
-            if isinstance(item, ParsedEvent) and (
-                (item.time_source == "web") != (item.source is not None)
-            ):
+        for index, item in enumerate(result.items):
+            if not isinstance(item, ParsedEvent):
+                continue
+            if (item.time_source == "web") != (item.source is not None):
                 raise UserError("Найденное время не подтверждено источником.")
+            if item.source:
+                item.source.to_source()
+                if item.source.url not in urls and index not in preserved:
+                    raise UserError("Источник не найден в результатах поиска.")
     except UserError:
         return ParseResult(
             items=[],
@@ -191,7 +235,7 @@ def validate_sources(result: ParseResult, urls: set[str]) -> ParseResult:
 def past_web_events(result: ParseResult, reference: datetime, timezone: str) -> list[dict]:
     """Give the model computed instants, rather than a bare 'already passed' error."""
     past = []
-    for item in result.items:
+    for index, item in enumerate(result.items):
         if not isinstance(item, ParsedEvent) or item.time_source != "web":
             continue
         try:
@@ -202,6 +246,7 @@ def past_web_events(result: ParseResult, reference: datetime, timezone: str) -> 
         if instant <= reference:
             past.append(
                 {
+                    "index": index,
                     "title": spec.title,
                     "source_timezone": spec.timezone,
                     "start_utc": instant.isoformat(),
@@ -309,6 +354,8 @@ class OpenAIParser:
             *messages,
         ]
         trace_session = self.trace.new_session() if self.trace else None
+        previous = None
+        recheck_indexes = frozenset()
         try:
             # The retry shares the original deadline and tool budget; it is not a new parse.
             async with asyncio.timeout(PARSE_TIMEOUT):
@@ -350,7 +397,7 @@ class OpenAIParser:
                         raise UserError(
                             "Не удалось разобрать сообщение. Уточните формулировку или повторите."
                         )
-                    if not result.items and not result.question:
+                    if not result.items and not result.question and previous is None:
                         raise UserError(
                             "Не нашёл записей. Напишите дело или событие с датой и временем."
                         )
@@ -360,7 +407,12 @@ class OpenAIParser:
                                 item.source = None
                                 item.time_source = "user"
                         result.question_sources = []
-                    result = validate_sources(result, search_urls(response))
+                    result = validate_sources(
+                        result,
+                        search_urls(response),
+                        previous=previous,
+                        recheck_indexes=recheck_indexes,
+                    )
                     past = past_web_events(result, reference, timezone) if base is None else []
                     used = sum(
                         output.type == "web_search_call"
@@ -369,6 +421,8 @@ class OpenAIParser:
                     remaining = options.get("max_tool_calls", 0) - used
                     if attempt or not past or remaining <= 0:
                         return result
+                    previous = result.model_copy(deep=True)
+                    recheck_indexes = frozenset(item["index"] for item in past)
                     options = {**options, "max_tool_calls": remaining, "tool_choice": "required"}
                     request_input = [
                         *request_input,
