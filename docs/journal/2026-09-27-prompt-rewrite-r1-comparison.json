@@ -1,0 +1,39 @@
+{
+  "control": {
+    "all_api_completed": true,
+    "complete_diagnostics": true,
+    "complete_traces": true,
+    "budgets_respected": true,
+    "unverified_url_parses": 0,
+    "guard_web_calls": 0,
+    "parse_seconds_p50": 1.9128,
+    "parse_seconds_p95": 5.119,
+    "parse_seconds_max": 5.5051,
+    "finished": true,
+    "passed": 31,
+    "planned": 33,
+    "passed_positive": 4,
+    "all_other_cases_passed": true,
+    "only_clarification_failures": true,
+    "false_clarification_parses": 2
+  },
+  "candidate": {
+    "all_api_completed": true,
+    "complete_diagnostics": true,
+    "complete_traces": true,
+    "budgets_respected": true,
+    "unverified_url_parses": 0,
+    "guard_web_calls": 0,
+    "parse_seconds_p50": 2.002,
+    "parse_seconds_p95": 5.559,
+    "parse_seconds_max": 5.8227,
+    "finished": true,
+    "passed": 31,
+    "planned": 33,
+    "passed_positive": 4,
+    "all_other_cases_passed": true,
+    "only_clarification_failures": true,
+    "false_clarification_parses": 2
+  },
+  "gate_passed": true
+}

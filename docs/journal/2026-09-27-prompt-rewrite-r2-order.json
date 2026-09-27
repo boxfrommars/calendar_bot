@@ -1,0 +1,1031 @@
+{
+  "baseline_revision": "d6b1edd",
+  "model": "gpt-6-luna",
+  "reasoning_effort": "low",
+  "repeat": 2,
+  "planned": 66,
+  "parse_timeout": 40,
+  "max_tool_calls": 3,
+  "max_output_tokens": 3000,
+  "sizes": {
+    "control": {
+      "create": 6293,
+      "edit": 3782
+    },
+    "candidate": {
+      "create": 3756,
+      "edit": 2525
+    }
+  },
+  "schema_sha256": "33b8c2fde1fa222af05d9d057ed0ca1cc0561a4cd1f7418094d496b6cef1e1e1",
+  "instruction_sha256": {
+    "control": {
+      "COMMON_INSTRUCTIONS": "3221030dd26847f2f0ffbafc5670f369ce48542ca94004e96c9f3105789a02aa",
+      "CREATE_INSTRUCTIONS": "a8daf27470aca3160e85ed1b8c1c8dfe637f0d92f1108bb95e9f7f67f18a33ef",
+      "EDIT_INSTRUCTIONS": "d2158c51b4d665a0e5c30920e4c9c9caed5a25f69ff8bdadebb7015ff2ba4047",
+      "RECHECK_INSTRUCTIONS": "5718f84b3aa08327bb18404e79241cd70a8980fd6687217fb3bd56ce42682579"
+    },
+    "candidate": {
+      "COMMON_INSTRUCTIONS": "436404bc748cb995aae6c810d3885e03778de61be4de283f74fdb3f8ba89bb1d",
+      "CREATE_INSTRUCTIONS": "9a9c4b6e2836ba34bef928cd67aab9bfb5d22d19e7c753026eb690331f9a3f4b",
+      "EDIT_INSTRUCTIONS": "069c4fc4ce82470e2e3aa579e1043eb49a85f8497f87c3fbbf35cab3c426ba28",
+      "RECHECK_INSTRUCTIONS": "c99399b2ca87cbbd9b5bac423d41c0b0c561633b372d73a5a5cfdc4932839dc2"
+    }
+  },
+  "protocol_sha256": "b442522b0a49c93567a9ff2fb08c169adb60800ed3f6496d51bffd47abc3f62d",
+  "schedule": [
+    {
+      "position": 1,
+      "variant": "candidate",
+      "case_id": "weekly_monday",
+      "repetition": 2
+    },
+    {
+      "position": 2,
+      "variant": "control",
+      "case_id": "weekly_monday",
+      "repetition": 2
+    },
+    {
+      "position": 3,
+      "variant": "control",
+      "case_id": "weekly_tuesday",
+      "repetition": 2
+    },
+    {
+      "position": 4,
+      "variant": "candidate",
+      "case_id": "weekly_tuesday",
+      "repetition": 2
+    },
+    {
+      "position": 5,
+      "variant": "candidate",
+      "case_id": "weekly_wednesday",
+      "repetition": 2
+    },
+    {
+      "position": 6,
+      "variant": "control",
+      "case_id": "weekly_wednesday",
+      "repetition": 2
+    },
+    {
+      "position": 7,
+      "variant": "control",
+      "case_id": "title_with_year",
+      "repetition": 2
+    },
+    {
+      "position": 8,
+      "variant": "candidate",
+      "case_id": "title_with_year",
+      "repetition": 2
+    },
+    {
+      "position": 9,
+      "variant": "candidate",
+      "case_id": "daily",
+      "repetition": 2
+    },
+    {
+      "position": 10,
+      "variant": "control",
+      "case_id": "daily",
+      "repetition": 2
+    },
+    {
+      "position": 11,
+      "variant": "control",
+      "case_id": "weekly_two_days",
+      "repetition": 2
+    },
+    {
+      "position": 12,
+      "variant": "candidate",
+      "case_id": "weekly_two_days",
+      "repetition": 2
+    },
+    {
+      "position": 13,
+      "variant": "candidate",
+      "case_id": "task_today",
+      "repetition": 2
+    },
+    {
+      "position": 14,
+      "variant": "control",
+      "case_id": "task_today",
+      "repetition": 2
+    },
+    {
+      "position": 15,
+      "variant": "control",
+      "case_id": "task_tomorrow",
+      "repetition": 2
+    },
+    {
+      "position": 16,
+      "variant": "candidate",
+      "case_id": "task_tomorrow",
+      "repetition": 2
+    },
+    {
+      "position": 17,
+      "variant": "candidate",
+      "case_id": "mixed_list",
+      "repetition": 2
+    },
+    {
+      "position": 18,
+      "variant": "control",
+      "case_id": "mixed_list",
+      "repetition": 2
+    },
+    {
+      "position": 19,
+      "variant": "control",
+      "case_id": "recurring_task",
+      "repetition": 2
+    },
+    {
+      "position": 20,
+      "variant": "candidate",
+      "case_id": "recurring_task",
+      "repetition": 2
+    },
+    {
+      "position": 21,
+      "variant": "candidate",
+      "case_id": "personal_missing_time",
+      "repetition": 2
+    },
+    {
+      "position": 22,
+      "variant": "control",
+      "case_id": "personal_missing_time",
+      "repetition": 2
+    },
+    {
+      "position": 23,
+      "variant": "control",
+      "case_id": "event_duration",
+      "repetition": 2
+    },
+    {
+      "position": 24,
+      "variant": "candidate",
+      "case_id": "event_duration",
+      "repetition": 2
+    },
+    {
+      "position": 25,
+      "variant": "candidate",
+      "case_id": "ten_items",
+      "repetition": 2
+    },
+    {
+      "position": 26,
+      "variant": "control",
+      "case_id": "ten_items",
+      "repetition": 2
+    },
+    {
+      "position": 27,
+      "variant": "control",
+      "case_id": "eleven_items",
+      "repetition": 2
+    },
+    {
+      "position": 28,
+      "variant": "candidate",
+      "case_id": "eleven_items",
+      "repetition": 2
+    },
+    {
+      "position": 29,
+      "variant": "candidate",
+      "case_id": "every_two_days",
+      "repetition": 2
+    },
+    {
+      "position": 30,
+      "variant": "control",
+      "case_id": "every_two_days",
+      "repetition": 2
+    },
+    {
+      "position": 31,
+      "variant": "control",
+      "case_id": "every_two_weeks",
+      "repetition": 2
+    },
+    {
+      "position": 32,
+      "variant": "candidate",
+      "case_id": "every_two_weeks",
+      "repetition": 2
+    },
+    {
+      "position": 33,
+      "variant": "candidate",
+      "case_id": "series_end_date",
+      "repetition": 2
+    },
+    {
+      "position": 34,
+      "variant": "control",
+      "case_id": "series_end_date",
+      "repetition": 2
+    },
+    {
+      "position": 35,
+      "variant": "control",
+      "case_id": "series_count",
+      "repetition": 2
+    },
+    {
+      "position": 36,
+      "variant": "candidate",
+      "case_id": "series_count",
+      "repetition": 2
+    },
+    {
+      "position": 37,
+      "variant": "candidate",
+      "case_id": "mixed_unsupported",
+      "repetition": 2
+    },
+    {
+      "position": 38,
+      "variant": "control",
+      "case_id": "mixed_unsupported",
+      "repetition": 2
+    },
+    {
+      "position": 39,
+      "variant": "control",
+      "case_id": "edit_title",
+      "repetition": 2
+    },
+    {
+      "position": 40,
+      "variant": "candidate",
+      "case_id": "edit_title",
+      "repetition": 2
+    },
+    {
+      "position": 41,
+      "variant": "candidate",
+      "case_id": "edit_time",
+      "repetition": 2
+    },
+    {
+      "position": 42,
+      "variant": "control",
+      "case_id": "edit_time",
+      "repetition": 2
+    },
+    {
+      "position": 43,
+      "variant": "control",
+      "case_id": "edit_reminders",
+      "repetition": 2
+    },
+    {
+      "position": 44,
+      "variant": "candidate",
+      "case_id": "edit_reminders",
+      "repetition": 2
+    },
+    {
+      "position": 45,
+      "variant": "candidate",
+      "case_id": "edit_task_date",
+      "repetition": 2
+    },
+    {
+      "position": 46,
+      "variant": "control",
+      "case_id": "edit_task_date",
+      "repetition": 2
+    },
+    {
+      "position": 47,
+      "variant": "control",
+      "case_id": "edit_type_rejected",
+      "repetition": 2
+    },
+    {
+      "position": 48,
+      "variant": "candidate",
+      "case_id": "edit_type_rejected",
+      "repetition": 2
+    },
+    {
+      "position": 49,
+      "variant": "candidate",
+      "case_id": "edit_add_rejected",
+      "repetition": 2
+    },
+    {
+      "position": 50,
+      "variant": "control",
+      "case_id": "edit_add_rejected",
+      "repetition": 2
+    },
+    {
+      "position": 51,
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 2
+    },
+    {
+      "position": 52,
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 2
+    },
+    {
+      "position": 53,
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 2
+    },
+    {
+      "position": 54,
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 2
+    },
+    {
+      "position": 55,
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 2
+    },
+    {
+      "position": 56,
+      "variant": "candidate",
+      "case_id": "web_bst",
+      "repetition": 2
+    },
+    {
+      "position": 57,
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 2
+    },
+    {
+      "position": 58,
+      "variant": "control",
+      "case_id": "web_bst_followup",
+      "repetition": 2
+    },
+    {
+      "position": 59,
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 2
+    },
+    {
+      "position": 60,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 2
+    },
+    {
+      "position": 61,
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2
+    },
+    {
+      "position": 62,
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2
+    },
+    {
+      "position": 63,
+      "variant": "control",
+      "case_id": "web_ambiguous",
+      "repetition": 2
+    },
+    {
+      "position": 64,
+      "variant": "candidate",
+      "case_id": "web_ambiguous",
+      "repetition": 2
+    },
+    {
+      "position": 65,
+      "variant": "candidate",
+      "case_id": "web_fictional",
+      "repetition": 2
+    },
+    {
+      "position": 66,
+      "variant": "control",
+      "case_id": "web_fictional",
+      "repetition": 2
+    }
+  ],
+  "requests": [
+    {
+      "variant": "candidate",
+      "case_id": "weekly_monday",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "c83aa05d186c9cc75f0a55469199249dc747191793969a66fd604265e763f823",
+      "normalized_input_sha256": "773d8895d180d6b3675ffda822e4a98dd2a603b9299144ae3afd4069110558a4",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "weekly_monday",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "773d8895d180d6b3675ffda822e4a98dd2a603b9299144ae3afd4069110558a4",
+      "normalized_input_sha256": "773d8895d180d6b3675ffda822e4a98dd2a603b9299144ae3afd4069110558a4",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "weekly_tuesday",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "79465496897f87adb94042ad815aba4447f4fa281463f947d122ecb9c24a0af4",
+      "normalized_input_sha256": "79465496897f87adb94042ad815aba4447f4fa281463f947d122ecb9c24a0af4",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "weekly_tuesday",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "28e89d57dfab1479ecdfab02522143bd22e3fe706ec14b0626d6931876a5c4c6",
+      "normalized_input_sha256": "79465496897f87adb94042ad815aba4447f4fa281463f947d122ecb9c24a0af4",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "weekly_wednesday",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "9d6f0c625342c5178e63e38dbd95204091b5bc998d9dee5cab6f7bae4a916224",
+      "normalized_input_sha256": "1b46f91e6791b58f687cc6d0ede61a87659e61a35f41c59d2c4ddbf47e698279",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "weekly_wednesday",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "1b46f91e6791b58f687cc6d0ede61a87659e61a35f41c59d2c4ddbf47e698279",
+      "normalized_input_sha256": "1b46f91e6791b58f687cc6d0ede61a87659e61a35f41c59d2c4ddbf47e698279",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "title_with_year",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "934f05513f8fe89ba2658bc07ea17a89066f3eebdea99e3a640362122374609c",
+      "normalized_input_sha256": "934f05513f8fe89ba2658bc07ea17a89066f3eebdea99e3a640362122374609c",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "title_with_year",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "2b9840cf344e479994896719646d6f590ef96538a85f0ec27c4b70c398d13de9",
+      "normalized_input_sha256": "934f05513f8fe89ba2658bc07ea17a89066f3eebdea99e3a640362122374609c",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "daily",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "000aff0aff3f2e2483ddc41f85f6a2face5d5a2eb61908b40c0b518daf9ba8ef",
+      "normalized_input_sha256": "c18f4b33a790326d1050404e82d19622ba58fb452f11472d021f4e2b86cffdba",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "daily",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "c18f4b33a790326d1050404e82d19622ba58fb452f11472d021f4e2b86cffdba",
+      "normalized_input_sha256": "c18f4b33a790326d1050404e82d19622ba58fb452f11472d021f4e2b86cffdba",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "weekly_two_days",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "a4b164735c1b918dc6cc33c0d818e498598704a9ba3119f273e6a22c7ce690b0",
+      "normalized_input_sha256": "a4b164735c1b918dc6cc33c0d818e498598704a9ba3119f273e6a22c7ce690b0",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "weekly_two_days",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "04f30ce77db65ef666f1328d9e83e6f467102e602f257c32d696161f92773337",
+      "normalized_input_sha256": "a4b164735c1b918dc6cc33c0d818e498598704a9ba3119f273e6a22c7ce690b0",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "task_today",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "23ffb70ca8299c654aab46274a08694a0c5057e2543cb3b0f08c51509ca7c4ef",
+      "normalized_input_sha256": "196bbbc013bf59533951ef84152c51941ff1d63a6e9fee80d070ea75b3085746",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "task_today",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "196bbbc013bf59533951ef84152c51941ff1d63a6e9fee80d070ea75b3085746",
+      "normalized_input_sha256": "196bbbc013bf59533951ef84152c51941ff1d63a6e9fee80d070ea75b3085746",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "task_tomorrow",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "79527a93881604701a95750b0e9a9225f18f216270e95e89567725aaece61a2a",
+      "normalized_input_sha256": "79527a93881604701a95750b0e9a9225f18f216270e95e89567725aaece61a2a",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "task_tomorrow",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "349964f6374aa22836cc11660a56faa03dc9eec15f0ec67b36c41c752e2fbf96",
+      "normalized_input_sha256": "79527a93881604701a95750b0e9a9225f18f216270e95e89567725aaece61a2a",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "mixed_list",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "dda153683a3717f5f4eaa150ca5e2d0f066597622f44d622799714aed09d3942",
+      "normalized_input_sha256": "db0ead191690eb29fd8f3ee791fdc4b844a591847c4ca306f14e9e5121edf34b",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "mixed_list",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "db0ead191690eb29fd8f3ee791fdc4b844a591847c4ca306f14e9e5121edf34b",
+      "normalized_input_sha256": "db0ead191690eb29fd8f3ee791fdc4b844a591847c4ca306f14e9e5121edf34b",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "recurring_task",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "ece4e7c33e0037a3653eb9d0d5ad47b2939f9f2e2a1d30ac299461b189de165c",
+      "normalized_input_sha256": "ece4e7c33e0037a3653eb9d0d5ad47b2939f9f2e2a1d30ac299461b189de165c",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "recurring_task",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "3264976c6b3d77a9e5c63de0f48e3789687a0fbe701e93d789eaa49998246b6f",
+      "normalized_input_sha256": "ece4e7c33e0037a3653eb9d0d5ad47b2939f9f2e2a1d30ac299461b189de165c",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "personal_missing_time",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "229b41eaa9f63150462b41342f28946bfabbdb21de9d8c8deeaf04a63d16f0f3",
+      "normalized_input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "personal_missing_time",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "normalized_input_sha256": "9b6aec71d04cd473135f795684a6538a04e99c1d2b4db102f47facb6016e725e",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "event_duration",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "normalized_input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "event_duration",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "94e4113aea30a713f2b67855d0675a77479fa76dcc8a2b75c4e22020596b8b0f",
+      "normalized_input_sha256": "f9b2da9c48d8576332c2633fa554a2a93a510030b11df70b8334a626174ac1f2",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "ten_items",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "482ca744ebe4563ca3ea5d5c6a633a0bcd9818252518ab4344869baef590f793",
+      "normalized_input_sha256": "c69dd2f02de0b44b3832c42417a7ee89eba3af03f400f42d8bf717a43530218c",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "ten_items",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "c69dd2f02de0b44b3832c42417a7ee89eba3af03f400f42d8bf717a43530218c",
+      "normalized_input_sha256": "c69dd2f02de0b44b3832c42417a7ee89eba3af03f400f42d8bf717a43530218c",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "eleven_items",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "5a4e453e147ff38b228a3d076016bc6de03ddd3e1683417d1d02e038e619d0bc",
+      "normalized_input_sha256": "5a4e453e147ff38b228a3d076016bc6de03ddd3e1683417d1d02e038e619d0bc",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "eleven_items",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "6fec07ffd720f6647dd92232e46e364b3afb4316af4c427f06089764bb8e06b9",
+      "normalized_input_sha256": "5a4e453e147ff38b228a3d076016bc6de03ddd3e1683417d1d02e038e619d0bc",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "every_two_days",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "1254ab050f2a71a6463e10608fec1a734ffedf7f093193925cec18ef7a3f0cc2",
+      "normalized_input_sha256": "62f4f86298cd23526e74a3ba05de0ff265e05c28fd212a4b3ad658038f068938",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "every_two_days",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "62f4f86298cd23526e74a3ba05de0ff265e05c28fd212a4b3ad658038f068938",
+      "normalized_input_sha256": "62f4f86298cd23526e74a3ba05de0ff265e05c28fd212a4b3ad658038f068938",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "every_two_weeks",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "71d7b114de205a2620fce02acb93007b4e2039169e53e5a98b9db38b2ce36961",
+      "normalized_input_sha256": "71d7b114de205a2620fce02acb93007b4e2039169e53e5a98b9db38b2ce36961",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "every_two_weeks",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "8431cdcbe5493fb73cdc107f820a34b2c320f07a29c07530585b3b9f8a13d188",
+      "normalized_input_sha256": "71d7b114de205a2620fce02acb93007b4e2039169e53e5a98b9db38b2ce36961",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "series_end_date",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "909ad3ade0cdad4fe123ff0a993c2619acadcf07b7047b45bb6fc298c98f9bcc",
+      "normalized_input_sha256": "17657bebb361ced3314940d5ea47629d31ef3e73be901a797b9a29ea721edc8c",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "series_end_date",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "17657bebb361ced3314940d5ea47629d31ef3e73be901a797b9a29ea721edc8c",
+      "normalized_input_sha256": "17657bebb361ced3314940d5ea47629d31ef3e73be901a797b9a29ea721edc8c",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "series_count",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "3baf217dd97a9606d140f2b104e4c5f4c910193d5c584bc788d655d0dab07343",
+      "normalized_input_sha256": "3baf217dd97a9606d140f2b104e4c5f4c910193d5c584bc788d655d0dab07343",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "series_count",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "18b27a6f90049c72df8da40025d170f760c6b1407d37f1790f62cfd378b130a4",
+      "normalized_input_sha256": "3baf217dd97a9606d140f2b104e4c5f4c910193d5c584bc788d655d0dab07343",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "mixed_unsupported",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "29380f0f2e4401c11723249dca45294f022d11c6afecde3335d976430fbbc3b2",
+      "normalized_input_sha256": "7dc676b7d2eaf95340b5daec434aa57294c0156377c73baa548a41f25daae914",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "mixed_unsupported",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "7dc676b7d2eaf95340b5daec434aa57294c0156377c73baa548a41f25daae914",
+      "normalized_input_sha256": "7dc676b7d2eaf95340b5daec434aa57294c0156377c73baa548a41f25daae914",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "edit_title",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "1cd1599253f90c10b39fa9c944abd3b640020dc4c1cbbabe52c338665395965b",
+      "normalized_input_sha256": "1cd1599253f90c10b39fa9c944abd3b640020dc4c1cbbabe52c338665395965b",
+      "options_sha256": "983d8f2fb8c67d79d6ae0f6ae29c9b3829d960291f25d1167f26f82c1ff9b572"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "edit_title",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "b5e17f6883b5f91fe69a036dfbda035a55cc433df70b03ff2271cc963c7c000e",
+      "normalized_input_sha256": "1cd1599253f90c10b39fa9c944abd3b640020dc4c1cbbabe52c338665395965b",
+      "options_sha256": "983d8f2fb8c67d79d6ae0f6ae29c9b3829d960291f25d1167f26f82c1ff9b572"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "edit_time",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "df3deec6025ced3764375f4e187925ade29184a143c9c2c451b86cb95466435b",
+      "normalized_input_sha256": "adbc56b5a3279945dcab2af78da1ff150b670b669d0fc34051ff3e10d8f8a6ff",
+      "options_sha256": "983d8f2fb8c67d79d6ae0f6ae29c9b3829d960291f25d1167f26f82c1ff9b572"
+    },
+    {
+      "variant": "control",
+      "case_id": "edit_time",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "adbc56b5a3279945dcab2af78da1ff150b670b669d0fc34051ff3e10d8f8a6ff",
+      "normalized_input_sha256": "adbc56b5a3279945dcab2af78da1ff150b670b669d0fc34051ff3e10d8f8a6ff",
+      "options_sha256": "983d8f2fb8c67d79d6ae0f6ae29c9b3829d960291f25d1167f26f82c1ff9b572"
+    },
+    {
+      "variant": "control",
+      "case_id": "edit_reminders",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "a38ecca9e6b3954a63e5e58e21422a75c73add7433b8eed0fcee14032885520d",
+      "normalized_input_sha256": "a38ecca9e6b3954a63e5e58e21422a75c73add7433b8eed0fcee14032885520d",
+      "options_sha256": "983d8f2fb8c67d79d6ae0f6ae29c9b3829d960291f25d1167f26f82c1ff9b572"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "edit_reminders",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "2d7eb058fe258137f1f85e306d30daf4d508f6eaea49ffceaf93b9889192b567",
+      "normalized_input_sha256": "a38ecca9e6b3954a63e5e58e21422a75c73add7433b8eed0fcee14032885520d",
+      "options_sha256": "983d8f2fb8c67d79d6ae0f6ae29c9b3829d960291f25d1167f26f82c1ff9b572"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "edit_task_date",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "e2ee8b9e4a6c831d60ea961ef7f028a516fa85900bb0deff70e48213f7b2aa19",
+      "normalized_input_sha256": "a2ee3ac8d98e0ed9326e8facaa01ca5a90a2903f163e95f73e8b4080dbb5829c",
+      "options_sha256": "983d8f2fb8c67d79d6ae0f6ae29c9b3829d960291f25d1167f26f82c1ff9b572"
+    },
+    {
+      "variant": "control",
+      "case_id": "edit_task_date",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "a2ee3ac8d98e0ed9326e8facaa01ca5a90a2903f163e95f73e8b4080dbb5829c",
+      "normalized_input_sha256": "a2ee3ac8d98e0ed9326e8facaa01ca5a90a2903f163e95f73e8b4080dbb5829c",
+      "options_sha256": "983d8f2fb8c67d79d6ae0f6ae29c9b3829d960291f25d1167f26f82c1ff9b572"
+    },
+    {
+      "variant": "control",
+      "case_id": "edit_type_rejected",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "ef79583e28fa4bb193b3d49778067d36ea843da9ece50235d25891bfb4add415",
+      "normalized_input_sha256": "ef79583e28fa4bb193b3d49778067d36ea843da9ece50235d25891bfb4add415",
+      "options_sha256": "983d8f2fb8c67d79d6ae0f6ae29c9b3829d960291f25d1167f26f82c1ff9b572"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "edit_type_rejected",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "49bcb5d82d7f739c06bff89ba156199d1d91b5193a1bef38c402b93f7e0aac4b",
+      "normalized_input_sha256": "ef79583e28fa4bb193b3d49778067d36ea843da9ece50235d25891bfb4add415",
+      "options_sha256": "983d8f2fb8c67d79d6ae0f6ae29c9b3829d960291f25d1167f26f82c1ff9b572"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "edit_add_rejected",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "f76bd0f47a2d1206b665c3986008cfb4dab335fc0bee911729bbc1c84ca66221",
+      "normalized_input_sha256": "831bc888cbb48eb675a7e2c327353297a80f7972bb775ad7aefa38359b86c8ba",
+      "options_sha256": "983d8f2fb8c67d79d6ae0f6ae29c9b3829d960291f25d1167f26f82c1ff9b572"
+    },
+    {
+      "variant": "control",
+      "case_id": "edit_add_rejected",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "831bc888cbb48eb675a7e2c327353297a80f7972bb775ad7aefa38359b86c8ba",
+      "normalized_input_sha256": "831bc888cbb48eb675a7e2c327353297a80f7972bb775ad7aefa38359b86c8ba",
+      "options_sha256": "983d8f2fb8c67d79d6ae0f6ae29c9b3829d960291f25d1167f26f82c1ff9b572"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "normalized_input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "573f105a7661407fcd78e9afc91fc71d3b74cc46609b41f1630d2b01f16801f5",
+      "normalized_input_sha256": "ba4192859a7c57df68fb18d9c1f088d0d2dcf61176770f9224fc37ec72e026d6",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "62b4be8fd2488d468a5f101928a7b7559cd46f4c858efd84fc2a91e12db6ca1a",
+      "normalized_input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "normalized_input_sha256": "40dadbe1ec1fcea6985e4bbac9aea5ae9154eca9ba3445f889bfb4211fcd41d1",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "normalized_input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "ff55c445ae35cc16e37314dc1c25a4e3e6f4f3189ee5d987686ee82e7851374a",
+      "normalized_input_sha256": "4733388dfcaee68f116a62b192a2780a723914fb533d6f7ea4bd42defe0405ce",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "9a4e53ffe9c2a22a220ceb0acb5e636280cc611de851e4ace15bba34073238e7",
+      "normalized_input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "normalized_input_sha256": "9c294b03aec1e2d3c66f4a2d114274b293defaeedc058397d5447746d44b4b9f",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "normalized_input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "1d3b7dbce40a11a241c20157f7ded5e6d4b7f2ec042a5de14c0632f108642b4e",
+      "normalized_input_sha256": "98b71c937de238375992064149c8db47be984c1bcc281079b23c90b66a076479",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "df8ced2d2f61abd80dcb936ddc6d12984bd94e2b65c5734125c32fbadf7f3dbc",
+      "normalized_input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "normalized_input_sha256": "c7f5da93dd1fe5c98190241585c465dad8fdf55a9f2097953510773d2f331ad1",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_ambiguous",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "d557e546c98ae1e8221e1bcd50380ccfb2e7446ddba756448dec5ddca696ecd3",
+      "normalized_input_sha256": "d557e546c98ae1e8221e1bcd50380ccfb2e7446ddba756448dec5ddca696ecd3",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_ambiguous",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "6916603fb24c4ad5d44ccaf7844a0a2a828fea48ae301547b9d2cea7d974d1dc",
+      "normalized_input_sha256": "d557e546c98ae1e8221e1bcd50380ccfb2e7446ddba756448dec5ddca696ecd3",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_fictional",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "042db8e4288bc408c07942df84774a624ce5b3d9e3c62a0a1b7bd52a043ab9fa",
+      "normalized_input_sha256": "9c5327f7b7edf0e279b09b0c46d1101bd30ffdf413ae231dee8f5c0e203c7c89",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    },
+    {
+      "variant": "control",
+      "case_id": "web_fictional",
+      "repetition": 2,
+      "attempt": 1,
+      "input_sha256": "9c5327f7b7edf0e279b09b0c46d1101bd30ffdf413ae231dee8f5c0e203c7c89",
+      "normalized_input_sha256": "9c5327f7b7edf0e279b09b0c46d1101bd30ffdf413ae231dee8f5c0e203c7c89",
+      "options_sha256": "d83d596de3564595e49378e810cc1fd14445070ecdd94c759c5d738a1d1310ac"
+    }
+  ],
+  "only_instructions_differ": true
+}
