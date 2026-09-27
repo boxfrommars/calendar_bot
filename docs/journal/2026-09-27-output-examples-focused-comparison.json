@@ -1,0 +1,59 @@
+{
+  "control": {
+    "all_api_completed": true,
+    "complete_diagnostics": true,
+    "complete_traces": true,
+    "budgets_respected": true,
+    "finished": true,
+    "passed": 33,
+    "planned": 40,
+    "passed_positive": 17,
+    "passed_guard": 16,
+    "all_nonweb_passed": true,
+    "false_clarification_parses": 7,
+    "unverified_url_parses": 0,
+    "guard_web_calls": 0,
+    "parse_seconds_p50": 4.4539,
+    "parse_seconds_p95": 6.449,
+    "parse_seconds_max": 8.3308,
+    "positive_by_repetition": [
+      4,
+      4,
+      4,
+      5
+    ]
+  },
+  "candidate": {
+    "all_api_completed": true,
+    "complete_diagnostics": true,
+    "complete_traces": true,
+    "budgets_respected": true,
+    "finished": true,
+    "passed": 33,
+    "planned": 40,
+    "passed_positive": 17,
+    "passed_guard": 16,
+    "all_nonweb_passed": true,
+    "false_clarification_parses": 5,
+    "unverified_url_parses": 0,
+    "guard_web_calls": 0,
+    "parse_seconds_p50": 4.4293,
+    "parse_seconds_p95": 6.3021,
+    "parse_seconds_max": 7.6118,
+    "positive_by_repetition": [
+      5,
+      5,
+      3,
+      4
+    ]
+  },
+  "positive_differences_by_repetition": [
+    1,
+    1,
+    -1,
+    -1
+  ],
+  "technical_gate_passed": true,
+  "quality_gate_passed": false,
+  "gate_passed": false
+}

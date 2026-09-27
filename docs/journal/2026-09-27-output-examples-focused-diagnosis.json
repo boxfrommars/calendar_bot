@@ -1,0 +1,273 @@
+{
+  "cases": [
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "raw_item_count": 0,
+      "raw_has_question": true,
+      "event_fields": [],
+      "clock_tokens": [
+        "21:00"
+      ],
+      "mentions_prague": false,
+      "mentions_london": false,
+      "mentions_bst": false,
+      "mentions_confirmation": false,
+      "mentions_past": true,
+      "asks_reminder_time": false
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro",
+      "repetition": 1,
+      "attempt": 1,
+      "raw_item_count": 0,
+      "raw_has_question": true,
+      "event_fields": [],
+      "clock_tokens": [],
+      "mentions_prague": false,
+      "mentions_london": false,
+      "mentions_bst": false,
+      "mentions_confirmation": false,
+      "mentions_past": true,
+      "asks_reminder_time": false
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "raw_item_count": 0,
+      "raw_has_question": true,
+      "event_fields": [],
+      "clock_tokens": [
+        "19:45",
+        "22:45"
+      ],
+      "mentions_prague": false,
+      "mentions_london": true,
+      "mentions_bst": true,
+      "mentions_confirmation": false,
+      "mentions_past": false,
+      "asks_reminder_time": false
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 2,
+      "attempt": 1,
+      "raw_item_count": 0,
+      "raw_has_question": true,
+      "event_fields": [],
+      "clock_tokens": [
+        "21:45"
+      ],
+      "mentions_prague": false,
+      "mentions_london": false,
+      "mentions_bst": false,
+      "mentions_confirmation": false,
+      "mentions_past": false,
+      "asks_reminder_time": false
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 3,
+      "attempt": 1,
+      "raw_item_count": 0,
+      "raw_has_question": true,
+      "event_fields": [],
+      "clock_tokens": [
+        "19:45"
+      ],
+      "mentions_prague": false,
+      "mentions_london": false,
+      "mentions_bst": false,
+      "mentions_confirmation": false,
+      "mentions_past": true,
+      "asks_reminder_time": false
+    },
+    {
+      "variant": "control",
+      "case_id": "web_euro_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "raw_item_count": 0,
+      "raw_has_question": true,
+      "event_fields": [],
+      "clock_tokens": [
+        "21:00",
+        "22:00"
+      ],
+      "mentions_prague": false,
+      "mentions_london": false,
+      "mentions_bst": false,
+      "mentions_confirmation": false,
+      "mentions_past": true,
+      "asks_reminder_time": false
+    },
+    {
+      "variant": "control",
+      "case_id": "web_bst",
+      "repetition": 4,
+      "attempt": 1,
+      "raw_item_count": 0,
+      "raw_has_question": true,
+      "event_fields": [],
+      "clock_tokens": [
+        "22:45"
+      ],
+      "mentions_prague": false,
+      "mentions_london": false,
+      "mentions_bst": false,
+      "mentions_confirmation": false,
+      "mentions_past": true,
+      "asks_reminder_time": false
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 1,
+      "attempt": 1,
+      "raw_item_count": 0,
+      "raw_has_question": true,
+      "event_fields": [],
+      "clock_tokens": [
+        "19:45",
+        "22:45"
+      ],
+      "mentions_prague": false,
+      "mentions_london": false,
+      "mentions_bst": false,
+      "mentions_confirmation": false,
+      "mentions_past": false,
+      "asks_reminder_time": false
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 2,
+      "attempt": 1,
+      "raw_item_count": 0,
+      "raw_has_question": false,
+      "event_fields": [],
+      "clock_tokens": [],
+      "mentions_prague": false,
+      "mentions_london": false,
+      "mentions_bst": false,
+      "mentions_confirmation": false,
+      "mentions_past": false,
+      "asks_reminder_time": false
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "raw_item_count": 1,
+      "raw_has_question": false,
+      "event_fields": [
+        {
+          "date": "2026-09-29",
+          "time": "19:45",
+          "timezone_tag": "prague",
+          "start_utc": "2026-09-29T17:45:00Z"
+        }
+      ],
+      "clock_tokens": [],
+      "mentions_prague": false,
+      "mentions_london": false,
+      "mentions_bst": false,
+      "mentions_confirmation": false,
+      "mentions_past": false,
+      "asks_reminder_time": false
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro_followup",
+      "repetition": 3,
+      "attempt": 1,
+      "raw_item_count": 0,
+      "raw_has_question": true,
+      "event_fields": [],
+      "clock_tokens": [
+        "21:00"
+      ],
+      "mentions_prague": false,
+      "mentions_london": false,
+      "mentions_bst": false,
+      "mentions_confirmation": false,
+      "mentions_past": true,
+      "asks_reminder_time": false
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst",
+      "repetition": 3,
+      "attempt": 1,
+      "raw_item_count": 0,
+      "raw_has_question": true,
+      "event_fields": [],
+      "clock_tokens": [
+        "18:45"
+      ],
+      "mentions_prague": false,
+      "mentions_london": false,
+      "mentions_bst": false,
+      "mentions_confirmation": false,
+      "mentions_past": true,
+      "asks_reminder_time": false
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_bst_followup",
+      "repetition": 4,
+      "attempt": 1,
+      "raw_item_count": 0,
+      "raw_has_question": true,
+      "event_fields": [],
+      "clock_tokens": [
+        "19:45",
+        "22:45"
+      ],
+      "mentions_prague": false,
+      "mentions_london": true,
+      "mentions_bst": true,
+      "mentions_confirmation": false,
+      "mentions_past": true,
+      "asks_reminder_time": false
+    },
+    {
+      "variant": "candidate",
+      "case_id": "web_euro",
+      "repetition": 4,
+      "attempt": 1,
+      "raw_item_count": 0,
+      "raw_has_question": true,
+      "event_fields": [],
+      "clock_tokens": [],
+      "mentions_prague": false,
+      "mentions_london": false,
+      "mentions_bst": false,
+      "mentions_confirmation": false,
+      "mentions_past": true,
+      "asks_reminder_time": false
+    }
+  ],
+  "control": {
+    "trace_files": 40,
+    "trace_requests": 40,
+    "trace_responses": 40,
+    "truncated_records": 0,
+    "copied_example_values": 0
+  },
+  "candidate": {
+    "trace_files": 40,
+    "trace_requests": 40,
+    "trace_responses": 40,
+    "truncated_records": 0,
+    "copied_example_values": 0
+  }
+}
