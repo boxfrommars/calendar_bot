@@ -1,0 +1,240 @@
+{
+  "only_question_description_differs": true,
+  "control": {
+    "outcomes": {
+      "planned": 33,
+      "passed": 32,
+      "failed": 1,
+      "error": 0,
+      "cancelled": 0,
+      "not_run": 0
+    },
+    "summary": {
+      "attempts": 33,
+      "completed_responses": 33,
+      "responses_with_usage": 33,
+      "seconds_total": 91.1297,
+      "seconds_p50": 1.9638,
+      "seconds_p95": 5.4595,
+      "input_tokens": 218848,
+      "output_tokens": 5120,
+      "cached_input_tokens": 155562,
+      "reasoning_tokens": 2470,
+      "web_search_calls": 8
+    },
+    "all_api_completed": true,
+    "complete_diagnostics": true,
+    "complete_traces": true,
+    "budgets_respected": true,
+    "unverified_url_parses": 0,
+    "guard_web_calls": 0,
+    "parse_seconds_p50": 1.9974,
+    "parse_seconds_p95": 5.4916,
+    "parse_seconds_max": 8.1999,
+    "gate_passed": false
+  },
+  "candidate": {
+    "outcomes": {
+      "planned": 33,
+      "passed": 31,
+      "failed": 2,
+      "error": 0,
+      "cancelled": 0,
+      "not_run": 0
+    },
+    "summary": {
+      "attempts": 33,
+      "completed_responses": 33,
+      "responses_with_usage": 33,
+      "seconds_total": 90.7556,
+      "seconds_p50": 2.0457,
+      "seconds_p95": 5.1932,
+      "input_tokens": 250520,
+      "output_tokens": 4672,
+      "cached_input_tokens": 188752,
+      "reasoning_tokens": 2120,
+      "web_search_calls": 9
+    },
+    "all_api_completed": true,
+    "complete_diagnostics": true,
+    "complete_traces": true,
+    "budgets_respected": true,
+    "unverified_url_parses": 0,
+    "guard_web_calls": 0,
+    "parse_seconds_p50": 2.0746,
+    "parse_seconds_p95": 5.2281,
+    "parse_seconds_max": 7.8406,
+    "gate_passed": false
+  },
+  "cases": [
+    {
+      "case_id": "weekly_monday",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "weekly_tuesday",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "weekly_wednesday",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "title_with_year",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "daily",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "weekly_two_days",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "task_today",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "task_tomorrow",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "mixed_list",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "recurring_task",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "personal_missing_time",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "event_duration",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "ten_items",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "eleven_items",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "every_two_days",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "every_two_weeks",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "series_end_date",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "series_count",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "mixed_unsupported",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "edit_title",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "edit_time",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "edit_reminders",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "edit_task_date",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "edit_type_rejected",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "edit_add_rejected",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "web_euro",
+      "control": "passed",
+      "candidate": "failed"
+    },
+    {
+      "case_id": "web_euro_followup",
+      "control": "passed",
+      "candidate": "failed"
+    },
+    {
+      "case_id": "web_bst",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "web_bst_followup",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "web_czechia_2026",
+      "control": "failed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "web_czechia_2026_followup",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "web_ambiguous",
+      "control": "passed",
+      "candidate": "passed"
+    },
+    {
+      "case_id": "web_fictional",
+      "control": "passed",
+      "candidate": "passed"
+    }
+  ],
+  "both_passed": 30,
+  "control_only_passed": 2,
+  "candidate_only_passed": 1,
+  "neither_passed": 0
+}

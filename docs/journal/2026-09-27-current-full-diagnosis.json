@@ -1,0 +1,21 @@
+[
+  {
+    "case_id": "web_czechia_2026",
+    "raw_item_count": 0,
+    "raw_has_question": true,
+    "question_url_count": 2,
+    "web_search_statuses": [
+      "completed",
+      "completed"
+    ],
+    "clock_tokens": [
+      "20:45"
+    ],
+    "mentions_prague": true,
+    "mentions_london": false,
+    "mentions_bst": false,
+    "mentions_confirmation": false,
+    "mentions_past": false,
+    "asks_reminder_time": false
+  }
+]
