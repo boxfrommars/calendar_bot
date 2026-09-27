@@ -9,6 +9,7 @@ from unittest.mock import AsyncMock, patch
 
 from calendar_bot.config import Config
 from calendar_bot.domain import UserError
+from calendar_bot.evaluation import EvaluationClient
 from calendar_bot.model_trace import ModelTrace
 from calendar_bot.parser import OpenAIParser, ParseResult
 from tests.test_parser import search_output, web_event
@@ -168,6 +169,40 @@ class ModelTraceTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaisesRegex(UserError, "Не удалось разобрать сообщение"):
             await parser.parse([], self.now, "Asia/Yerevan")
         self.assertEqual(self.records()[-1]["status"], "incomplete")
+
+    async def test_evaluation_keeps_failed_search_response_until_parser_records_and_rejects_it(
+        self,
+    ):
+        response = SimpleNamespace(
+            status="completed",
+            output_parsed=ParseResult(
+                items=[web_event(date="2026-09-27", time="19:45")], question=None
+            ),
+            output=[search_output()] * 3 + [search_output(status="failed")],
+        )
+        call = AsyncMock(return_value=response)
+        metrics = EvaluationClient(SimpleNamespace(responses=SimpleNamespace(parse=call)))
+        parser = OpenAIParser("SECRET", "model", client=metrics, trace=self.trace)
+        with self.assertRaisesRegex(UserError, "Поиск временно недоступен"):
+            await parser.parse([], self.now, "Asia/Yerevan")
+        entries = self.records()
+        self.assertEqual([entry["kind"] for entry in entries], ["request", "response"])
+        self.assertEqual(entries[-1]["parsed"], response.output_parsed.model_dump())
+        self.assertEqual(
+            [output["status"] for output in entries[-1]["output"]],
+            ["completed", "completed", "completed", "failed"],
+        )
+        attempt = metrics.attempts[0]
+        self.assertEqual(attempt["status"], "completed")
+        self.assertEqual(attempt["requested_max_tool_calls"], 3)
+        self.assertEqual(attempt["web_search_calls"], 4)
+        self.assertEqual(
+            attempt["diagnostics"]["web_search_statuses"],
+            ["completed", "completed", "completed", "failed"],
+        )
+        self.assertEqual(attempt["diagnostics"]["source_check_status"], "unavailable")
+        self.assertIsNone(attempt["diagnostics"]["unverified_source_url_count"])
+        call.assert_awaited_once()
 
     async def test_retention_only_prunes_owned_files_and_caps_total_size(self):
         self.path.mkdir()

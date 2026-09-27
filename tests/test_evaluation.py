@@ -21,6 +21,7 @@ from calendar_bot.evaluation import (
     select_cases,
 )
 from calendar_bot.parser import ParsedEvent, ParsedTask, ParseResult
+from tests.test_parser import SOURCE, search_output, web_event
 
 
 class EvaluationTests(unittest.IsolatedAsyncioTestCase):
@@ -61,6 +62,8 @@ class EvaluationTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(report["completed"])
         self.assertNotIn("SECRET", json.dumps(report))
         self.assertEqual(report["attempts"][0]["reasoning_effort"], "medium")
+        self.assertIsNone(report["attempts"][0]["requested_max_tool_calls"])
+        self.assertEqual(report["attempts"][0]["diagnostics"]["web_search_statuses"], ["unknown"])
         self.assertIsNone(report["attempts"][1]["reasoning_effort"])
         summary = report["summary"]
         self.assertEqual(summary["attempts"], 2)
@@ -74,6 +77,65 @@ class EvaluationTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(report["by_mode"]["edit"]["input_tokens"])
         await client.close()
         sdk.close.assert_awaited_once()
+
+    async def test_diagnostics_error_does_not_replace_api_response_or_error_status(self):
+        response = SimpleNamespace(status="completed", output=[])
+        sdk = SimpleNamespace(responses=SimpleNamespace(parse=AsyncMock(return_value=response)))
+        client = EvaluationClient(sdk)
+        with patch(
+            "calendar_bot.evaluation.response_diagnostics",
+            side_effect=RuntimeError("SECRET_DIAGNOSTIC_ERROR"),
+        ):
+            self.assertIs(await client.responses.parse(model="gpt-6-luna"), response)
+        entry = client.attempts[0]
+        self.assertEqual(entry["status"], "completed")
+        self.assertNotIn("error_type", entry)
+        self.assertEqual(entry["diagnostics"], {"error_type": "RuntimeError"})
+        self.assertNotIn("SECRET", json.dumps(client.report(completed=False)))
+        sdk.responses.parse.assert_awaited_once()
+
+    async def test_source_diagnostics_distinguish_unavailable_from_zero_errors(self):
+        for status in ("completed", "failed", "in_progress", None, "SECRET_STATUS"):
+            with self.subTest(status=status):
+                output = search_output(status=status)
+                if status is None:
+                    del output.status
+                result = ParseResult(
+                    items=[web_event()],
+                    question="PRIVATE_REPLY",
+                    question_sources=[SOURCE.model_copy(update={"url": SOURCE.url + "/different"})],
+                )
+                response = SimpleNamespace(
+                    status="completed", output=[output], output_parsed=result
+                )
+                client = EvaluationClient(
+                    SimpleNamespace(
+                        responses=SimpleNamespace(parse=AsyncMock(return_value=response))
+                    )
+                )
+                original = result.model_dump()
+                self.assertIs(await client.responses.parse(model="gpt-6-luna"), response)
+                self.assertEqual(result.model_dump(), original)
+                data = client.attempts[0]["diagnostics"]
+                self.assertEqual(data["raw_item_count"], 1)
+                self.assertTrue(data["raw_has_question"])
+                self.assertEqual(data["source_url_count"], 1)
+                self.assertEqual(data["question_url_count"], 1)
+                self.assertEqual(
+                    data["web_search_statuses"],
+                    [status if status in ("completed", "failed", "in_progress") else "unknown"],
+                )
+                if status == "completed":
+                    self.assertEqual(data["source_check_status"], "checked")
+                    self.assertEqual(data["unverified_source_url_count"], 0)
+                    self.assertEqual(data["unverified_question_url_count"], 1)
+                else:
+                    self.assertEqual(data["source_check_status"], "unavailable")
+                    self.assertIsNone(data["unverified_source_url_count"])
+                    self.assertIsNone(data["unverified_question_url_count"])
+                report = json.dumps(client.report(completed=False))
+                for private in ("PRIVATE", "SECRET", SOURCE.url):
+                    self.assertNotIn(private, report)
 
     async def test_cancelled_attempt_is_recorded_and_propagated(self):
         client = EvaluationClient(

@@ -26,9 +26,52 @@ from .parser import (
     EDIT_INSTRUCTIONS,
     REASONING_EFFORT,
     OpenAIParser,
+    ParsedEvent,
     ParseResult,
     normalize,
+    search_urls,
 )
+
+
+def response_diagnostics(response) -> dict:
+    """Observe the raw reply without changing it or accepting it for storage."""
+    calls = [
+        output
+        for output in (getattr(response, "output", None) or [])
+        if getattr(output, "type", None) == "web_search_call"
+    ]
+    statuses = [getattr(output, "status", None) for output in calls]
+    result = getattr(response, "output_parsed", None)
+    parsed = isinstance(result, ParseResult)
+    sources = (
+        [item.source.url for item in result.items if isinstance(item, ParsedEvent) and item.source]
+        if parsed
+        else []
+    )
+    questions = [source.url for source in result.question_sources] if parsed else []
+    data = {
+        "web_search_statuses": [
+            status if status in ("completed", "failed", "in_progress", "searching") else "unknown"
+            for status in statuses
+        ],
+        "raw_item_count": len(result.items) if parsed else None,
+        "raw_has_question": bool(result.question) if parsed else None,
+        "source_url_count": len(sources) if parsed else None,
+        "question_url_count": len(questions) if parsed else None,
+        "source_check_status": "unavailable",
+        "unverified_source_url_count": None,
+        "unverified_question_url_count": None,
+    }
+    # The parser records the reply before rejecting unfinished tools. Do not
+    # invoke its rejecting check here or turn missing observations into zeros.
+    if parsed and all(status == "completed" for status in statuses):
+        urls = search_urls(response)
+        data.update(
+            source_check_status="checked",
+            unverified_source_url_count=sum(url not in urls for url in sources),
+            unverified_question_url_count=sum(url not in urls for url in questions),
+        )
+    return data
 
 
 class EvaluationClient:
@@ -46,6 +89,7 @@ class EvaluationClient:
         entry = {
             "mode": "create" if kwargs.get("tools") else "edit",
             "requested_model": kwargs["model"],
+            "requested_max_tool_calls": kwargs.get("max_tool_calls"),
             "reasoning_effort": (kwargs.get("reasoning") or {}).get("effort"),
             "status": "error",
             **self.case_context,
@@ -68,6 +112,12 @@ class EvaluationClient:
                     output.type == "web_search_call" for output in (response.output or [])
                 ),
             )
+            try:
+                entry["diagnostics"] = response_diagnostics(response)
+            except Exception as exc:
+                # Diagnostics must not swallow the SDK reply before the parser's
+                # private trace and validation. Never retain the exception body.
+                entry["diagnostics"] = {"error_type": type(exc).__name__}
             return response
         except (Exception, asyncio.CancelledError) as exc:
             entry["error_type"] = type(exc).__name__
