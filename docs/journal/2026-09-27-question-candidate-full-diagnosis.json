@@ -1,0 +1,32 @@
+[
+  {
+    "case_id": "web_euro",
+    "raw_item_count": 0,
+    "raw_has_question": true,
+    "question_url_count": 1,
+    "web_search_statuses": [
+      "completed"
+    ],
+    "clock_tokens": [],
+    "mentions_berlin": false,
+    "mentions_cest": false,
+    "mentions_past": true,
+    "asks_reminder_time": false
+  },
+  {
+    "case_id": "web_euro_followup",
+    "raw_item_count": 0,
+    "raw_has_question": true,
+    "question_url_count": 1,
+    "web_search_statuses": [
+      "completed"
+    ],
+    "clock_tokens": [
+      "21:00"
+    ],
+    "mentions_berlin": true,
+    "mentions_cest": false,
+    "mentions_past": true,
+    "asks_reminder_time": false
+  }
+]

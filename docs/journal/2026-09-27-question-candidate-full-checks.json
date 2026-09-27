@@ -1,0 +1,12 @@
+{
+  "all_api_completed": true,
+  "complete_diagnostics": true,
+  "complete_traces": true,
+  "budgets_respected": true,
+  "unverified_url_parses": 0,
+  "guard_web_calls": 0,
+  "parse_seconds_p50": 2.0746,
+  "parse_seconds_p95": 5.2281,
+  "parse_seconds_max": 7.8406,
+  "gate_passed": false
+}
