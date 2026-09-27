@@ -1,0 +1,27 @@
+{
+  "control": {
+    "all_api_completed": true,
+    "complete_diagnostics": true,
+    "complete_traces": true,
+    "budgets_respected": true,
+    "unverified_url_parses": 1,
+    "guard_web_calls": 0,
+    "parse_seconds_p50": 5.3934,
+    "parse_seconds_p95": 7.2156,
+    "parse_seconds_max": 7.2156,
+    "gate_passed": false
+  },
+  "candidate": {
+    "all_api_completed": true,
+    "complete_diagnostics": true,
+    "complete_traces": true,
+    "budgets_respected": true,
+    "unverified_url_parses": 0,
+    "guard_web_calls": 0,
+    "parse_seconds_p50": 4.7967,
+    "parse_seconds_p95": 6.5338,
+    "parse_seconds_max": 6.5338,
+    "gate_passed": true
+  },
+  "gate_passed": false
+}

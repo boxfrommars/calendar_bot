@@ -1,0 +1,25 @@
+{
+  "case_id": "web_czechia_2026_followup",
+  "variant": "control",
+  "repetition": 2,
+  "raw_item_count": 1,
+  "raw_has_question": false,
+  "matches_expected_start_utc": true,
+  "future_at_reference": true,
+  "web_search_calls": 1,
+  "web_search_statuses": [
+    "completed"
+  ],
+  "returned_source_in_results": false,
+  "tool_source_count": 26,
+  "same_host_source_count": 3,
+  "nearest_source_equal_components": {
+    "scheme": true,
+    "netloc": true,
+    "path": false,
+    "query": true,
+    "fragment": true
+  },
+  "trailing_slash_only": false,
+  "same_path_numeric_ids": true
+}

@@ -1,0 +1,172 @@
+{
+  "completed": true,
+  "summary": {
+    "attempts": 3,
+    "completed_responses": 3,
+    "responses_with_usage": 3,
+    "seconds_total": 15.8017,
+    "seconds_p50": 4.7848,
+    "seconds_p95": 6.523,
+    "input_tokens": 38117,
+    "output_tokens": 808,
+    "cached_input_tokens": 22290,
+    "reasoning_tokens": 377,
+    "web_search_calls": 3
+  },
+  "by_mode": {
+    "create": {
+      "attempts": 3,
+      "completed_responses": 3,
+      "responses_with_usage": 3,
+      "seconds_total": 15.8017,
+      "seconds_p50": 4.7848,
+      "seconds_p95": 6.523,
+      "input_tokens": 38117,
+      "output_tokens": 808,
+      "cached_input_tokens": 22290,
+      "reasoning_tokens": 377,
+      "web_search_calls": 3
+    },
+    "edit": {
+      "attempts": 0,
+      "completed_responses": 0,
+      "responses_with_usage": 0,
+      "seconds_total": 0,
+      "seconds_p50": null,
+      "seconds_p95": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_tokens": null,
+      "web_search_calls": null
+    }
+  },
+  "attempts": [
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "requested_max_tool_calls": 3,
+      "reasoning_effort": "low",
+      "status": "completed",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1,
+      "model": "gpt-6-luna",
+      "input_tokens": 11220,
+      "output_tokens": 267,
+      "cached_input_tokens": 7430,
+      "reasoning_tokens": 105,
+      "web_search_calls": 1,
+      "diagnostics": {
+        "web_search_statuses": [
+          "completed"
+        ],
+        "raw_item_count": 1,
+        "raw_has_question": false,
+        "source_url_count": 1,
+        "question_url_count": 0,
+        "source_check_status": "checked",
+        "unverified_source_url_count": 0,
+        "unverified_question_url_count": 0
+      },
+      "seconds": 6.523
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "requested_max_tool_calls": 3,
+      "reasoning_effort": "low",
+      "status": "completed",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2,
+      "model": "gpt-6-luna",
+      "input_tokens": 11423,
+      "output_tokens": 276,
+      "cached_input_tokens": 7430,
+      "reasoning_tokens": 134,
+      "web_search_calls": 1,
+      "diagnostics": {
+        "web_search_statuses": [
+          "completed"
+        ],
+        "raw_item_count": 1,
+        "raw_has_question": false,
+        "source_url_count": 1,
+        "question_url_count": 0,
+        "source_check_status": "checked",
+        "unverified_source_url_count": 0,
+        "unverified_question_url_count": 0
+      },
+      "seconds": 4.7848
+    },
+    {
+      "mode": "create",
+      "requested_model": "gpt-6-luna",
+      "requested_max_tool_calls": 3,
+      "reasoning_effort": "low",
+      "status": "completed",
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3,
+      "model": "gpt-6-luna",
+      "input_tokens": 15474,
+      "output_tokens": 265,
+      "cached_input_tokens": 7430,
+      "reasoning_tokens": 138,
+      "web_search_calls": 1,
+      "diagnostics": {
+        "web_search_statuses": [
+          "completed"
+        ],
+        "raw_item_count": 1,
+        "raw_has_question": false,
+        "source_url_count": 1,
+        "question_url_count": 0,
+        "source_check_status": "checked",
+        "unverified_source_url_count": 0,
+        "unverified_question_url_count": 0
+      },
+      "seconds": 4.4939
+    }
+  ],
+  "schema_version": 2,
+  "finished": true,
+  "outcomes": {
+    "planned": 3,
+    "passed": 3,
+    "failed": 0,
+    "error": 0,
+    "cancelled": 0,
+    "not_run": 0
+  },
+  "cases": [
+    {
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 1,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 6.5338
+    },
+    {
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 2,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 4.7967
+    },
+    {
+      "case_id": "web_czechia_2026_followup",
+      "repetition": 3,
+      "status": "passed",
+      "item_count": 1,
+      "has_question": false,
+      "seconds": 4.5056
+    }
+  ],
+  "suite_sha256": "af66cb3b1632ed4ef358d2af5ee162974337c02904855ba484287525c5f79f04",
+  "prompt_sha256": {
+    "create": "c7a268393169ccf2db4bb0e0091c94b013e182df791610707a226e73fc9c3394",
+    "edit": "0e0ca17068ce348f792527aa39070adaecafe289718dac80fcba908d489be600"
+  },
+  "schema_sha256": "6217cb8f454fde9257f2bca17aa7902df6eaf92a366c17bd277d1d1e78c1af67"
+}
