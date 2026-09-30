@@ -223,13 +223,25 @@ class PresentationTests(unittest.TestCase):
                 self.assertLess(text.index(self.spec.title), text.index("Открытое"))
                 self.assertLess(text.index("Открытое"), text.index("Готовое"))
                 self.assertIn(
-                    f"3. 13:00 — {self.spec.title}\n\n4. ⬜ Открытое\n\n5. ✅ Готовое",
+                    f"3. 13:00 — {self.spec.title}\n4. ⬜ Открытое\n5. ✅ Готовое",
                     text,
                 )
                 self.assertIn("20 сентября", text)
                 self.assertIn("23 сентября", text)
                 if days == 1:
                     self.assertIn("\n\nСегодня\n\n", text)
+
+    def test_agenda_keeps_events_close_within_day_and_separates_days(self):
+        rows = [
+            {"spec": self.spec.to_json(), "start_at": (self.now + offset).timestamp()}
+            for offset in (timedelta(hours=1), timedelta(hours=2), timedelta(days=1, hours=1))
+        ]
+        text = view.agenda(rows, "Asia/Yerevan", self.now, 7, 0).render()[0]
+        self.assertIn(f"1. 13:00 — {self.spec.title}\n2. 14:00 — {self.spec.title}", text)
+        self.assertIn(
+            f"2. 14:00 — {self.spec.title}\n\nпт, 25 сентября\n\n3. 13:00",
+            text,
+        )
 
     def test_full_agenda_page_with_long_literal_titles_fits_telegram_limit(self):
         now = datetime(2026, 12, 30, 18, tzinfo=UTC)

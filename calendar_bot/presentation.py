@@ -354,7 +354,9 @@ def agenda(
             label = f"{number}. {marker} {spec.title}"
             if overdue:
                 label += f" · {date_label(spec.day, today)}"
-            body.extend(["", Text(label)])
+            if group != previous_day:
+                body.append("")
+            body.append(Text(label))
             previous_day = group
             continue
         spec = EventSpec.from_json(row["spec"])
@@ -365,7 +367,9 @@ def agenda(
             body.extend(["", Bold(date_label(local.date(), today))])
         elif previous_day == "overdue":
             body.extend(["", Bold("Сегодня")])
-        body.extend(["", Text(f"{number}. ", Bold(f"{local:%H:%M}"), " — ", spec.title)])
+        if local.date() != previous_day:
+            body.append("")
+        body.append(Text(f"{number}. ", Bold(f"{local:%H:%M}"), " — ", spec.title))
         if instant <= now:
             body[-1] += Text(" · ", Italic("уже началось"))
         if note := schedule_note(spec, instant, timezone):
