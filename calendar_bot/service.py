@@ -717,17 +717,15 @@ class CalendarService:
                 )
         return rows
 
-    async def plan_page(
-        self, user_id: int, *, start_day: date | None = None, days=7, page=0
-    ) -> tuple[list[dict], int, int]:
+    async def plan_items(
+        self, user_id: int, *, start_day: date | None = None, days=7, now=None
+    ) -> list[dict]:
         self.authorize(user_id)
-        if not 0 <= page <= 10000:
-            raise UserError("Некорректная страница.")
         async with self.store.transaction() as tx:
             user = await tx.one("SELECT * FROM users WHERE id=?", (user_id,))
             if not user or not user["timezone"]:
                 raise UserError("Сначала выберите часовой пояс через /start.")
-            now = self.clock()
+            now = now if now is not None else self.clock()
             today = local_day(now, user["timezone"])
             period = AgendaPeriod(start_day or today, days)
             include_overdue = period.contains(today)
@@ -743,19 +741,12 @@ class CalendarService:
                 today.isoformat(),
             )
             events = await self._plan_events(tx, user_id, *period.window(user["timezone"]), now)
-            total = (
-                len(events)
-                + (await tx.one("SELECT COUNT(*) AS n FROM tasks WHERE " + task_where, parameters))[
-                    "n"
-                ]
-            )
-            page = min(page, max(0, (total - 1) // 8))
             rows = await tx.all(
                 "SELECT *, 'task' AS kind, (? AND day<? AND completed_at IS NULL) AS overdue_group "
                 "FROM tasks WHERE "
                 + task_where
-                + " ORDER BY overdue_group DESC,day,completed_at IS NOT NULL,created_at,id LIMIT ?",
-                (include_overdue, today.isoformat(), *parameters, (page + 1) * 8),
+                + " ORDER BY overdue_group DESC,day,completed_at IS NOT NULL,created_at,id",
+                (include_overdue, today.isoformat(), *parameters),
             )
             for event in events:
                 event["day"] = local_day(
@@ -771,7 +762,19 @@ class CalendarService:
                     row.get("event_id", row.get("id")),
                 )
             )
-            return rows[page * 8 : page * 8 + 8], page, total
+            for number, row in enumerate(rows, 1):
+                row["number"] = number
+            return rows
+
+    async def plan_page(
+        self, user_id: int, *, start_day: date | None = None, days=7, page=0
+    ) -> tuple[list[dict], int, int]:
+        self.authorize(user_id)
+        if not 0 <= page <= 10000:
+            raise UserError("Некорректная страница.")
+        rows = await self.plan_items(user_id, start_day=start_day, days=days)
+        page = min(page, max(0, (len(rows) - 1) // 8))
+        return rows[page * 8 : page * 8 + 8], page, len(rows)
 
     async def event_list(self, user_id: int, *, offset=0, limit=6) -> list[dict]:
         self.authorize(user_id)

@@ -289,55 +289,39 @@ class BotUI:
 
     async def period(self, uid, origin=None):
         user = await self.ready(uid)
-        return read_period(origin, local_day(self.service.clock(), user["timezone"]))
+        key = origin.removeprefix("j") if origin else origin
+        return read_period(key, local_day(self.service.clock(), user["timezone"]))
+
+    async def origin_key(self, uid, origin):
+        prefix = "j" if origin and origin.startswith("j") else ""
+        return prefix + period_key(await self.period(uid, origin))
+
+    @staticmethod
+    def list_callback(origin, page):
+        if origin.startswith("j"):
+            return f"j:{origin[1:]}:{page}"
+        return f"a:{origin}:{page}"
+
+    @staticmethod
+    def actionable(rows, now):
+        return [
+            row
+            for row in rows
+            if row["kind"] == "task" or (row["active"] and row["start_at"] > now.timestamp())
+        ]
 
     async def show_agenda(self, uid, days, page=0, *, start_day=None, message=None):
+        # Legacy page/message arguments remain accepted; every overview is a new snapshot.
+        if not 0 <= page <= 10000:
+            raise UserError("Некорректная страница.")
         user = await self.ready(uid)
         now = self.service.clock()
         period = AgendaPeriod(start_day or local_day(now, user["timezone"]), days)
-        rows, page, total = await self.service.plan_page(
-            uid, days=days, start_day=period.start, page=page
-        )
+        rows = await self.service.plan_items(uid, days=days, start_day=period.start, now=now)
         scope = period_key(period)
         buttons = []
-        for number, row in enumerate(rows, page * 8 + 1):
-            if row["kind"] == "task":
-                completed = row["completed_at"] is not None
-                marker = view.TASK_DONE_MARKER if completed else view.TASK_OPEN_MARKER
-                suffix = f"{row['id']}:{row['version']}:{scope}:{page}"
-                buttons.append(
-                    [
-                        (
-                            f"{marker} {number}. {row['title'][:38]}",
-                            f"t:{'open' if completed else 'done'}:{suffix}",
-                        ),
-                        ("Карточка", f"t:card:{suffix}"),
-                    ]
-                )
-                continue
-            spec = EventSpec.from_json(row["spec"])
-            instant = datetime.fromtimestamp(row["start_at"], UTC)
-            if instant > now and row["active"]:
-                day_key = row["original_day"].replace("-", "")
-                buttons.append(
-                    [
-                        (
-                            f"{number}. {spec.title[:38]}",
-                            f"o:{row['event_id']}:{row['version']}:{day_key}:{scope}:{page}",
-                        )
-                    ]
-                )
-        navigation = []
-
-        def destination(selected):
-            return f"a:{scope}:{selected}"
-
-        if page:
-            navigation.append(("← Страница", destination(page - 1)))
-        if (page + 1) * 8 < total:
-            navigation.append(("Страница →", destination(page + 1)))
-        if navigation:
-            buttons.append(navigation)
+        if self.actionable(rows, now):
+            buttons.append([("Выбрать запись", f"pick:{scope}:0")])
         if days == 7:
             periods = []
             for direction, label in ((-1, "← 7 дней"), (1, "7 дней →")):
@@ -349,12 +333,64 @@ class BotUI:
             if periods:
                 buttons.append(periods)
             buttons.append([("К ближайшим 7 дням", "a:7:0")])
+        parts = view.agenda_parts(rows, user["timezone"], now, period)
+        for index, part in enumerate(parts):
+            markup = keyboard(*buttons) if buttons and index == len(parts) - 1 else None
+            await self.send(uid, part, markup)
+
+    async def show_selection(self, uid, origin, page=0, *, message=None):
+        if not 0 <= page <= 10000:
+            raise UserError("Некорректная страница.")
+        user = await self.ready(uid)
+        now = self.service.clock()
+        period = await self.period(uid, origin)
+        rows = self.actionable(
+            await self.service.plan_items(uid, days=period.days, start_day=period.start, now=now),
+            now,
+        )
+        total = len(rows)
+        page = min(page, max(0, (total - 1) // 8))
+        scope = "j" + period_key(period)
+        buttons = []
+        for row in rows[page * 8 : page * 8 + 8]:
+            label = view.selection_label(row, user["timezone"])
+            if row["kind"] == "task":
+                completed = row["completed_at"] is not None
+                suffix = f"{row['id']}:{row['version']}:{scope}:{page}"
+                buttons.append(
+                    [
+                        (label, f"t:{'open' if completed else 'done'}:{suffix}"),
+                        ("Карточка", f"t:card:{suffix}"),
+                    ]
+                )
+            else:
+                day = row["original_day"].replace("-", "")
+                buttons.append(
+                    [(label, f"o:{row['event_id']}:{row['version']}:{day}:{scope}:{page}")]
+                )
+        navigation = []
+        if page:
+            navigation.append(("← Страница", self.list_callback(scope, page - 1)))
+        if (page + 1) * 8 < total:
+            navigation.append(("Страница →", self.list_callback(scope, page + 1)))
+        if navigation:
+            buttons.append(navigation)
+        buttons.append([("К расписанию", f"a:{period_key(period)}:0")])
         await self.present(
             uid,
-            view.agenda(rows, user["timezone"], now, days, page, start_day=period.start),
-            keyboard(*buttons) if buttons else None,
+            view.selection(
+                rows[page * 8 : page * 8 + 8], period, now, user["timezone"], page, total
+            ),
+            keyboard(*buttons),
             message,
         )
+
+    async def show_source(self, uid, origin, page, message=None):
+        if origin and origin.startswith("j"):
+            await self.show_selection(uid, origin, page, message=message)
+        else:
+            period = await self.period(uid, origin)
+            await self.show_agenda(uid, period.days, start_day=period.start)
 
     async def show_events(self, uid, page=0):
         user = await self.ready(uid)
@@ -383,7 +419,7 @@ class BotUI:
     ):
         user = await self.ready(uid)
         if origin is not None:
-            origin = period_key(await self.period(uid, origin))
+            origin = await self.origin_key(uid, origin)
         context = f":{origin}:{page}" if origin is not None else ""
         event = await self.service.event(uid, event_id, version)
         series = EventSpec.from_json(event["spec"])
@@ -427,7 +463,14 @@ class BotUI:
         if day and is_series:
             buttons.append([("Вся серия →", f"e:{event_id}:{version}:all{context}")])
         if origin is not None:
-            buttons.append([("К списку", f"a:{origin}:{page}")])
+            buttons.append(
+                [
+                    (
+                        "К выбору" if origin.startswith("j") else "К списку",
+                        self.list_callback(origin, page),
+                    )
+                ]
+            )
         await self.present(
             uid,
             view.event_card(
@@ -449,11 +492,11 @@ class BotUI:
         self, uid, task_id, version=None, *, saved=False, message=None, origin=None, page=0
     ):
         user = await self.ready(uid)
-        origin = period_key(read_period(origin, local_day(self.service.clock(), user["timezone"])))
+        origin = await self.origin_key(uid, origin)
         row = await self.service.task(uid, task_id, version)
         suffix = f"{task_id}:{row['version']}:c{origin}:{page}"
         completed = row["completed_at"] is not None
-        back = f"a:{origin}:{page}"
+        back = self.list_callback(origin, page)
         await self.present(
             uid,
             view.task_card(
@@ -470,7 +513,7 @@ class BotUI:
                     )
                 ],
                 [("Изменить", f"t:edit:{suffix}"), ("Удалить", f"t:delete:{suffix}")],
-                [("К списку", back)],
+                [("К выбору" if origin.startswith("j") else "К списку", back)],
             ),
             message,
         )
@@ -479,8 +522,7 @@ class BotUI:
         if scope and scope.startswith("c"):
             await self.show_task(uid, task_id, message=message, origin=scope[1:], page=page)
         else:
-            period = await self.period(uid, scope)
-            await self.show_agenda(uid, period.days, page, start_day=period.start, message=message)
+            await self.show_source(uid, scope, page, message)
 
     async def task_callback(self, uid, values, message):
         action = values[1]
@@ -589,9 +631,7 @@ class BotUI:
             return
         user = await self.ready(uid)
         if row["kind"] == "task":
-            origin = period_key(
-                read_period(origin, local_day(self.service.clock(), user["timezone"]))
-            )
+            origin = await self.origin_key(uid, origin)
             suffix = f"{row['id']}:{row['version']}:{origin}:{page}"
             completed = False
             if row["task_id"]:
@@ -641,7 +681,7 @@ class BotUI:
         )
         suffix = f"{row['id']}:{row['version']}"
         if origin is not None:
-            suffix += f":{period_key(await self.period(uid, origin))}:{page}"
+            suffix += f":{await self.origin_key(uid, origin)}:{page}"
         await self.present(
             uid,
             view.event_card(
@@ -750,6 +790,15 @@ class BotUI:
             await self.show_agenda(
                 uid, period.days, int(values[2]), start_day=period.start, message=query.message
             )
+        elif action in {"pick", "j"}:
+            if len(values) != 3:
+                raise UserError("Некорректная кнопка. Откройте /week.")
+            await self.show_selection(
+                uid,
+                values[1],
+                int(values[2]),
+                message=query.message if action == "j" else None,
+            )
         elif action == "l":
             await self.show_events(uid, int(values[1]))
         elif action == "p" and values[1] == "retry":
@@ -769,7 +818,7 @@ class BotUI:
                 origin, page = values[4], int(values[5])
                 if not 0 <= page <= 10000:
                     raise UserError("Некорректная кнопка дела. Откройте /week.")
-                origin = period_key(await self.period(uid, origin))
+                origin = await self.origin_key(uid, origin)
             if command not in {"save", "cancel", "edit"} or version < 1:
                 raise UserError("Некорректная кнопка. Откройте /today или /week.")
             if row["kind"] == "task":
@@ -880,7 +929,7 @@ class BotUI:
             )
             origin, page = None, 0
             if len(values) == 6:
-                origin = period_key(await self.period(uid, values[4]))
+                origin = await self.origin_key(uid, values[4])
                 page = int(values[5])
                 if not 0 <= page <= 10000:
                     raise UserError("Некорректная страница.")
@@ -922,10 +971,7 @@ class BotUI:
             elif action == "yes":
                 await self.service.cancel_event(uid, event_id, version, day)
                 if origin is not None:
-                    period = await self.period(uid, origin)
-                    await self.show_agenda(
-                        uid, period.days, page, start_day=period.start, message=message
-                    )
+                    await self.show_source(uid, origin, page, message)
                     return
                 await self.send(
                     uid,

@@ -108,6 +108,93 @@ def parsed(title="Встреча", **kwargs):
 
 
 class TelegramFlowTests(DatabaseCase):
+    def button(self, prefix):
+        return next(
+            b.callback_data
+            for row in self.session.messages[-1].reply_markup.inline_keyboard
+            for b in row
+            if b.callback_data.startswith(prefix)
+        )
+
+    async def choose_records(self):
+        await self.press(self.button("pick:"))
+
+    async def test_complete_wednesday_to_tuesday_week_never_hides_monday_or_tuesday(self):
+        self.clock.now = datetime(2026, 10, 21, 4, 32, tzinfo=UTC)
+        await self.create(
+            repeat="weekly",
+            weekdays=(0, 1, 2, 3, 4),
+            when=datetime(2026, 10, 21, 13, 30, tzinfo=UTC),
+            title="Будни",
+        )
+        await self.create(
+            repeat="weekly",
+            weekdays=(0, 1, 2, 3, 4),
+            when=datetime(2026, 10, 21, 14, tzinfo=UTC),
+            title="Вечер",
+        )
+        await self.create(title="Среда", when=datetime(2026, 10, 21, 17, tzinfo=UTC))
+        await self.create(title="Четверг", when=datetime(2026, 10, 22, 9, tzinfo=UTC))
+        before = await self.rows("SELECT * FROM occurrences ORDER BY event_id,original_day")
+        notices = await self.rows("SELECT * FROM notifications ORDER BY id")
+        await self.say("/week")
+        snapshot = self.session.messages[-1]
+        self.assertIn("21 октября — вт, 27 октября", snapshot.text)
+        self.assertIn("Всего записей: 12", snapshot.text)
+        self.assertIn("пн, 26 октября\n\n9. 17:30 — Будни", snapshot.text)
+        self.assertIn("вт, 27 октября\n\n11. 17:30 — Будни", snapshot.text)
+        self.assertIn("12. 18:00 — Вечер", snapshot.text)
+        self.assertIn("Снимок: 21.10.2026 08:32", snapshot.text)
+        self.assertFalse(
+            any(
+                b.callback_data.startswith(("o:", "t:", "j:"))
+                for row in snapshot.reply_markup.inline_keyboard
+                for b in row
+            )
+        )
+        count = len(self.session.messages)
+        await self.choose_records()
+        self.assertEqual(len(self.session.messages), count + 1)
+        self.assertEqual(self.session.messages[count - 1], snapshot)
+        self.assertIn("Страница 1 из 2", self.session.messages[-1].text)
+        await self.press("j:a7_20261021:1")
+        self.assertIn(
+            "26.10 17:30", self.session.messages[-1].reply_markup.inline_keyboard[0][0].text
+        )
+        self.assertEqual(
+            await self.rows("SELECT * FROM occurrences ORDER BY event_id,original_day"), before
+        )
+        self.assertEqual(await self.rows("SELECT * FROM notifications ORDER BY id"), notices)
+        self.assertEqual(self.parser.calls, [])
+
+    async def test_multipart_overview_and_actions_leave_all_previous_snapshots_unchanged(self):
+        for n in range(13):
+            await self.create(spec=TaskSpec(f"Дело {n}: " + "😀" * 160, date(2026, 9, 24)))
+        start = len(self.session.messages)
+        await self.say("/today")
+        snapshots = list(self.session.messages[start:])
+        self.assertGreater(len(snapshots), 1)
+        for index, message in enumerate(snapshots, 1):
+            self.assertIn(f"Часть {index} из {len(snapshots)}", message.text)
+            self.assertLessEqual(len(message.text.encode("utf-16-le")) // 2, 3500)
+            self.assertEqual(message.reply_markup is not None, index == len(snapshots))
+        await self.choose_records()
+        selector = self.session.messages[-1]
+        await self.press(self.button("t:done:"))
+        self.assertEqual(self.session.messages[-1].message_id, selector.message_id)
+        self.assertEqual(
+            len(await self.rows("SELECT * FROM tasks WHERE completed_at IS NOT NULL")), 1
+        )
+        await self.press("j:a1_20260924:1")
+        self.assertIn("✅", self.session.messages[-1].text)
+        self.assertEqual(self.session.messages[start : start + len(snapshots)], snapshots)
+        count = len(self.session.messages)
+        await self.press(self.button("a:"))
+        self.assertEqual(self.session.messages[start : start + len(snapshots)], snapshots)
+        self.assertGreater(len(self.session.messages), count + 1)
+        self.assertIn("✅", "\n".join(m.text for m in self.session.messages[count:]))
+        self.assertEqual(self.parser.calls, [])
+
     async def test_screenshot_timezone_error_is_repaired_before_saving(self):
         self.clock.now = datetime(2026, 9, 26, 17, 47, tzinfo=UTC)
         source = ParsedSource(title="England Football", url="https://example.org/england-spain")
@@ -437,6 +524,7 @@ class TelegramFlowTests(DatabaseCase):
     async def test_task_buttons_update_only_clicked_message_and_ignore_stale_repeats(self):
         task_id = await self.create(spec=TaskSpec("Проверить 😀", date(2026, 9, 24)))
         await self.say("/today")
+        await self.choose_records()
         original = self.session.messages[-1]
         done_button = next(
             b
@@ -444,7 +532,7 @@ class TelegramFlowTests(DatabaseCase):
             for b in row
             if b.callback_data.startswith("t:done:")
         )
-        self.assertEqual(done_button.text, "⬜ 1. Проверить 😀")
+        self.assertEqual(done_button.text, "⬜ 1. 24.09 · Проверить 😀")
         self.assertIn("1. ⬜ Проверить 😀", original.text)
         data = done_button.callback_data
         await self.say("/week")
@@ -467,7 +555,7 @@ class TelegramFlowTests(DatabaseCase):
             for b in row
             if b.callback_data.startswith("t:open:")
         )
-        self.assertEqual(undo_button.text, "✅ 1. Проверить 😀")
+        self.assertEqual(undo_button.text, "✅ 1. 24.09 · Проверить 😀")
         await self.press(undo_button.callback_data, message=current)
         self.assertIn("1. ⬜ Проверить 😀", self.session.edits[-1].text)
         self.assertIsNone((await self.service.task(101, task_id))["completed_at"])
@@ -486,6 +574,7 @@ class TelegramFlowTests(DatabaseCase):
         task_id = await self.create(spec=TaskSpec("Старое имя", date(2026, 9, 24)))
         await self.service.set_task_completion(101, task_id, 1, True)
         await self.say("/week")
+        await self.choose_records()
 
         def button(prefix):
             return next(
@@ -519,6 +608,7 @@ class TelegramFlowTests(DatabaseCase):
     async def test_task_edit_fallback_sends_current_state_without_repeating_mutation(self):
         task_id = await self.create(spec=TaskSpec("Готово", date(2026, 9, 24)))
         await self.say("/week")
+        await self.choose_records()
         original = self.session.messages[-1]
         data = next(
             b.callback_data
@@ -565,8 +655,9 @@ class TelegramFlowTests(DatabaseCase):
         for number in range(9):
             await self.create(spec=TaskSpec(f"Прошлое {number}", date(2026, 9, 23)))
         await self.say("/week")
+        await self.choose_records()
         self.assertEqual(self.session.messages[-1].text.count("Просроченные дела"), 1)
-        await self.press("a:a7_20260924:1")
+        await self.press("j:a7_20260924:1")
         current = self.session.messages[-1]
         data = next(
             b.callback_data
@@ -601,13 +692,15 @@ class TelegramFlowTests(DatabaseCase):
         await self.service.cancel_task(101, task_id, 1)
         count = len(self.session.messages)
         await self.press(f"t:done:{task_id}:1:clist:0", message=original)
-        self.assertEqual(len(self.session.messages), count)
-        self.assertIn("В этом периоде событий и дел нет", self.session.edits[-1].text)
+        self.assertEqual(len(self.session.messages), count + 1)
+        self.assertIn("В этом периоде событий и дел нет", self.session.messages[-1].text)
+        self.assertEqual(self.session.messages[count - 1], original)
         self.assertEqual((await self.rows("SELECT active FROM tasks"))[0]["active"], 0)
 
     async def test_not_modified_response_does_not_duplicate_the_interactive_message(self):
         task_id = await self.create(spec=TaskSpec("Готово", date(2026, 9, 24)))
         await self.say("/week")
+        await self.choose_records()
         original = self.session.messages[-1]
         self.session.edit_errors = [
             TelegramBadRequest(
@@ -616,7 +709,7 @@ class TelegramFlowTests(DatabaseCase):
             )
         ]
         count = len(self.session.messages)
-        await self.press(f"t:done:{task_id}:1:list:0", message=original)
+        await self.press(f"t:done:{task_id}:1:ja7_20260924:0", message=original)
         self.assertEqual(len(self.session.messages), count)
         self.assertEqual((await self.service.task(101, task_id))["version"], 2)
 
@@ -624,7 +717,8 @@ class TelegramFlowTests(DatabaseCase):
         for number in range(9):
             await self.create(spec=TaskSpec(f"Дело {number}", date(2026, 9, 24)))
         await self.say("/week")
-        await self.press("a:a7_20260924:1")
+        await self.choose_records()
+        await self.press("j:a7_20260924:1")
 
         def button(prefix):
             return next(
@@ -650,8 +744,8 @@ class TelegramFlowTests(DatabaseCase):
         count = len(self.session.messages)
         await self.press(button("d:save:"))
         self.assertEqual(len(self.session.messages), count)
-        self.assertEqual(button("a:"), "a:a7_20260924:1")
-        await self.press(button("a:"))
+        self.assertEqual(button("j:"), "j:a7_20260924:1")
+        await self.press(button("j:"))
         self.assertIn("9. ⬜ Перенесено", self.session.messages[-1].text)
 
     async def test_week_navigation_works_in_empty_periods_and_resets_page(self):
@@ -664,7 +758,8 @@ class TelegramFlowTests(DatabaseCase):
         self.assertEqual(buttons["7 дней →"], "a:a7_20261001:0")
         count = len(self.session.messages)
         await self.press(buttons["7 дней →"])
-        self.assertEqual(len(self.session.messages), count)
+        self.assertEqual(len(self.session.messages), count + 1)
+        self.assertEqual(self.session.messages[count - 1], original)
         self.assertIn("1 октября", self.session.messages[-1].text)
         self.assertIn("7 октября", self.session.messages[-1].text)
         self.assertIn("В этом периоде событий и дел нет", self.session.messages[-1].text)
@@ -680,7 +775,9 @@ class TelegramFlowTests(DatabaseCase):
         for number in range(9):
             await self.create(spec=TaskSpec(f"Будущее {number}", date(2026, 10, 3)))
         await self.say("/week")
-        await self.press("a:a7_20261001:1")
+        await self.press("a:a7_20261001:0")
+        await self.choose_records()
+        await self.press("j:a7_20261001:1")
         source = self.session.messages[-1]
         data = source.reply_markup.inline_keyboard[0][1].callback_data
         self.clock.advance(minutes=2)
@@ -688,7 +785,7 @@ class TelegramFlowTests(DatabaseCase):
         await self.press(data)
         card = self.session.messages[-1]
         back = card.reply_markup.inline_keyboard[-1][0].callback_data
-        self.assertEqual(back, "a:a7_20261001:1")
+        self.assertEqual(back, "j:a7_20261001:1")
         delete = card.reply_markup.inline_keyboard[1][1].callback_data
         await self.press(delete)
         await self.press(self.session.messages[-1].reply_markup.inline_keyboard[0][0].callback_data)
@@ -706,6 +803,7 @@ class TelegramFlowTests(DatabaseCase):
         await self.say("/week")
         before_notices = await self.rows("SELECT * FROM notifications ORDER BY id")
         await self.press("a:a7_20261123:0")
+        await self.choose_records()
 
         def button(prefix):
             return next(
@@ -716,7 +814,7 @@ class TelegramFlowTests(DatabaseCase):
             )
 
         await self.press(button("o:"))
-        self.assertEqual(button("a:"), "a:a7_20261123:0")
+        self.assertEqual(button("j:"), "j:a7_20261123:0")
         self.assertEqual(await self.rows("SELECT * FROM notifications ORDER BY id"), before_notices)
         await self.press(button("x:"))
         self.parser.results = [
@@ -728,8 +826,8 @@ class TelegramFlowTests(DatabaseCase):
         self.assertEqual(await self.rows("SELECT * FROM exceptions"), [])
         await self.press(button("d:save:"))
         self.assertIn("1 декабря", self.session.messages[-1].text)
-        self.assertEqual(button("a:"), "a:a7_20261123:0")
-        await self.press(button("a:"))
+        self.assertEqual(button("j:"), "j:a7_20261123:0")
+        await self.press(button("j:"))
         self.assertNotIn("Дальняя встреча", self.session.messages[-1].text)
         await self.press(button("o:"))
         await self.press(button("c:"))
@@ -853,6 +951,7 @@ class TelegramFlowTests(DatabaseCase):
     async def test_edit_and_single_occurrence_cancellation_via_buttons(self):
         event_id = await self.create(repeat="daily")
         await self.say("/week")
+        await self.choose_records()
         buttons = [b for row in self.session.messages[-1].reply_markup.inline_keyboard for b in row]
         await self.press(buttons[0].callback_data)
         self.assertIn("Эта встреча", self.session.messages[-1].text)
@@ -1013,12 +1112,24 @@ class TelegramFlowTests(DatabaseCase):
         self.assertEqual(first.text.count("Ереван · UTC+4"), 1)
         buttons = [b for row in first.reply_markup.inline_keyboard for b in row]
         self.assertFalse(any(b.text.startswith("1.") for b in buttons))
-        await self.press(next(b.callback_data for b in buttons if b.text == "Страница →"))
+        self.assertIn("10. 12:08 — Встреча 8", first.text)
+        self.assertIn("Всего записей: 10", first.text)
+        self.assertFalse(any(b.text == "Страница →" for b in buttons))
+        await self.choose_records()
+        self.assertIn("Страница 1 из 2", self.session.messages[-1].text)
+        self.assertEqual(self.session.messages[-2], first)
+        self.assertFalse(
+            any(
+                b.callback_data.startswith("o:") and b.text.startswith("1.")
+                for row in self.session.messages[-1].reply_markup.inline_keyboard
+                for b in row
+            )
+        )
+        await self.press("j:a7_20260924:1")
         second = self.session.messages[-1]
-        self.assertIn("9. 12:07 — Встреча 7", second.text)
         self.assertIn("10. 12:08 — Встреча 8", second.text)
         self.assertIn(
-            "a:a7_20260924:0",
+            "j:a7_20260924:0",
             [b.callback_data for row in second.reply_markup.inline_keyboard for b in row],
         )
 

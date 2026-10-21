@@ -3,7 +3,7 @@ from dataclasses import replace
 from datetime import UTC, date, datetime, time, timedelta
 
 from calendar_bot import presentation as view
-from calendar_bot.domain import EventSource, EventSpec, TaskSpec, local_instant
+from calendar_bot.domain import AgendaPeriod, EventSource, EventSpec, TaskSpec, local_instant
 from tests.support import entity_fragments
 
 
@@ -256,6 +256,55 @@ class PresentationTests(unittest.TestCase):
         text, entities = view.agenda(rows, "Pacific/Kiritimati", now, 7, 0).render()
         self.assertLessEqual(len(text.encode("utf-16-le")) // 2, 4096)
         entity_fragments(text, entities)
+
+    def test_full_snapshot_splits_whole_records_and_repeats_day_with_literal_entities(self):
+        rows = [
+            {
+                "kind": "event",
+                "spec": replace(self.spec, title=f"Запись {n}: " + "😀" * 160).to_json(),
+                "start_at": (self.now + timedelta(minutes=n + 1)).timestamp(),
+            }
+            for n in range(24)
+        ]
+        parts = view.agenda_parts(rows, "Asia/Yerevan", self.now, AgendaPeriod(self.now.date()))
+        self.assertGreater(len(parts), 1)
+        texts = []
+        for index, part in enumerate(parts, 1):
+            kwargs = part.as_kwargs()
+            text = kwargs["text"]
+            texts.append(text)
+            self.assertIsNone(kwargs["parse_mode"])
+            self.assertLessEqual(len(text.encode("utf-16-le")) // 2, 3500)
+            self.assertIn(f"Часть {index} из {len(parts)}", text)
+            self.assertIn("7 дней · чт, 24 сентября — ср, 30 сентября", text)
+            self.assertIn("Всего записей: 24", text)
+            self.assertIn("Снимок: 24.09.2026 12:00", text)
+            self.assertIn(("bold", "чт, 24 сентября"), entity_fragments(text, kwargs["entities"]))
+        combined = "\n".join(texts)
+        for n in range(24):
+            title = EventSpec.from_json(rows[n]["spec"]).title
+            self.assertEqual(combined.count(title), 1)
+            self.assertTrue(any(f"{n + 1}. " in text and title in text for text in texts))
+
+    def test_small_and_empty_snapshots_need_no_parts_and_selector_fits_long_records(self):
+        period = AgendaPeriod(self.now.date())
+        self.assertEqual(len(view.agenda_parts([], "Asia/Yerevan", self.now, period)), 1)
+        spec = replace(self.spec, title="😀" * 180, timezone="America/Argentina/ComodRivadavia")
+        rows = [
+            {
+                "kind": "event",
+                "number": n + 1,
+                "spec": spec.to_json(),
+                "start_at": (self.now + timedelta(days=n % 7, minutes=n)).timestamp(),
+            }
+            for n in range(8)
+        ]
+        content = view.selection(rows, period, self.now, "Pacific/Kiritimati", 0, 8)
+        kwargs = content.as_kwargs()
+        self.assertLessEqual(len(kwargs["text"].encode("utf-16-le")) // 2, 4096)
+        entity_fragments(kwargs["text"], kwargs["entities"])
+        self.assertIn("😀" * 119 + "…", kwargs["text"])
+        self.assertNotIn(spec.title, kwargs["text"])
 
     def test_summary_formats_only_structural_prefixes_in_old_and_new_parts(self):
         title = "😀 <b>план</b> & _проект_ 14:00 > ☀️ События на завтра"

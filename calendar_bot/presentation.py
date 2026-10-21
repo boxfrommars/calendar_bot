@@ -14,6 +14,7 @@ from .domain import (
     EventSpec,
     PastEventError,
     TaskSpec,
+    UserError,
     local_instant,
     shift_day,
     split_lines,
@@ -215,10 +216,11 @@ HELP = lines(
         Text(Code("/settings"), " — часовой пояс, напоминания и сводка"),
         Text(Code("/cancel"), " — выйти из текущего ввода"),
         Text(Code("/id"), " — ваш Telegram ID"),
+        "В расписании показан весь период. Для действий нажмите «Выбрать запись».",
         "",
         Bold("Изменить или удалить"),
         "Используйте кнопки в карточке. Изменения и удаление требуют подтверждения.",
-        "Для одной встречи из серии откройте /week.",
+        "Для одной встречи из серии откройте /week и нажмите «Выбрать запись».",
         "",
         Italic(
             "Дела пока только разовые, без отдельных напоминаний. В напоминаниях о встречах показаны оставшиеся дела на сегодня и просрочка. Ежемесячные повторы не поддерживаются."
@@ -317,6 +319,17 @@ def task_card(spec: TaskSpec, today: date, *, completed=False, saved=False, draf
     return lines(body)
 
 
+def agenda_title(period: AgendaPeriod, today: date) -> str:
+    if period.days == 1:
+        return ("Сегодня" if period.start == today else "Расписание") + (
+            f" · {date_label(period.start, today)}"
+        )
+    return (
+        f"7 дней · {date_label(period.start, today)} — "
+        f"{date_label(shift_day(period.end, -1), today)}"
+    )
+
+
 def agenda(
     rows: list[dict],
     timezone: str,
@@ -325,21 +338,24 @@ def agenda(
     page: int,
     *,
     start_day: date | None = None,
+    total: int | None = None,
+    part: tuple[int, int] | None = None,
+    title_limit: int | None = None,
 ) -> Text:
     today = now.astimezone(zone(timezone)).date()
     period = AgendaPeriod(start_day or today, days)
-    title = (
-        ("Сегодня" if period.start == today else "Расписание")
-        + f" · {date_label(period.start, today)}"
-        if days == 1
-        else f"7 дней · {date_label(period.start, today)} — {date_label(shift_day(period.end, -1), today)}"
-    )
-    body = [Text("📅 ", Bold(title))]
+    body = [Text("📅 ", Bold(agenda_title(period, today)))]
+    if total is not None:
+        body.append(Text(f"Всего записей: {total}"))
+    if part is not None:
+        body.append(Bold(f"Часть {part[0]} из {part[1]}"))
     previous_day = None
     instants = []
     for number, row in enumerate(rows, page * 8 + 1):
+        number = row.get("number", number)
         if row.get("kind") == "task":
             spec = TaskSpec.from_dict(row)
+            title = shorten_title(spec.title, title_limit)
             completed = row["completed_at"] is not None
             overdue = period.contains(today) and spec.day < today and not completed
             group = "overdue" if overdue else spec.day
@@ -351,7 +367,7 @@ def agenda(
                 elif previous_day == "overdue":
                     body.extend(["", Bold("Сегодня")])
             marker = TASK_DONE_MARKER if completed else TASK_OPEN_MARKER
-            label = f"{number}. {marker} {spec.title}"
+            label = f"{number}. {marker} {title}"
             if overdue:
                 label += f" · {date_label(spec.day, today)}"
             if group != previous_day:
@@ -360,6 +376,7 @@ def agenda(
             previous_day = group
             continue
         spec = EventSpec.from_json(row["spec"])
+        title = shorten_title(spec.title, title_limit)
         instant = datetime.fromtimestamp(row["start_at"], UTC)
         instants.append(instant)
         local = instant.astimezone(zone(timezone))
@@ -369,7 +386,7 @@ def agenda(
             body.extend(["", Bold("Сегодня")])
         if local.date() != previous_day:
             body.append("")
-        body.append(Text(f"{number}. ", Bold(f"{local:%H:%M}"), " — ", spec.title))
+        body.append(Text(f"{number}. ", Bold(f"{local:%H:%M}"), " — ", title))
         if instant <= now:
             body[-1] += Text(" · ", Italic("уже началось"))
         if note := schedule_note(spec, instant, timezone):
@@ -385,7 +402,79 @@ def agenda(
             ]
         )
     body.extend(["", Italic("Время: " + timezone_range(timezone, instants or [now]))])
+    if total is not None:
+        body.append(Italic(f"Снимок: {now.astimezone(zone(timezone)):%d.%m.%Y %H:%M}"))
     return lines(body)
+
+
+def agenda_parts(
+    rows: list[dict], timezone: str, now: datetime, period: AgendaPeriod
+) -> list[Text]:
+    """Split a single snapshot at record boundaries, including all entity/text overhead."""
+    rows = [row | {"number": number} for number, row in enumerate(rows, 1)]
+
+    def render(selected, part=None):
+        return agenda(
+            selected,
+            timezone,
+            now,
+            period.days,
+            0,
+            start_day=period.start,
+            total=len(rows),
+            part=part,
+        )
+
+    def fits(content):
+        return len(content.render()[0].encode("utf-16-le")) // 2 <= 3500
+
+    whole = render(rows)
+    if fits(whole):
+        return [whole]
+    groups, current = [], []
+    # There cannot be more parts than records; reserve the largest possible label.
+    reserved = (len(rows), len(rows))
+    for row in rows:
+        if current and not fits(render([*current, row], reserved)):
+            groups.append(current)
+            current = []
+        current.append(row)
+        if not fits(render(current, reserved)):
+            raise UserError("Запись слишком длинная для сообщения Telegram.")
+    groups.append(current)
+    return [render(group, (index, len(groups))) for index, group in enumerate(groups, 1)]
+
+
+def shorten_title(title: str, limit: int | None) -> str:
+    return title if limit is None or len(title) <= limit else title[: limit - 1] + "…"
+
+
+def selection_label(row: dict, timezone: str) -> str:
+    if row["kind"] == "task":
+        marker = TASK_DONE_MARKER if row["completed_at"] is not None else TASK_OPEN_MARKER
+        return (
+            f"{marker} {row['number']}. {date.fromisoformat(row['day']):%d.%m} · "
+            + shorten_title(row["title"], 38)
+        )
+    instant = datetime.fromtimestamp(row["start_at"], UTC).astimezone(zone(timezone))
+    title = EventSpec.from_json(row["spec"]).title
+    return f"{row['number']}. {instant:%d.%m %H:%M} · {shorten_title(title, 38)}"
+
+
+def selection(
+    rows: list[dict], period: AgendaPeriod, now: datetime, timezone: str, page: int, total: int
+) -> Text:
+    return lines(
+        [
+            Bold("Выберите запись"),
+            f"Страница {page + 1} из {max(1, (total + 7) // 8)} · доступно записей: {total}",
+            "У дела можно сразу отметить выполнение или открыть карточку."
+            if total
+            else "Нет записей, доступных для действий.",
+            "",
+            agenda(rows, timezone, now, period.days, page, start_day=period.start, title_limit=120),
+        ]
+    )
 
 
 def event_list(rows: list[dict], timezone: str, now: datetime, page: int) -> Text:
