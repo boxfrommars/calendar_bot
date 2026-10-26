@@ -1,5 +1,7 @@
 aiogram>=3.26,<4
 aiosqlite>=0.21,<1
+# Security minimum: https://github.com/advisories/GHSA-6q48-6c7w-9gw2
+certifi>=2026.10.19
 openai>=2,<3
 pydantic>=2.12,<3
 python-dotenv>=1.1,<2

@@ -20,13 +20,18 @@
 ## Runtime-интерфейс
 
 - Package manager: pip. Команды ниже выполняются Python из окружения приложения
-  и из корня checkout.
+  и из корня checkout. Для установки нужен pip 26.2.2 или новее с исправленным
+  собственным CA bundle; обновление certifi приложения не обновляет pip.
 - Установка production-зависимостей:
 
   ```sh
   python -m pip install --require-hashes -r requirements.txt
   ```
 
+- TLS CA bundle приложения предоставляется certifi из lock; минимум безопасности —
+  `certifi>=2026.10.19` по
+  [GHSA-6q48-6c7w-9gw2](https://github.com/advisories/GHSA-6q48-6c7w-9gw2).
+  В установленном bundle должен отсутствовать `emSign ECC Root CA - G3`.
 - Команда запуска: `python -m calendar_bot run`.
 - Локальная проверка работающего polling: `python -m calendar_bot health`.
 - Относительный публичный каталог: не применимо. Frontend-сборка и её выходные

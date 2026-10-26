@@ -358,14 +358,26 @@ Telegram и не входит в автономный набор. Живые п�
 
 Исходные ограничения находятся в [requirements.in](../requirements.in),
 production устанавливает [requirements.txt](../requirements.txt) с хешами.
-Пересоздание lock через uv:
+Минимум безопасности `certifi>=2026.10.19` исключает доверие к скомпрометированной
+цепочке emSign; основание — [GHSA-6q48-6c7w-9gw2](https://github.com/advisories/GHSA-6q48-6c7w-9gw2).
+Версию не ниже этой границы выбирает uv, результат фиксируется в lock.
+
+Для установки зависимостей используйте pip 26.2.2 или новее, для генерации lock —
+uv 0.13.4 или новее. Эти инструменты содержат собственные CA bundles; обновление
+certifi приложения не обновляет их автоматически. Безопасное первичное обновление
+инструментов с проверкой SHA-256 описано в
+[официальном сообщении Python](https://discuss.python.org/t/information-for-python-users-regarding-emudhra-emsign-ca-certificate-security-incident/109576).
+
+Пересоздание lock через uv для Python 3.14:
 
 ```sh
-uv pip compile requirements.in --universal --python-version 3.14 --generate-hashes --output-file requirements.txt
+uv pip compile requirements.in --universal --python-version 3.14 --generate-hashes --output-file requirements.txt --cache-dir .cache/uv
 ```
 
-После обновления установите зависимости с `--require-hashes` и повторите проверки.
-Не редактируйте lock вручную. uv не требуется для запуска приложения.
+После обновления установите зависимости с `--require-hashes`, выполните
+`python -m pip check` и повторите проверки.
+Проверьте установленную версию certifi и отсутствие `emSign ECC Root CA - G3`
+в его CA bundle. Не редактируйте lock вручную. uv не требуется для запуска приложения.
 
 ## Диагностика разбора
 
