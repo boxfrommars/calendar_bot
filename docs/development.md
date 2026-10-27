@@ -374,8 +374,19 @@ certifi приложения не обновляет их автоматичес
 uv pip compile requirements.in --universal --python-version 3.14 --generate-hashes --output-file requirements.txt --cache-dir .cache/uv
 ```
 
-После обновления установите зависимости с `--require-hashes`, выполните
-`python -m pip check` и повторите проверки.
+По умолчанию uv сохраняет подходящие версии из существующего lock. Для обновления
+всех прямых и транзитивных зависимостей добавьте `--upgrade`:
+
+```sh
+uv pip compile requirements.in --universal --python-version 3.14 --generate-hashes --upgrade --output-file requirements.txt --cache-dir .cache/uv
+```
+
+Обе команды соблюдают ограничения [requirements.in](../requirements.in), включая
+верхние границы версий. Проверьте итоговый diff и совместимость обновлённых пакетов;
+поведение `--upgrade` описано в [документации uv](https://docs.astral.sh/uv/pip/compile/#upgrading-requirements).
+
+После обновления проверьте установку lock с `--require-hashes` в чистое виртуальное
+окружение Python 3.14, выполните `python -m pip check` и повторите проверки.
 Проверьте установленную версию certifi и отсутствие `emSign ECC Root CA - G3`
 в его CA bundle. Не редактируйте lock вручную. uv не требуется для запуска приложения.
 
