@@ -1,4 +1,5 @@
 import json
+from dataclasses import replace
 from datetime import UTC, date, datetime, timedelta
 
 from aiogram.exceptions import (
@@ -367,16 +368,41 @@ class NotificationTests(DatabaseCase):
         await self.drain()
         self.assertEqual(self.bot.sent, [])
 
+    async def test_edit_rebuilds_summary_after_failed_first_send(self):
+        self.clock.now = datetime(2026, 9, 24, 3, tzinfo=UTC)
+        await self.service.preferences(101, summary_enabled=1)
+        spec = self.spec(when=self.clock() + timedelta(hours=6))
+        event_id = await self.create(spec=spec)
+        self.clock.advance(hours=2)
+        self.bot.errors.append(
+            TelegramNetworkError(method=SendMessage(chat_id=101, text="test"), message="network")
+        )
+        self.assertTrue(await self.worker.dispatch_one())
+        [notice] = await self.rows(
+            "SELECT * FROM notifications WHERE kind='summary' AND occurrence_key='2026-09-24'"
+        )
+        self.assertIn("🔔 за 15, 5 и 1 мин", "\n".join(json.loads(notice["parts"])))
+        self.assertEqual(notice["part_index"], 0)
+        await self.edit(event_id, replace(spec, reminder_minutes=(60, 30)))
+        self.clock.advance(seconds=5)
+        await self.drain()
+        self.assertEqual(len(self.bot.sent), 1)
+        self.assertIn("🔔 за 60 и 30 мин", self.bot.sent[0]["text"])
+
     async def test_summary_parts_continue_after_restart(self):
         self.clock.now = datetime(2026, 9, 24, 3, tzinfo=UTC)
         await self.service.preferences(101, summary_enabled=1)
-        for index in range(25):
-            await self.create(
+        specs = [
+            self.spec(
                 title=f"{index}: " + "😀" * 160, offsets=(), when=self.clock() + timedelta(hours=5)
             )
+            for index in range(25)
+        ]
+        ids = [await self.create(spec=spec) for spec in specs]
         self.clock.advance(hours=2)
         await self.worker.dispatch_one()
         first = self.bot.sent[0]["text"]
+        await self.edit(ids[-1], replace(specs[-1], reminder_minutes=(30,)))
         await self.restart()
         self.worker = NotificationWorker(self.service, self.bot)
         for _ in range(10):
@@ -394,6 +420,7 @@ class NotificationTests(DatabaseCase):
         delivered = "\n".join(m["text"] for m in self.bot.sent)
         for index in range(25):
             self.assertEqual(delivered.count(f" — {index}: " + "😀" * 160), 1)
+        self.assertEqual(delivered.count("🔕 без напоминаний"), 25)
 
     async def test_saved_legacy_parts_resume_unchanged_after_restart(self):
         self.clock.now = datetime(2026, 9, 24, 5, tzinfo=UTC)

@@ -333,7 +333,9 @@ class BotUI:
             if periods:
                 buttons.append(periods)
             buttons.append([("К ближайшим 7 дням", "a:7:0")])
-        parts = view.agenda_parts(rows, user["timezone"], now, period)
+        parts = view.agenda_parts(
+            rows, user["timezone"], now, period, default_reminders=json.loads(user["reminders"])
+        )
         for index, part in enumerate(parts):
             markup = keyboard(*buttons) if buttons and index == len(parts) - 1 else None
             await self.send(uid, part, markup)
@@ -431,11 +433,7 @@ class BotUI:
         else:
             spec = series
             instant = await self.service.upcoming(uid, event_id)
-        offsets = (
-            spec.reminder_minutes
-            if spec.reminder_minutes is not None
-            else json.loads(user["reminders"])
-        )
+        offsets = spec.effective_reminders(json.loads(user["reminders"]))
         suffix = day.replace("-", "") if day else "all"
         label = (
             "Эта встреча"
@@ -584,14 +582,13 @@ class BotUI:
                 view.prompt(
                     "Что изменить в деле?",
                     "Напишите новое название или дату.",
-                    "После разбора я покажу карточку для подтверждения.",
+                    "После разбора сохраню правку и покажу обновлённую карточку.",
                     "",
                     Italic("/cancel — выйти."),
                 ),
             )
 
     async def show_results(self, uid, rows, *, origin=None, page=0):
-        await self.service.set_conversation(uid, None)
         for row in rows:
             if row["status"] == "saved":
                 if row["kind"] == "task":
@@ -607,18 +604,25 @@ class BotUI:
                             ),
                         )
                     continue
-                event = await self.service.event(uid, row["result_id"])
-                await self.show_event(
-                    uid,
-                    event["id"],
-                    event["version"],
-                    row["original_day"],
-                    saved=True,
-                    origin=origin,
-                    page=page,
-                )
+                try:
+                    event = await self.service.event(uid, row["result_id"])
+                    await self.show_event(
+                        uid,
+                        event["id"],
+                        event["version"],
+                        row["original_day"],
+                        saved=True,
+                        origin=origin,
+                        page=page,
+                    )
+                except UserError:
+                    await self.send(
+                        uid,
+                        view.status("Сохранено. Актуальное расписание доступно в /today и /week."),
+                    )
             else:
                 await self.show_draft(uid, row, origin=origin, page=page)
+        await self.service.set_conversation(uid, None)
 
     async def show_draft(self, uid, row, *, origin=None, page=0, message=None):
         if row["status"] != "pending":
@@ -657,11 +661,7 @@ class BotUI:
             return
         spec = EventSpec.from_json(row["spec"])
         instant = spec.first_after(self.service.clock())
-        offsets = (
-            spec.reminder_minutes
-            if spec.reminder_minutes is not None
-            else json.loads(user["reminders"])
-        )
+        offsets = spec.effective_reminders(json.loads(user["reminders"]))
         is_series = spec.repeat != "once"
         if row["event_id"] and not row["original_day"]:
             event = await self.service.event(uid, row["event_id"])
@@ -1000,12 +1000,13 @@ class BotUI:
                         Text("Введите минуты через запятую: ", Code("15, 5, 1"), "."),
                         Text(Code("0"), " — в момент начала; ", Code("нет"), " — отключить;"),
                         Text(Code("общие"), " — использовать ваши настройки."),
+                        "Настройки сохранятся сразу после ввода.",
                     )
                     if action == "r"
                     else view.prompt(
                         "Что изменить?",
-                        "Напишите новое название, дату, время или повтор.",
-                        "После разбора я покажу карточку для подтверждения.",
+                        "Можно изменить название, расписание или напоминания.",
+                        "После разбора сохраню правку и покажу обновлённую карточку.",
                         "",
                         Italic("/cancel — выйти."),
                     ),
@@ -1069,7 +1070,10 @@ class BotUI:
         key = f"message:{uid}:{message.message_id}"
         existing = await self.service.request_drafts(uid, key)
         if existing is not None:
-            await self.show_results(uid, existing)
+            context = state["payload"] if state and state["payload"].get("key") == key else {}
+            await self.show_results(
+                uid, existing, origin=context.get("origin"), page=context.get("page", 0)
+            )
             return
         if state and state["mode"] == "event_reminders":
             payload = state["payload"]
@@ -1077,6 +1081,8 @@ class BotUI:
                 EventSpec.from_dict(payload["base"]),
                 reminder_minutes=parse_reminders(text, inherit=True),
             )
+            # Keep the selected period available if Telegram fails after the commit.
+            await self.service.set_conversation(uid, "event_reminders", payload | {"key": key})
             rows = await self.service.create_drafts(
                 uid,
                 key,
@@ -1085,10 +1091,10 @@ class BotUI:
                 event_id=payload["event_id"],
                 event_version=payload["event_version"],
                 original_day=payload["original_day"],
+                auto_save=True,
             )
-            await self.service.set_conversation(uid, None)
-            await self.show_draft(
-                uid, rows[0], origin=payload.get("origin"), page=payload.get("page", 0)
+            await self.show_results(
+                uid, rows, origin=payload.get("origin"), page=payload.get("page", 0)
             )
             return
         if len(text) > 4000:
@@ -1150,7 +1156,11 @@ class BotUI:
             )
             return
         try:
-            specs = [normalize(item, reference, user["timezone"]) for item in result.items]
+            original_title = (payload.get("base") or {}).get("title")
+            specs = [
+                normalize(item, reference, user["timezone"], original_title=original_title)
+                for item in result.items
+            ]
             rows = await self.service.create_drafts(
                 uid,
                 payload["key"],
@@ -1163,9 +1173,7 @@ class BotUI:
                 original_day=payload.get("original_day"),
                 draft_id=payload.get("draft_id"),
                 draft_version=payload.get("draft_version"),
-                auto_save=not (
-                    payload.get("event_id") or payload.get("task_id") or payload.get("draft_id")
-                ),
+                auto_save=not payload.get("draft_id"),
             )
         except PastEventError as exc:
             await self.ask_clarification(

@@ -1,4 +1,5 @@
 import json
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass, replace
 from datetime import UTC, date, datetime, time, timedelta
 from typing import Literal
@@ -242,6 +243,9 @@ class EventSpec:
             for field in ("title", "day", "clock", "timezone", "repeat", "weekdays")
         )
         return replace(self, source=previous.source if unchanged else None)
+
+    def effective_reminders(self, defaults: Iterable[int]) -> tuple[int, ...]:
+        return tuple(defaults) if self.reminder_minutes is None else self.reminder_minutes
 
     @classmethod
     def from_json(cls, value: str) -> "EventSpec":

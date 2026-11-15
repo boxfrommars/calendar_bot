@@ -138,7 +138,7 @@ class TaskServiceTests(DatabaseCase):
             await self.service.task(101, task_id)
         self.assertEqual((await self.rows("SELECT version FROM tasks"))[0]["version"], 5)
 
-    async def test_edit_cannot_convert_types_or_auto_save_or_skip_draft_expiry(self):
+    async def test_edit_cannot_convert_types_overwrite_newer_task_or_skip_draft_expiry(self):
         task_id = await self.create(spec=TaskSpec("Дело", date(2026, 9, 24)))
         with self.assertRaises(UserError):
             await self.service.create_drafts(
@@ -154,14 +154,14 @@ class TaskServiceTests(DatabaseCase):
                 event_id=event_id,
                 event_version=1,
             )
-        with self.assertRaises(ValueError):
+        with self.assertRaises(UserError):
             await self.service.create_drafts(
                 101,
                 "auto-edit",
                 [TaskSpec("Другое", date(2026, 9, 24))],
                 self.clock(),
                 task_id=task_id,
-                task_version=1,
+                task_version=2,
                 auto_save=True,
             )
         draft = (

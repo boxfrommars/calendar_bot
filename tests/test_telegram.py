@@ -19,8 +19,16 @@ from aiogram.types import (
 
 from calendar_bot import presentation as view
 from calendar_bot.domain import EventSpec, TaskSpec, UserError
-from calendar_bot.parser import OpenAIParser, ParsedEvent, ParsedSource, ParsedTask, ParseResult
+from calendar_bot.parser import (
+    EditParseResult,
+    OpenAIParser,
+    ParsedEvent,
+    ParsedSource,
+    ParsedTask,
+    ParseResult,
+)
 from calendar_bot.telegram import MENU, BotUI
+from calendar_bot.worker import NotificationWorker
 from tests.support import DatabaseCase, entity_fragments
 
 
@@ -570,7 +578,7 @@ class TelegramFlowTests(DatabaseCase):
         self.assertEqual((await self.service.task(101, task_id))["version"], 1)
         self.assertEqual(self.parser.calls, [])
 
-    async def test_task_edit_and_delete_require_confirmation_and_preserve_completion(self):
+    async def test_task_edit_auto_saves_and_preserves_completion_delete_requires_confirmation(self):
         task_id = await self.create(spec=TaskSpec("Старое имя", date(2026, 9, 24)))
         await self.service.set_task_completion(101, task_id, 1, True)
         await self.say("/week")
@@ -593,9 +601,8 @@ class TelegramFlowTests(DatabaseCase):
             )
         ]
         await self.say("перенеси на 26 сентября и назови Новое имя")
-        self.assertEqual((await self.service.task(101, task_id))["title"], "Старое имя")
         self.assertEqual(self.parser.calls[-1][3]["kind"], "task")
-        await self.press(button("d:save:"))
+        self.assertIn("Дело сохранено", self.session.messages[-1].text)
         task = await self.service.task(101, task_id)
         self.assertEqual((task["title"], task["day"]), ("Новое имя", "2026-09-26"))
         self.assertIsNotNone(task["completed_at"])
@@ -741,9 +748,7 @@ class TelegramFlowTests(DatabaseCase):
         await self.say("перенести на сегодня")
         self.assertEqual(self.parser.calls[-1][1], reference)
         self.assertIn("25 сентября", self.session.messages[-1].text)
-        count = len(self.session.messages)
-        await self.press(button("d:save:"))
-        self.assertEqual(len(self.session.messages), count)
+        self.assertIn("Дело сохранено", self.session.messages[-1].text)
         self.assertEqual(button("j:"), "j:a7_20260924:1")
         await self.press(button("j:"))
         self.assertIn("9. ⬜ Перенесено", self.session.messages[-1].text)
@@ -823,8 +828,8 @@ class TelegramFlowTests(DatabaseCase):
             )
         ]
         await self.say("перенеси на 1 декабря в 13:00")
-        self.assertEqual(await self.rows("SELECT * FROM exceptions"), [])
-        await self.press(button("d:save:"))
+        self.assertEqual(len(await self.rows("SELECT * FROM exceptions")), 1)
+        self.assertIn("Событие сохранено", self.session.messages[-1].text)
         self.assertIn("1 декабря", self.session.messages[-1].text)
         self.assertEqual(button("j:"), "j:a7_20261123:0")
         await self.press(button("j:"))
@@ -959,13 +964,8 @@ class TelegramFlowTests(DatabaseCase):
         await self.press(f"x:{event_id}:1:{original}")
         self.parser.results = [ParseResult(items=[parsed("Перенос", time="18:00")], question=None)]
         await self.say("перенеси на завтра 18:00")
-        self.assertIn("Изменение одной встречи", self.session.messages[-1].text)
-        draft = (
-            await self.rows(
-                "SELECT * FROM drafts WHERE event_id=? ORDER BY rowid DESC", (event_id,)
-            )
-        )[0]
-        await self.press(f"d:save:{draft['id']}:1")
+        self.assertIn("Событие сохранено", self.session.messages[-1].text)
+        self.assertIn("18:00", self.session.messages[-1].text)
         event = await self.service.event(101, event_id)
         await self.press(f"c:{event_id}:{event['version']}:{original}")
         self.assertIn("только эту встречу", self.session.messages[-1].text)
@@ -978,21 +978,104 @@ class TelegramFlowTests(DatabaseCase):
         )
         self.assertEqual((await self.service.event(101, event_id))["active"], 1)
 
-    async def test_settings_and_custom_event_reminders_are_confirmed(self):
+    async def test_settings_and_custom_event_reminders_apply_without_confirmation(self):
         event_id = await self.create()
         await self.press("s:reminders")
         await self.say("30, 10")
         self.assertIn("За 30 и 10 минут", self.session.messages[-1].text)
         await self.press(f"r:{event_id}:1:all")
         await self.say("нет")
+        self.assertIn("Событие сохранено", self.session.messages[-1].text)
         self.assertIn("🔔 Выключены", self.session.messages[-1].text)
         self.assertIn("Напоминания для этого события.", self.session.messages[-1].text)
-        draft = (await self.rows("SELECT * FROM drafts WHERE event_id=?", (event_id,)))[0]
-        self.assertTrue(await self.pending(event_id))
-        await self.press(f"d:save:{draft['id']}:1")
         self.assertEqual(await self.pending(event_id), [])
+        await self.press(self.button("r:"))
+        await self.say("общие")
+        self.assertIn("За 30 и 10 минут", self.session.messages[-1].text)
+        self.assertEqual([n["offset_minutes"] for n in await self.pending(event_id)], [30, 10])
+        self.assertEqual(self.parser.calls, [])
 
-    async def test_literal_title_survives_auto_save_and_edits_still_need_confirmation(self):
+    async def test_spoken_reminder_edit_keeps_event_fields_and_sends_both_offsets(self):
+        self.clock.now = datetime(2026, 11, 14, 14, 3, tzinfo=UTC)
+        await self.service.preferences(101, summary_enabled=1)
+        title = "Встреча, ул. Примерная, 27"
+        start = datetime(2026, 11, 15, 14, 30, tzinfo=UTC)
+        event_id = await self.create(when=start, title=title)
+        edited = EditParseResult(
+            items=[parsed("Другой адрес", time="21:00", reminders=[60, 30])],
+            question=None,
+            changed_fields=["reminders"],
+        )
+        call = AsyncMock(return_value=SimpleNamespace(status="completed", output_parsed=edited))
+        self.ui.parser = OpenAIParser(
+            "test-not-real", "model", client=SimpleNamespace(responses=SimpleNamespace(parse=call))
+        )
+        await self.press(f"x:{event_id}:1:all")
+        await self.say("напомни за 1 час и за 30 минут")
+        saved = self.session.messages[-1]
+        self.assertTrue(saved.text.startswith("✅ Событие сохранено"))
+        self.assertIn("За 60 и 30 минут", saved.text)
+        self.assertIn(title, saved.text)
+        self.assertNotIn(
+            "Сохранить", [b.text for row in saved.reply_markup.inline_keyboard for b in row]
+        )
+        event = EventSpec.from_json((await self.service.event(101, event_id))["spec"])
+        self.assertEqual(event, self.spec(when=start, title=title, offsets=(60, 30)))
+        self.assertEqual([n["offset_minutes"] for n in await self.pending(event_id)], [60, 30])
+
+        worker = NotificationWorker(self.service, self.bot)
+        self.clock.now = datetime(2026, 11, 15, 5, tzinfo=UTC)
+        row = f"18:30 — {title} · 🔔 за 60 и 30 мин"
+        self.assertTrue(await worker.dispatch_one())
+        self.assertIn(row, self.session.messages[-1].text)
+        await self.say("/today")
+        self.assertIn(row, self.session.messages[-1].text)
+        self.clock.now = start - timedelta(minutes=61)
+        self.assertFalse(await worker.dispatch_one())
+        self.clock.advance(minutes=1)
+        self.assertTrue(await worker.dispatch_one())
+        self.assertIn("Через 60 минут", self.session.messages[-1].text)
+        self.clock.advance(minutes=10)
+        await self.say("/week")
+        self.assertIn(row, self.session.messages[-1].text)
+        self.clock.advance(minutes=20)
+        self.assertTrue(await worker.dispatch_one())
+        self.assertIn("Через 30 минут", self.session.messages[-1].text)
+        self.assertEqual(call.await_count, 1)
+
+    async def test_reminder_edit_recovers_saved_card_with_period_after_response_failure(self):
+        event_id = await self.create()
+        await self.say("/today")
+        await self.choose_records()
+        await self.press(self.button("o:"))
+        await self.press(self.button("r:"))
+        with patch.object(self.ui, "show_event", side_effect=RuntimeError("Failed to send card")):
+            await self.say("45, 0", message_id=90)
+        notices = await self.pending(event_id)
+        self.assertEqual([n["offset_minutes"] for n in notices], [45, 0])
+
+        await self.restart()
+        self.ui = BotUI(self.service, self.parser, self.bot)
+        self.dispatcher = Dispatcher()
+        self.dispatcher.include_router(self.ui.router)
+        await self.say("45, 0", message_id=90)
+        self.assertIn("Событие сохранено", self.session.messages[-1].text)
+        self.assertEqual(self.button("j:"), "j:a1_20260924:0")
+        self.assertEqual((await self.service.event(101, event_id))["version"], 2)
+        self.assertEqual(await self.pending(event_id), notices)
+        self.assertEqual(self.parser.calls, [])
+
+    async def test_correction_of_a_legacy_draft_still_requires_saving(self):
+        [draft] = await self.service.create_drafts(101, "legacy", [self.spec()], self.clock())
+        await self.ui.show_draft(101, draft)
+        await self.press(self.button("d:edit:"))
+        self.parser.results = [ParseResult(items=[parsed("Исправленная встреча")], question=None)]
+        await self.say("измени название на Исправленная встреча")
+        self.assertEqual(await self.rows("SELECT * FROM events"), [])
+        await self.press(self.button("d:save:"))
+        self.assertIn("Исправленная встреча", self.session.messages[-1].text)
+
+    async def test_literal_title_survives_auto_saved_addition_and_edit(self):
         title = "🧑‍💻 Retro & <b>Planning</b> _2027_ > 🎯"
         self.bot.default.parse_mode = "HTML"
         self.parser.results = [ParseResult(items=[parsed(title)], question=None)]
@@ -1009,19 +1092,14 @@ class TelegramFlowTests(DatabaseCase):
         self.assertTrue(card.text.startswith("✅ Событие сохранено"))
         self.assertNotIn("Черновик", card.text)
         event = (await self.rows("SELECT * FROM events"))[0]
-        original = event["spec"]
         await self.press(buttons[0].callback_data)
         self.parser.results = [ParseResult(items=[parsed(title, time="17:00")], question=None)]
         await self.say("перенеси на 17:00")
-        self.assertEqual((await self.service.event(101, event["id"]))["spec"], original)
-        change = self.session.messages[-1]
-        save = change.reply_markup.inline_keyboard[0][0]
-        self.assertEqual(save.text, "Сохранить")
-        await self.press(save.callback_data)
         saved = self.session.messages[-1]
         self.assertIn(("bold", title), entity_fragments(saved.text, saved.entities))
         self.assertIn(("bold", "17:00"), entity_fragments(saved.text, saved.entities))
-        self.assertEqual(self.session.messages[-2].text, "✅ Сохранено.")
+        self.assertTrue(saved.text.startswith("✅ Событие сохранено"))
+        self.assertEqual((await self.service.event(101, event["id"]))["version"], 2)
         self.assertEqual(len(await self.rows("SELECT * FROM events")), 1)
         await self.ui.send(101, title)
         self.assertEqual(self.session.messages[-1].text, title)
@@ -1148,12 +1226,14 @@ class TelegramFlowTests(DatabaseCase):
         )
         await self.press(f"r:{event_id}:1:all")
         await self.say("30, 0")
-        self.assertIn("Изменение всех будущих встреч", self.session.messages[-1].text)
+        self.assertIn("Серия сохранена", self.session.messages[-1].text)
         self.assertIn("За 30 минут; в момент начала", self.session.messages[-1].text)
-        await self.press(f"x:{event_id}:1:all")
+        await self.press(f"x:{event_id}:2:all")
         self.parser.results = [ParseResult(items=[parsed(repeat="once")], question=None)]
         await self.say("сделай разовой завтра в 16:00")
-        self.assertIn("Изменение всех будущих встреч", self.session.messages[-1].text)
+        self.assertIn("Событие сохранено", self.session.messages[-1].text)
+        saved = EventSpec.from_json((await self.service.event(101, event_id))["spec"])
+        self.assertEqual(saved.repeat, "once")
 
     async def test_help_has_code_examples_and_settings_have_sections(self):
         await self.say("/help")

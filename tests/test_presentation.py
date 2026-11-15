@@ -284,7 +284,37 @@ class PresentationTests(unittest.TestCase):
         for n in range(24):
             title = EventSpec.from_json(rows[n]["spec"]).title
             self.assertEqual(combined.count(title), 1)
-            self.assertTrue(any(f"{n + 1}. " in text and title in text for text in texts))
+            self.assertTrue(
+                any(
+                    f"{n + 1}. " in text and f"{title} · 🔔 за 15, 5 и 1 мин" in text
+                    for text in texts
+                )
+            )
+
+    def test_agenda_and_summary_show_effective_offsets_for_future_events(self):
+        rows = [
+            {
+                "spec": replace(self.spec, title=title, reminder_minutes=offsets).to_json(),
+                "start_at": (self.now + timedelta(minutes=minutes)).timestamp(),
+            }
+            for title, offsets, minutes in (
+                ("Началось", (60,), 0),
+                ("Общие", None, 10),
+                ("Отключены", (), 20),
+                ("Свои", (60, 0), 30),
+            )
+        ]
+        timezone = "Asia/Yerevan"
+        period = AgendaPeriod(self.now.date(), 1)
+        [overview] = view.agenda_parts(rows, timezone, self.now, period, default_reminders=[45, 5])
+        [summary] = view.summary_parts(
+            rows, period.start, timezone, self.now, default_reminders=[45, 5]
+        )
+        for text in (overview.render()[0], summary):
+            self.assertIn("Общие · 🔔 за 45 и 5 мин", text)
+            self.assertIn("Отключены · 🔕 без напоминаний", text)
+            self.assertIn("Свои · 🔔 за 60 мин · в начале", text)
+            self.assertNotIn("Началось · 🔔", text)
 
     def test_small_and_empty_snapshots_need_no_parts_and_selector_fits_long_records(self):
         period = AgendaPeriod(self.now.date())
@@ -339,7 +369,10 @@ class PresentationTests(unittest.TestCase):
             fragments = entity_fragments(text, entities)
             event_lines.extend(line for line in part.splitlines() if " — " in line)
             self.assertTrue(any(kind == "bold" for kind, _ in fragments))
-        self.assertEqual([line.split(" — ", 1)[1] for line in event_lines], titles)
+        self.assertEqual(
+            [line.split(" — ", 1)[1] for line in event_lines],
+            [titles[0], *(f"{title} · 🔔 за 15, 5 и 1 мин" for title in titles[1:])],
+        )
         self.assertEqual("\n".join(parts).count("Время: Ереван · UTC+4"), 1)
 
     def test_summary_labels_foreign_schedule_and_empty_day(self):

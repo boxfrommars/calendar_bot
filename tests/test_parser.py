@@ -15,6 +15,7 @@ from calendar_bot.parser import (
     COMMON_INSTRUCTIONS,
     CREATE_INSTRUCTIONS,
     EDIT_INSTRUCTIONS,
+    EditParseResult,
     OpenAIParser,
     ParsedEvent,
     ParsedSource,
@@ -59,10 +60,15 @@ def search_output(url=SOURCE.url, *, status="completed", action="search"):
 class ParserContractTests(unittest.IsolatedAsyncioTestCase):
     async def test_task_edit_passes_only_selected_item_and_strict_schema(self):
         expected = ParseResult(
-            items=[ParsedTask(kind="task", title="Изменённое дело", date="2026-09-25")],
+            items=[ParsedTask(kind="task", title="Дело", date="2026-09-25")],
             question=None,
         )
-        call = AsyncMock(return_value=SimpleNamespace(status="completed", output_parsed=expected))
+        response = EditParseResult(
+            items=[ParsedTask(kind="task", title="Изменённое дело", date="2026-09-25")],
+            question=None,
+            changed_fields=["date"],
+        )
+        call = AsyncMock(return_value=SimpleNamespace(status="completed", output_parsed=response))
         parser = OpenAIParser(
             "test-not-real", "model", client=SimpleNamespace(responses=SimpleNamespace(parse=call))
         )
@@ -85,6 +91,7 @@ class ParserContractTests(unittest.IsolatedAsyncioTestCase):
             {"reference_local", "reference_utc", "reference_weekday", "timezone", "selected_item"},
         )
         self.assertNotIn("tools", arguments)
+        self.assertIs(arguments["text_format"], EditParseResult)
         self.assertEqual(arguments["input"][0]["content"], COMMON_INSTRUCTIONS + EDIT_INSTRUCTIONS)
         self.assertFalse(arguments["store"])
         schema = ParseResult.model_json_schema()
@@ -93,6 +100,18 @@ class ParserContractTests(unittest.IsolatedAsyncioTestCase):
         for kind in ("ParsedTask", "ParsedEvent"):
             self.assertIn("kind", schema["$defs"][kind]["required"])
             self.assertNotIn("default", schema["$defs"][kind]["properties"]["kind"])
+
+    async def test_edit_with_missing_or_inapplicable_changed_fields_requires_clarification(self):
+        base = {"kind": "task", "title": "Дело", "day": "2026-09-24"}
+        edited = ParsedTask(kind="task", title="Новое имя", date="2026-09-25")
+        for changed_fields in ([], ["reminders"]):
+            with self.subTest(changed_fields=changed_fields):
+                response = EditParseResult(
+                    items=[edited], question=None, changed_fields=changed_fields
+                )
+                result = response.apply_to(base)
+                self.assertTrue(result.question)
+                self.assertEqual(result.items, [])
 
     async def test_sdk_uses_structured_schema_and_minimum_context(self):
         expected = ParseResult(
@@ -141,11 +160,11 @@ class ParserContractTests(unittest.IsolatedAsyncioTestCase):
         )
         messages = [{"role": "user", "content": untrusted}]
         for base in (None, {"kind": "task", "title": untrusted, "day": "2026-09-24"}):
+            response = ParseResult(items=[], question="Уточните запись")
+            if base is not None:
+                response = EditParseResult(items=[], question="Уточните запись", changed_fields=[])
             call = AsyncMock(
-                return_value=SimpleNamespace(
-                    status="completed",
-                    output_parsed=ParseResult(items=[], question="Уточните запись"),
-                )
+                return_value=SimpleNamespace(status="completed", output_parsed=response)
             )
             parser = OpenAIParser(
                 "test-not-real",
@@ -663,9 +682,13 @@ class WebSearchTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(context["reference_local"], "2026-09-24T23:59:00+04:00")
 
     async def test_edits_cannot_introduce_model_provenance(self):
+        item = web_event()
+        base = normalize(item, datetime(2026, 9, 24, tzinfo=UTC), "Asia/Yerevan").to_dict()
         result, arguments = await self.parse(
-            ParseResult(items=[web_event()], question=None, question_sources=[SOURCE]),
-            base={"title": "Выбранное событие"},
+            EditParseResult(
+                items=[item], question=None, question_sources=[SOURCE], changed_fields=["title"]
+            ),
+            base=base,
         )
         self.assertNotIn("tools", arguments)
         self.assertIsNone(result.items[0].source)

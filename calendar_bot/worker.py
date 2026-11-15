@@ -114,7 +114,14 @@ class NotificationWorker:
                     "UPDATE notifications SET status='skipped' WHERE id=?", (notice["id"],)
                 )
                 return None
-            parts = view.summary_parts(rows, day, user["timezone"], now, tasks)
+            parts = view.summary_parts(
+                rows,
+                day,
+                user["timezone"],
+                now,
+                tasks,
+                default_reminders=json.loads(user["reminders"]),
+            )
         if notice["parts"] is None or notice["kind"] == "reminder":
             await tx.execute(
                 "UPDATE notifications SET parts=? WHERE id=?",

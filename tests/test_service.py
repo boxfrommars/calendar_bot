@@ -118,23 +118,34 @@ class ServiceTests(DatabaseCase):
         await self.service.create_drafts(101, "auto", specs, self.clock(), auto_save=True)
         self.assertEqual(len(await self.rows("SELECT * FROM events")), 2)
 
-    async def test_auto_save_is_only_for_new_authorized_requests(self):
+    async def test_auto_save_requires_authorized_current_target_and_keeps_old_drafts_pending(self):
         event_id = await self.create()
         with self.assertRaises(UserError):
             await self.service.create_drafts(
                 999, "unauthorized", [self.spec()], self.clock(), auto_save=True
             )
+        for uid, version in ((202, 1), (101, None), (101, 2)):
+            with self.subTest(uid=uid, version=version), self.assertRaises(UserError):
+                await self.service.create_drafts(
+                    uid,
+                    "edit",
+                    [self.spec()],
+                    self.clock(),
+                    event_id=event_id,
+                    event_version=version,
+                    auto_save=True,
+                )
+        legacy = await self.service.create_drafts(101, "legacy", [self.spec()], self.clock())
         with self.assertRaises(ValueError):
             await self.service.create_drafts(
                 101,
-                "edit",
+                "correct-legacy",
                 [self.spec()],
                 self.clock(),
-                event_id=event_id,
-                event_version=1,
+                draft_id=legacy[0]["id"],
+                draft_version=legacy[0]["version"],
                 auto_save=True,
             )
-        legacy = await self.service.create_drafts(101, "legacy", [self.spec()], self.clock())
         again = await self.service.create_drafts(
             101, "legacy", [self.spec()], self.clock(), auto_save=True
         )

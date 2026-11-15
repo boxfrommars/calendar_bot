@@ -59,6 +59,46 @@ class ParseResult(BaseModel):
     question_sources: list[ParsedSource] = Field(default_factory=list, max_length=3)
 
 
+class EditParseResult(ParseResult):
+    changed_fields: list[Literal["title", "date", "time", "timezone", "repeat", "reminders"]]
+
+    def apply_to(self, base: dict) -> ParseResult:
+        if self.question:
+            return ParseResult(items=[], question=self.question)
+
+        kind = base.get("kind", "event")
+        fields = {"title": ("title",), "date": ("date",)}
+        original = {"kind": kind, "title": base["title"], "date": base["day"]}
+        if kind == "event":
+            fields.update(
+                time=("time",),
+                timezone=("timezone",),
+                repeat=("repeat", "weekdays"),
+                reminders=("reminders",),
+            )
+            original.update(
+                time=base["clock"],
+                timezone=base["timezone"],
+                repeat=base["repeat"],
+                weekdays=base["weekdays"],
+                reminders=base["reminder_minutes"],
+                time_source="user",
+            )
+        if (
+            len(self.items) != 1
+            or self.items[0].kind != kind
+            or not self.changed_fields
+            or set(self.changed_fields) - fields.keys()
+        ):
+            return ParseResult(items=[], question="Что именно изменить в выбранной записи?")
+
+        item = self.items[0]
+        changes = {
+            field: getattr(item, field) for group in self.changed_fields for field in fields[group]
+        }
+        return ParseResult(items=[type(item).model_validate(original | changes)], question=None)
+
+
 class Parser(Protocol):
     async def parse(
         self, messages: list[dict], reference: datetime, timezone: str, base: dict | None = None
@@ -129,7 +169,11 @@ source={title,url}: HTTP(S) URL буквально из результатов �
 """
 
 EDIT_INSTRUCTIONS = """Режим: изменение только selected_item. Верни одну изменённую запись или уточнение.
-Сохрани тип и все незатронутые поля. Соответствие: day → date, clock → time,
+В changed_fields перечисли только поля, которые пользователь явно попросил изменить
+с учётом уточнений: title, date, time, timezone, repeat, reminders. repeat включает
+weekdays. Для дела допустимы title и date. При вопросе changed_fields=[] и items=[].
+Запрос интервалов меняет только reminders. Не уточняй и не исправляй название,
+адрес или время начала без такого запроса. Соответствие: day → date, clock → time,
 reminder_minutes → reminders; отсутствие kind означает event. Перенос одного
 вхождения остаётся once. Смена task/event, добавление, удаление и выполнение
 через этот режим недоступны: уточни запрос, при необходимости предложи /today или /week.
@@ -385,7 +429,7 @@ class OpenAIParser:
                         store=False,
                         reasoning={"effort": REASONING_EFFORT},
                         max_output_tokens=3000,
-                        text_format=ParseResult,
+                        text_format=ParseResult if base is None else EditParseResult,
                         input=request_input,
                         **options,
                     )
@@ -403,23 +447,19 @@ class OpenAIParser:
                         raise UserError(
                             "Не удалось разобрать сообщение. Уточните формулировку или повторите."
                         )
+                    if base is not None:
+                        return result.apply_to(base)
                     if not result.items and not result.question and previous is None:
                         raise UserError(
                             "Не нашёл записей. Напишите дело или событие с датой и временем."
                         )
-                    if base is not None:
-                        for item in result.items:
-                            if isinstance(item, ParsedEvent):
-                                item.source = None
-                                item.time_source = "user"
-                        result.question_sources = []
                     result = validate_sources(
                         result,
                         search_urls(response),
                         previous=previous,
                         recheck_indexes=recheck_indexes,
                     )
-                    past = past_web_events(result, reference, timezone) if base is None else []
+                    past = past_web_events(result, reference, timezone)
                     used = sum(
                         output.type == "web_search_call"
                         for output in getattr(response, "output", [])
@@ -460,8 +500,13 @@ class OpenAIParser:
 
 
 def normalize(
-    parsed: ParsedEvent | ParsedTask, reference: datetime, timezone: str
+    parsed: ParsedEvent | ParsedTask,
+    reference: datetime,
+    timezone: str,
+    *,
+    original_title: str | None = None,
 ) -> EventSpec | TaskSpec:
+    title = parsed.title if parsed.title == original_title else parsed.title.strip()
     if isinstance(parsed, ParsedTask):
         try:
             day = (
@@ -471,7 +516,7 @@ def normalize(
             )
         except ValueError:
             raise UserError("Не удалось распознать дату дела. Укажите её явно.") from None
-        return TaskSpec(parsed.title.strip(), day)
+        return TaskSpec(title, day)
     tz = parsed.timezone or timezone
     zone(tz)
     if parsed.time is None:
@@ -497,7 +542,7 @@ def normalize(
         validate_public_time(day, parse_time(parsed.time), tz)
         source = parsed.source.to_source()
     return EventSpec(
-        title=parsed.title.strip(),
+        title=title,
         day=day,
         clock=parse_time(parsed.time),
         timezone=tz,

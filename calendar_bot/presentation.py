@@ -8,6 +8,7 @@ from datetime import UTC, date, datetime, time
 from aiogram.utils.formatting import Bold, Code, Italic, Text, TextLink
 
 from .domain import (
+    DEFAULT_REMINDERS,
     WEEKDAYS,
     AgendaPeriod,
     EventSource,
@@ -110,15 +111,23 @@ def minute_word(value: int, *, accusative=False) -> str:
     return "минуты" if value % 10 in {2, 3, 4} else "минут"
 
 
-def reminder_label(values: Sequence[int]) -> str:
+def reminder_label(values: Sequence[int], *, compact=False) -> str:
     before = [value for value in values if value > 0]
     parts = []
     if before:
         numbers = [str(value) for value in before]
         joined = ", ".join(numbers[:-1]) + " и " + numbers[-1] if len(numbers) > 1 else numbers[0]
-        parts.append(f"За {joined} {minute_word(before[-1], accusative=True)}")
+        if compact:
+            parts.append(f"за {joined} мин")
+        else:
+            parts.append(f"За {joined} {minute_word(before[-1], accusative=True)}")
     if 0 in values:
-        parts.append("в момент начала" if parts else "В момент начала")
+        if compact:
+            parts.append("в начале")
+        else:
+            parts.append("в момент начала" if parts else "В момент начала")
+    if compact:
+        return "🔔 " + " · ".join(parts) if parts else "🔕 без напоминаний"
     return "; ".join(parts) or "Выключены"
 
 
@@ -219,7 +228,7 @@ HELP = lines(
         "В расписании показан весь период. Для действий нажмите «Выбрать запись».",
         "",
         Bold("Изменить или удалить"),
-        "Используйте кнопки в карточке. Изменения и удаление требуют подтверждения.",
+        "Используйте кнопки в карточке. Правки сохраняются сразу, удаление требует подтверждения.",
         "Для одной встречи из серии откройте /week и нажмите «Выбрать запись».",
         "",
         Italic(
@@ -341,6 +350,7 @@ def agenda(
     total: int | None = None,
     part: tuple[int, int] | None = None,
     title_limit: int | None = None,
+    default_reminders: Sequence[int] | None = None,
 ) -> Text:
     today = now.astimezone(zone(timezone)).date()
     period = AgendaPeriod(start_day or today, days)
@@ -389,6 +399,9 @@ def agenda(
         body.append(Text(f"{number}. ", Bold(f"{local:%H:%M}"), " — ", title))
         if instant <= now:
             body[-1] += Text(" · ", Italic("уже началось"))
+        elif default_reminders is not None:
+            offsets = spec.effective_reminders(default_reminders)
+            body[-1] += Text(" · ", reminder_label(offsets, compact=True))
         if note := schedule_note(spec, instant, timezone):
             body.append(Italic(note))
         previous_day = local.date()
@@ -408,7 +421,12 @@ def agenda(
 
 
 def agenda_parts(
-    rows: list[dict], timezone: str, now: datetime, period: AgendaPeriod
+    rows: list[dict],
+    timezone: str,
+    now: datetime,
+    period: AgendaPeriod,
+    *,
+    default_reminders: Sequence[int] = DEFAULT_REMINDERS,
 ) -> list[Text]:
     """Split a single snapshot at record boundaries, including all entity/text overhead."""
     rows = [row | {"number": number} for number, row in enumerate(rows, 1)]
@@ -423,6 +441,7 @@ def agenda_parts(
             start_day=period.start,
             total=len(rows),
             part=part,
+            default_reminders=default_reminders,
         )
 
     def fits(content):
@@ -563,7 +582,13 @@ def reminder_part(
 
 
 def summary_parts(
-    rows: list[dict], day: date, timezone: str, now: datetime, tasks: Sequence[dict] = ()
+    rows: list[dict],
+    day: date,
+    timezone: str,
+    now: datetime,
+    tasks: Sequence[dict] = (),
+    *,
+    default_reminders: Sequence[int] = DEFAULT_REMINDERS,
 ) -> list[str]:
     today = now.astimezone(zone(timezone)).date()
     body = [f"☀️ {'План' if tasks else 'События'} на {date_label(day, today)}", ""]
@@ -573,7 +598,11 @@ def summary_parts(
         instant = datetime.fromtimestamp(row["start_at"], UTC)
         instants.append(instant)
         local = instant.astimezone(zone(timezone))
-        body.append(f"{local:%H:%M} — {spec.title}")
+        label = f"{local:%H:%M} — {spec.title}"
+        if instant > now:
+            offsets = spec.effective_reminders(default_reminders)
+            label += " · " + reminder_label(offsets, compact=True)
+        body.append(label)
         if note := schedule_note(spec, instant, timezone):
             body.append(note)
         body.append("")

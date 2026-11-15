@@ -156,10 +156,12 @@ class CalendarService:
         draft_version=None,
         auto_save=False,
     ) -> list[dict]:
-        """Persist a parsed request; only fresh additions can opt into atomic auto-save."""
+        """Persist a parsed request, optionally applying new additions or edits immediately."""
         self.authorize(user_id)
-        if auto_save and (event_id or task_id or draft_id or original_day):
-            raise ValueError("Only new items can be saved automatically")
+        if auto_save and draft_id:
+            raise ValueError("Existing drafts require confirmation")
+        if original_day and not event_id:
+            raise ValueError("An occurrence edit requires an event")
         if event_id and task_id:
             raise ValueError("Only one edit target is allowed")
         if not 1 <= len(specs) <= 10 or ((event_id or task_id or draft_id) and len(specs) != 1):
@@ -176,6 +178,8 @@ class CalendarService:
                     for d in json.loads(previous["draft_ids"])
                 ]
             if event_id:
+                if event_version is None:
+                    raise UserError("Откройте свежую карточку события через /week.")
                 target = await self._owned_event(tx, user_id, event_id, event_version)
                 # A one-off has no series to make an exception to: moving it changes
                 # its actual date, so it remains visible/editable after the old date.
@@ -384,6 +388,7 @@ class CalendarService:
         )
         event = await tx.one("SELECT * FROM events WHERE id=?", (event_id,))
         await self._rebuild_event(tx, event, user, now)
+        await self._invalidate_unstarted_summaries(tx, user_id)
         return event_id
 
     async def _save_task_draft(self, tx, user_id, draft, now) -> str:
@@ -404,7 +409,7 @@ class CalendarService:
         await tx.execute(
             "UPDATE drafts SET status='saved',result_id=? WHERE id=?", (task_id, draft["id"])
         )
-        await self._invalidate_task_summaries(tx, user_id)
+        await self._invalidate_unstarted_summaries(tx, user_id)
         return task_id
 
     async def _owned_task(
@@ -446,7 +451,7 @@ class CalendarService:
                 "UPDATE tasks SET completed_at=?,version=version+1 WHERE id=?",
                 (self.clock().timestamp() if completed else None, task_id),
             )
-            await self._invalidate_task_summaries(tx, user_id)
+            await self._invalidate_unstarted_summaries(tx, user_id)
 
     async def cancel_task(self, user_id: int, task_id: str, version: int) -> None:
         self.authorize(user_id)
@@ -455,9 +460,9 @@ class CalendarService:
         async with self.gate, self.store.transaction() as tx:
             await self._owned_task(tx, user_id, task_id, version)
             await tx.execute("UPDATE tasks SET active=0,version=version+1 WHERE id=?", (task_id,))
-            await self._invalidate_task_summaries(tx, user_id)
+            await self._invalidate_unstarted_summaries(tx, user_id)
 
-    async def _invalidate_task_summaries(self, tx, user_id) -> None:
+    async def _invalidate_unstarted_summaries(self, tx, user_id) -> None:
         # A started multipart summary is an immutable snapshot. Never rewind delivery.
         await tx.execute(
             "UPDATE notifications SET parts=NULL WHERE user_id=? AND kind='summary' "
@@ -514,6 +519,7 @@ class CalendarService:
             event = await tx.one("SELECT * FROM events WHERE id=?", (event_id,))
             user = await tx.one("SELECT * FROM users WHERE id=?", (user_id,))
             await self._rebuild_event(tx, event, user, now)
+            await self._invalidate_unstarted_summaries(tx, user_id)
 
     async def _enqueue(
         self,
@@ -584,6 +590,7 @@ class CalendarService:
                 instant = override.first_after(now)
                 if instant >= horizon:
                     desired.append(Occurrence(event["id"], original_day, instant, override))
+        default_reminders = tuple(json.loads(user["reminders"]))
         for occurrence in desired:
             day = occurrence.original_day.isoformat()
             if day in protected:
@@ -592,10 +599,7 @@ class CalendarService:
                 "INSERT INTO occurrences VALUES(?,?,?,?)",
                 (event["id"], day, occurrence.start.timestamp(), occurrence.spec.to_json()),
             )
-            offsets = occurrence.spec.reminder_minutes
-            if offsets is None:
-                offsets = json.loads(user["reminders"])
-            for offset in offsets:
+            for offset in occurrence.spec.effective_reminders(default_reminders):
                 await self._enqueue(
                     tx,
                     user_id=user["id"],
